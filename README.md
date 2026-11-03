@@ -58,8 +58,16 @@ Lỗi luôn có dạng: `{ "error": { "code", "message", "fields"? } }`
 - **Rate limit** 10 lần / 15 phút / IP cho đăng nhập & đăng ký; `helmet`, giới hạn body 10 kB.
 - Validate 2 lớp: client (phản hồi tức thì) + server (Zod, nguồn sự thật).
 
-## Production
+## Deploy (Render + Neon)
 
-- Đặt `NODE_ENV=production`, `JWT_ACCESS_SECRET` mới, `CLIENT_ORIGIN` = domain thật; chạy sau HTTPS.
-- `npm run build` → phục vụ `client/dist` bằng Nginx, proxy `/api` sang Express.
-- `npm run db:deploy -w server` để áp migration.
+Production chạy **1 service**: Express phục vụ cả API (`/api/*`) lẫn frontend đã build (`client/dist`).
+Cấu hình nằm trong [render.yaml](render.yaml); `npm start` tự chạy `prisma migrate deploy` trước khi khởi động.
+
+1. **Neon** (neon.tech) → tạo project, region Singapore → copy *connection string* (bỏ chọn "Connection pooling").
+2. **GitHub** → tạo repo trống → `git remote add origin <url>` → `git push -u origin main`.
+3. **Render** (render.com) → New → **Blueprint** → chọn repo → nhập:
+   - `DATABASE_URL` = connection string của Neon
+   - `CLIENT_ORIGIN` = `https://<tên-service>.onrender.com`
+4. Đợi build xong (~3–5 phút) → mở URL. Từ đó mỗi lần `git push` Render tự deploy lại.
+
+Gói free của Render ngủ sau 15 phút không có truy cập; lần mở đầu tiên sau đó mất ~30–60 giây.
