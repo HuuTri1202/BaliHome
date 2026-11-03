@@ -1,0 +1,22 @@
+# PostgreSQL cho môi trường dev. Chạy: npm run db:up
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: balihome-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: bali
+      POSTGRES_PASSWORD: bali_dev_password
+      POSTGRES_DB: balihome
+    ports:
+      - "5432:5432"
+    volumes:
+      - balihome-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bali -d balihome"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  balihome-pgdata:

@@ -1,0 +1,65 @@
+/**
+ * Lớp gọi API dùng chung.
+ * - Cookie httpOnly được trình duyệt tự gửi kèm (cùng origin qua Vite proxy).
+ * - Gặp 401 → tự gọi /auth/refresh một lần rồi thử lại request gốc.
+ *   Nhiều request cùng 401 một lúc chỉ tạo đúng 1 lần refresh (dùng chung promise).
+ */
+export class ApiError extends Error {
+  constructor(status, code, message, fields) {
+    super(message);
+    this.status = status;
+    this.code = code;
+    this.fields = fields ?? {};
+  }
+}
+
+const NETWORK_MSG = 'Không kết nối được máy chủ. Vui lòng kiểm tra mạng và thử lại.';
+
+async function rawRequest(path, { method = 'GET', body, signal } = {}) {
+  let res;
+  try {
+    res = await fetch(`/api${path}`, {
+      method,
+      credentials: 'include',
+      headers: body ? { 'Content-Type': 'application/json' } : undefined,
+      body: body ? JSON.stringify(body) : undefined,
+      signal,
+    });
+  } catch (err) {
+    if (err.name === 'AbortError') throw err;
+    throw new ApiError(0, 'NETWORK', NETWORK_MSG);
+  }
+
+  if (res.status === 204) return null;
+  const data = await res.json().catch(() => null);
+
+  if (!res.ok) {
+    // Proxy trả 5xx không có JSON → backend chưa chạy
+    if (!data?.error) throw new ApiError(res.status, 'NETWORK', NETWORK_MSG);
+    throw new ApiError(res.status, data.error.code, data.error.message, data.error.fields);
+  }
+  return data;
+}
+
+let refreshPromise = null;
+const NO_RETRY = ['/auth/login', '/auth/register', '/auth/refresh', '/auth/logout'];
+
+export async function request(path, options) {
+  try {
+    return await rawRequest(path, options);
+  } catch (err) {
+    if (!(err instanceof ApiError) || err.status !== 401 || NO_RETRY.includes(path)) throw err;
+    refreshPromise ??= rawRequest('/auth/refresh', { method: 'POST' }).finally(() => {
+      refreshPromise = null;
+    });
+    await refreshPromise; // refresh thất bại → ném lỗi → coi như chưa đăng nhập
+    return rawRequest(path, options);
+  }
+}
+
+export const authApi = {
+  me: () => request('/auth/me'),
+  login: (payload) => request('/auth/login', { method: 'POST', body: payload }),
+  register: (payload) => request('/auth/register', { method: 'POST', body: payload }),
+  logout: () => request('/auth/logout', { method: 'POST' }),
+};

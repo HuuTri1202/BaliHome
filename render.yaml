@@ -1,0 +1,25 @@
+# Render Blueprint — tạo service tự động khi chọn "New → Blueprint" trên Render.
+# 1 web service chạy Express, phục vụ cả API (/api/*) lẫn frontend (client/dist).
+services:
+  - type: web
+    name: balihome
+    runtime: node
+    plan: free
+    region: singapore              # gần Việt Nam nhất
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm start        # chạy prisma migrate deploy rồi khởi động server
+    healthCheckPath: /api/health
+    autoDeploy: true               # push lên GitHub → tự deploy lại
+    envVars:
+      - key: NODE_VERSION
+        value: "22.12.0"
+      - key: NODE_ENV
+        value: production
+      - key: TRUST_PROXY
+        value: "1"
+      - key: JWT_ACCESS_SECRET
+        generateValue: true        # Render tự sinh chuỗi bí mật ngẫu nhiên
+      - key: DATABASE_URL
+        sync: false                # dán connection string của Neon khi tạo
+      - key: CLIENT_ORIGIN
+        sync: false                # VD: https://balihome.onrender.com

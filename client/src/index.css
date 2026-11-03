@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+/* ===== Design tokens (Tailwind v4: khai báo bằng CSS) =====
+   Dùng: bg-brand-500, text-accent-500, font-sans ... */
+@theme {
+  --font-sans: "Be Vietnam Pro", ui-sans-serif, system-ui, sans-serif;
+
+  --color-brand-50: #eef4ff;
+  --color-brand-100: #dce8ff;
+  --color-brand-200: #bcd2ff;
+  --color-brand-400: #4d82ec;
+  --color-brand-500: #1e5bd8;
+  --color-brand-600: #1a4fbf;
+  --color-brand-700: #153f99;
+  --color-brand-900: #0e2a7a;
+  --color-brand-950: #081a52;
+
+  --color-accent-400: #f0525a;
+  --color-accent-500: #e5232d;
+  --color-accent-600: #c81e2b;
+
+  --animate-rise: rise 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-shake: shake 0.4s ease-in-out;
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
+  }
+}
+
+html { -webkit-tap-highlight-color: transparent; }
+body {
+  @apply bg-slate-50 font-sans text-slate-900 antialiased;
+}
+
+/* Biến màu có thể transition → gradient nền đổi mượt theo phong cách logo */
+@property --c1 { syntax: "<color>"; inherits: true; initial-value: #dce8ff; }
+@property --c2 { syntax: "<color>"; inherits: true; initial-value: #ffffff; }
+@property --c3 { syntax: "<color>"; inherits: true; initial-value: #1e5bd8; }
+
+.theme-bg {
+  background:
+    radial-gradient(60% 55% at 50% 45%, color-mix(in srgb, var(--c3) 22%, transparent), transparent 70%),
+    radial-gradient(120% 90% at 0% 0%, var(--c2), transparent 60%),
+    linear-gradient(160deg, var(--c1), var(--c2));
+  transition: --c1 0.8s ease, --c2 0.8s ease, --c3 0.8s ease;
+}
+
+.outline-word {
+  -webkit-text-stroke: 2px color-mix(in srgb, var(--c3) 35%, transparent);
+  color: transparent;
+}
+
+/* Ẩn icon "hiện mật khẩu" mặc định của Edge (đã có nút riêng) */
+input::-ms-reveal { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
