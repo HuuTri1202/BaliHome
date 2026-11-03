@@ -27,7 +27,7 @@ export default function Navbar({ accent }) {
       </nav>
 
       {/* Giữ chỗ cố định khi đang kiểm tra phiên → không nhấp nháy nút */}
-      <div className="flex min-w-[180px] items-center justify-end gap-2">
+      <div className="flex items-center justify-end gap-2 sm:min-w-[180px]">
         {status === 'loading' ? (
           <div className="h-10 w-40 animate-pulse rounded-full bg-slate-900/5" />
         ) : user ? (
