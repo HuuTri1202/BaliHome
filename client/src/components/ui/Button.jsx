@@ -1,24 +1,28 @@
 import { forwardRef } from 'react';
+import { ArrowRightIcon } from './icons.jsx';
 
 /**
- * Nút bấm theo motif lục giác (2 đầu vát giống khung logo).
- * Màu nền đặt qua biến --fill (vẽ ở ::before của .hex-pill) → outline focus không bị cắt.
- * Tất cả màu lấy từ token nên tự đúng ở chế độ sáng/tối.
+ * Nút viên thuốc (bo tròn hoàn toàn) — phong cách "light luxury".
+ * Màu lấy từ token → tự đúng ở chế độ sáng/tối.
+ *  primary : nền mực đậm (đảo màu ở chế độ tối)   brand : xanh thương hiệu
+ *  soft    : bậc tông nền                          glass : kính mờ (đặt trên ảnh/cảnh nền)
+ *  onMotif : trắng trên mảng navy                  danger / ghost
  */
 const VARIANTS = {
-  primary: 'text-on-action [--fill:var(--action)] hover:[--fill:var(--action-hover)]',
-  soft: 'text-ink [--fill:var(--ground-3)] hover:[--fill:var(--line)]',
-  outline: 'text-ink [--fill:var(--ground-3)] hover:[--fill:var(--line)]', // giữ tên cũ = soft
-  dark: 'text-ground [--fill:var(--ink)] hover:[--fill:var(--ink-2)]',
-  onMotif: 'text-motif [--fill:var(--on-motif)] hover:[--fill:var(--on-motif-2)]',
-  danger:
-    'text-signal [--fill:color-mix(in_srgb,var(--signal)_12%,transparent)] hover:[--fill:color-mix(in_srgb,var(--signal)_22%,transparent)]',
-  ghost: 'text-ink-2 hover:text-ink [--fill:transparent] hover:[--fill:var(--ground-2)]',
+  primary: 'bg-ink text-ground hover:bg-ink/85',
+  brand: 'bg-action text-on-action hover:bg-action-hover',
+  soft: 'bg-ground-3 text-ink hover:bg-line',
+  outline: 'bg-ground-3 text-ink hover:bg-line', // tên cũ = soft
+  glass: 'glass text-ink hover:bg-ground',
+  dark: 'bg-ink text-ground hover:bg-ink/85',
+  onMotif: 'bg-on-motif text-motif hover:bg-on-motif-2',
+  danger: 'bg-[color-mix(in_srgb,var(--signal)_12%,transparent)] text-signal hover:bg-[color-mix(in_srgb,var(--signal)_20%,transparent)]',
+  ghost: 'text-ink-2 hover:bg-ground-2 hover:text-ink',
 };
 const SIZES = {
-  sm: 'h-10 px-5 text-sm [--cut:0.7rem]',
+  sm: 'h-10 px-5 text-sm',
   md: 'h-12 px-6 text-[15px]',
-  lg: 'h-14 px-8 text-base [--cut:1.05rem]',
+  lg: 'h-14 px-7 text-base',
 };
 
 export function Spinner({ className = 'h-5 w-5' }) {
@@ -30,9 +34,18 @@ export function Spinner({ className = 'h-5 w-5' }) {
   );
 }
 
+/** Vòng tròn chứa mũi tên ở đuôi nút (như mẫu "Start a Project →") */
+export function ArrowBubble({ className = '' }) {
+  return (
+    <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-full bg-ground text-ink transition-transform group-hover:translate-x-0.5 ${className}`} aria-hidden="true">
+      <ArrowRightIcon className="h-4 w-4" />
+    </span>
+  );
+}
+
 /** Nút có trạng thái loading: khoá thao tác + giữ nguyên kích thước (không nhảy layout) */
 export const Button = forwardRef(function Button(
-  { as: Comp = 'button', variant = 'primary', size = 'md', loading = false, className = '', children, disabled, ...props },
+  { as: Comp = 'button', variant = 'primary', size = 'md', loading = false, bubble = false, className = '', children, disabled, ...props },
   ref
 ) {
   const isButton = Comp === 'button';
@@ -42,10 +55,10 @@ export const Button = forwardRef(function Button(
       {...(isButton && { type: props.type ?? 'button', disabled: disabled || loading })}
       aria-busy={loading || undefined}
       className={
-        'hex-pill inline-flex select-none items-center justify-center gap-2 font-bold whitespace-nowrap ' +
-        'transition-transform duration-200 hover:-translate-y-px active:translate-y-0 active:scale-[.98] ' +
+        'group relative inline-flex select-none items-center justify-center gap-2 whitespace-nowrap rounded-full font-semibold ' +
+        'transition-[transform,background-color,color] duration-200 hover:-translate-y-px active:translate-y-0 active:scale-[.98] ' +
         'disabled:pointer-events-none disabled:opacity-60 ' +
-        `${VARIANTS[variant]} ${SIZES[size]} ${className}`
+        `${VARIANTS[variant]} ${SIZES[size]} ${bubble ? 'pr-1.5' : ''} ${className}`
       }
       {...props}
     >
@@ -55,6 +68,7 @@ export const Button = forwardRef(function Button(
         </span>
       )}
       <span className={`inline-flex items-center gap-2 ${loading ? 'invisible' : ''}`}>{children}</span>
+      {bubble && <ArrowBubble className={`ml-3 ${loading ? 'invisible' : ''}`} />}
     </Comp>
   );
 });

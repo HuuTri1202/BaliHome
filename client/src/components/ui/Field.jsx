@@ -3,7 +3,7 @@ import { EyeIcon, EyeOffIcon, AlertIcon } from './icons.jsx';
 
 /* Ô nhập vuông góc (khớp nút lục giác cạnh sắc). Form là nơi duy nhất được phép có viền. */
 const CONTROL =
-  'block w-full border bg-ground text-[16px] text-ink outline-none transition-colors ' +
+  'block w-full rounded-2xl border bg-ground text-[16px] text-ink outline-none transition-colors ' +
   'placeholder:text-ink-2/70 disabled:cursor-not-allowed disabled:bg-ground-2 ';
 const controlState = (error) =>
   error
@@ -94,7 +94,7 @@ export const PasswordField = forwardRef(function PasswordField(props, ref) {
         <button
           type="button"
           onClick={() => setVisible((v) => !v)}
-          className="grid h-10 w-10 place-items-center text-ink-2 transition-colors hover:bg-ground-2 hover:text-ink"
+          className="grid h-10 w-10 place-items-center rounded-full text-ink-2 transition-colors hover:bg-ground-2 hover:text-ink"
           aria-label={visible ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
           aria-pressed={visible}
         >

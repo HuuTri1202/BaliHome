@@ -30,7 +30,7 @@ export default function AuthLayout({ title, subtitle, children, footer }) {
         </div>
 
         <div>
-          <h2 className="max-w-[14ch] text-[2.5rem] font-extrabold leading-[1.02] tracking-[-0.035em]">Thành viên Bali Home</h2>
+          <h2 className="max-w-[14ch] text-[2.5rem] font-display font-normal leading-[1.05]">Thành viên Bali Home</h2>
           <ul className="mt-8 grid gap-5">
             {PERKS.map(([t, d]) => (
               <li key={t} className="flex gap-4">
@@ -59,7 +59,7 @@ export default function AuthLayout({ title, subtitle, children, footer }) {
 
         <div className="mx-auto flex w-full max-w-[460px] flex-1 flex-col justify-center py-12">
           <div className="animate-rise">
-            <h1 className="text-[2.5rem] font-extrabold leading-[1.02] tracking-[-0.035em] sm:text-[3rem]">{title}</h1>
+            <h1 className="text-[2.5rem] font-display font-normal leading-[1.05] sm:text-[3rem]">{title}</h1>
             {subtitle && <p className="mt-3 text-[17px] text-ink-2">{subtitle}</p>}
           </div>
           <div className="mt-10">{children}</div>

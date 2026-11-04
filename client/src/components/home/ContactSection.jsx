@@ -39,9 +39,9 @@ function ServicePicker({ value, error, onChange, services, status }) {
               <label
                 key={s.slug}
                 className={
-                  'hex-pill flex h-11 cursor-pointer items-center px-5 text-[15px] font-semibold transition-transform active:scale-[.98] ' +
+                  'flex h-11 cursor-pointer items-center rounded-full px-5 text-[15px] font-semibold transition-[transform,background-color] active:scale-[.98] ' +
                   'has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-offset-3 has-[:focus-visible]:outline-action ' +
-                  (checked ? 'text-on-action [--fill:var(--action)]' : 'text-ink [--fill:var(--ground-3)] hover:[--fill:var(--line)]')
+                  (checked ? 'bg-ink text-ground' : 'bg-ground text-ink hover:bg-ground-3')
                 }
               >
                 <input type="radio" name="need" value={s.slug} checked={checked} onChange={onChange} className="sr-only" />
@@ -109,7 +109,7 @@ export default function ContactSection({
     <section id={id} aria-labelledby={`${id}-title`} className="py-24 lg:py-28">
       <Reveal className={`${CONTAINER} grid gap-12 lg:grid-cols-12 lg:gap-16`}>
         <div className="lg:col-span-5">
-          <h2 id={`${id}-title`} {...item(0, 'text-title font-extrabold')}>
+          <h2 id={`${id}-title`} {...item(0, 'font-display text-title font-normal')}>
             {title}
           </h2>
           <p {...item(1, 'mt-6 max-w-[34ch] text-lead text-ink')}>{intro}</p>
@@ -127,7 +127,7 @@ export default function ContactSection({
           </ul>
         </div>
 
-        <div {...item(3, 'bg-ground-2 p-6 sm:p-10 lg:col-span-7 lg:p-12')}>
+        <div {...item(3, 'rounded-3xl bg-ground-2 p-6 sm:p-10 lg:col-span-7 lg:p-12')}>
           {sent ? (
             <div className="flex min-h-[420px] flex-col items-start justify-center" role="status">
               <span className="hex hex-ratio grid w-16 place-items-center bg-success text-white">

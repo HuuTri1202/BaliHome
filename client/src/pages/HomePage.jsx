@@ -1,12 +1,11 @@
 import { Link } from 'react-router-dom';
-import Navbar, { CONTAINER } from '../components/Navbar.jsx';
+import { CONTAINER } from '../components/Navbar.jsx';
 import Footer from '../components/Footer.jsx';
-import LogoCanvas from '../components/LazyLogoCanvas.jsx';
+import HeroScene from '../components/home/HeroScene.jsx';
 import Reveal, { item } from '../components/Reveal.jsx';
 import ContactSection from '../components/home/ContactSection.jsx';
 import { Button } from '../components/ui/Button.jsx';
 import { ArrowRightIcon } from '../components/ui/icons.jsx';
-import { THEMES } from '../data/themes.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useServices } from '../hooks/useServices.js';
 import { groupServices } from '../data/needs.js';
@@ -26,7 +25,6 @@ import { ServicesSkeleton, ServicesError } from '../components/services/ServiceS
  * ⚠ Các bước làm việc và câu chữ cam kết là NỘI DUNG NHÁP — cần Bali Home xác nhận.
  * ========================================================================== */
 
-const logoTheme = THEMES[0]; // màu nhận diện xanh – đỏ nguyên bản cho logo 3D
 
 const STEPS = [
   ['Lắng nghe', 'Bạn gửi yêu cầu hoặc gọi điện. Bali Home hỏi rõ mục tiêu, khách hàng và ngân sách của bạn.'],
@@ -55,7 +53,7 @@ function ServiceIndex() {
   return (
     <div className="grid gap-1">
       {groupServices(services).map((g, gi) => (
-        <div key={g.id} className={`grid gap-6 p-7 sm:p-10 lg:grid-cols-12 lg:gap-10 ${gi % 2 ? 'bg-ground-3' : 'bg-ground-2'}`}>
+        <div key={g.id} className={`grid gap-6 rounded-3xl p-7 sm:p-10 lg:grid-cols-12 lg:gap-10 ${gi % 2 ? 'bg-ground-3' : 'bg-ground-2'}`}>
           <div className="lg:col-span-4">
             <h3 className="text-lead font-bold">{g.name}</h3>
             <p className="mt-2 max-w-[32ch] text-ink-2">{g.intro}</p>
@@ -120,48 +118,15 @@ export default function HomePage() {
 
   return (
     <div className="min-h-dvh overflow-x-clip bg-ground">
-      <Navbar />
-
       <main>
-        {/* ================= 1. HERO ================= */}
-        <section aria-labelledby="hero-title" className="relative overflow-hidden">
-          <div className={`${CONTAINER} grid min-h-[calc(100svh-5rem)] items-center gap-6 pb-12 lg:grid-cols-12 lg:pb-0`}>
-            <div className="relative z-10 pt-10 lg:col-span-6 lg:py-24">
-              <h1 id="hero-title" className="animate-rise text-display font-extrabold">
-                Trọn gói cho thương hiệu
-              </h1>
-              <p className="mt-8 max-w-[36ch] animate-rise text-lead text-ink [animation-delay:90ms]">
-                Bali Home nhận in ấn, design, web, edit, profile card, sales, marketing và content. Một đầu mối cho mọi việc của thương hiệu.
-              </p>
-              <div className="mt-10 flex animate-rise flex-wrap items-center gap-x-7 gap-y-4 [animation-delay:180ms]">
-                <Button as="a" href="#lien-he" size="lg">
-                  Gửi yêu cầu tư vấn <ArrowRightIcon className="h-5 w-5" />
-                </Button>
-                <Link
-                  to={user ? '/tai-khoan' : '/dang-ky'}
-                  className="group inline-flex items-center gap-2 py-2 text-[17px] font-semibold text-action"
-                >
-                  {user ? 'Tài khoản của tôi' : 'Tạo tài khoản thành viên'}
-                  <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </Link>
-              </div>
-            </div>
-
-            {/* Lục giác khổng lồ = sân khấu cho logo 3D (thứ "sống" duy nhất của trang: kéo để xoay) */}
-            <div className="relative mx-auto w-[88vw] max-w-[540px] lg:absolute lg:top-1/2 lg:right-[-3vw] lg:w-[min(44vw,calc((100svh-6rem)*0.866))] lg:max-w-[760px] lg:-translate-y-1/2">
-              <div className="hex hex-ratio hex-hero relative w-full bg-motif">
-                <LogoCanvas theme={logoTheme} className="absolute left-[6%] top-[20%] h-[60%] w-[80%] lg:left-[4%]" />
-              </div>
-              <p className="mt-3 text-center text-sm text-ink-2 lg:hidden">Chạm và kéo để xoay logo</p>
-            </div>
-          </div>
-        </section>
+        {/* ================= 1. HERO (khung cảnh + menu kính + logo 3D + 3 thẻ nổi) ================= */}
+        <HeroScene />
 
         {/* ================= 2. DỊCH VỤ (dữ liệu thật từ /api/services) ================= */}
         <section id="dich-vu" aria-labelledby="dich-vu-title" className="py-24 lg:py-28">
           <Reveal className={CONTAINER}>
             <div className="grid gap-6 lg:grid-cols-12 lg:items-end">
-              <h2 id="dich-vu-title" {...item(0, 'text-title font-extrabold lg:col-span-7')}>
+              <h2 id="dich-vu-title" {...item(0, 'font-display text-title font-normal lg:col-span-7')}>
                 Tám dịch vụ, một đầu mối
               </h2>
               <p {...item(1, 'max-w-[40ch] text-lead text-ink lg:col-span-5')}>
@@ -179,7 +144,7 @@ export default function HomePage() {
           <Reveal className={`${CONTAINER} grid gap-12 lg:grid-cols-12`}>
             <div className="lg:col-span-5">
               <div className="lg:sticky lg:top-32">
-                <h2 id="cach-lam-viec-title" {...item(0, 'text-title font-extrabold')}>
+                <h2 id="cach-lam-viec-title" {...item(0, 'font-display text-title font-normal')}>
                   Làm việc với Bali Home
                 </h2>
                 <p {...item(1, 'mt-6 max-w-[34ch] text-lead text-ink')}>
@@ -189,7 +154,7 @@ export default function HomePage() {
             </div>
             <ol className="grid gap-4 lg:col-span-7">
               {STEPS.map(([title, text], i) => (
-                <li key={title} {...item(2 + i, 'flex gap-6 bg-ground-2 p-7 sm:p-9')}>
+                <li key={title} {...item(2 + i, 'flex gap-6 rounded-3xl bg-ground-2 p-7 sm:p-9')}>
                   {/* thứ tự thể hiện bằng lục giác lớn dần, không dùng số 01/02 */}
                   <span className="hex hex-ratio mt-1 shrink-0 bg-action" style={{ width: `${1.1 + i * 0.35}rem` }} aria-hidden="true" />
                   <span>
@@ -204,9 +169,9 @@ export default function HomePage() {
 
         {/* ================= 4. DẢI GIÁ TRỊ (mảng navy, 2 đầu vát theo motif) ================= */}
         <section aria-labelledby="gia-tri-title" className="px-0 sm:px-4 lg:px-6">
-          <Reveal className="hex-band bg-motif text-on-motif [--notch:1.75rem] sm:[--notch:3rem] lg:[--notch:5rem]">
+          <Reveal className="rounded-[2rem] bg-motif text-on-motif lg:rounded-[2.5rem]">
             <div className={`${CONTAINER} py-24 lg:py-36`}>
-              <h2 id="gia-tri-title" {...item(0, 'text-title font-extrabold')}>
+              <h2 id="gia-tri-title" {...item(0, 'font-display text-title font-normal')}>
                 Uy tín, chất lượng, tận tâm
               </h2>
               <div className="mt-16 grid gap-12 md:grid-cols-3 md:gap-10">
@@ -226,7 +191,7 @@ export default function HomePage() {
         <section id="thanh-vien" aria-labelledby="thanh-vien-title" className="py-24 lg:py-28">
           <Reveal className={`${CONTAINER} grid items-center gap-14 lg:grid-cols-12`}>
             <div className="lg:col-span-6">
-              <h2 id="thanh-vien-title" {...item(0, 'text-title font-extrabold')}>
+              <h2 id="thanh-vien-title" {...item(0, 'font-display text-title font-normal')}>
                 Theo dõi mọi yêu cầu
               </h2>
               <p {...item(1, 'mt-6 max-w-[38ch] text-lead text-ink')}>

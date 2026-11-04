@@ -42,7 +42,7 @@ const STATUS_TONE = {
 
 function Panel({ title, action, children, className = '' }) {
   return (
-    <section className={`bg-ground-2 p-6 sm:p-8 ${className}`}>
+    <section className={`rounded-3xl bg-ground-2 p-6 sm:p-8 ${className}`}>
       <div className="flex items-center justify-between gap-4">
         <h2 className="text-[19px] font-bold">{title}</h2>
         {action}
@@ -76,7 +76,7 @@ function CopyButton({ value, label }) {
 
 function InfoRow({ label, children }) {
   return (
-    <div className="grid gap-1 bg-ground px-5 py-4 sm:grid-cols-[11rem_1fr] sm:items-center sm:gap-4">
+    <div className="grid gap-1 rounded-2xl bg-ground px-5 py-4 sm:grid-cols-[11rem_1fr] sm:items-center sm:gap-4">
       <dt className="text-sm font-medium text-ink-2">{label}</dt>
       <dd className="min-w-0 break-words text-[16px] font-semibold">{children}</dd>
     </div>
@@ -120,7 +120,7 @@ function RequestsPanel() {
       {state.status === 'ready' && state.items.length > 0 && (
         <ul className="grid gap-1">
           {state.items.map((r) => (
-            <li key={r.id} className="flex items-center justify-between gap-4 bg-ground px-5 py-4">
+            <li key={r.id} className="flex items-center justify-between gap-4 rounded-2xl bg-ground px-5 py-4">
               <div className="min-w-0">
                 <p className="font-semibold">{r.needLabel ?? r.need}</p>
                 <p className="text-sm text-ink-2">
@@ -161,7 +161,7 @@ export default function AccountPage() {
         {welcome && <Alert type="success" className="mb-6">Tạo tài khoản thành công. Chào mừng bạn đến với Bali Home!</Alert>}
 
         {/* ========== Hồ sơ ========== */}
-        <section className="animate-rise overflow-hidden bg-ground-2">
+        <section className="animate-rise overflow-hidden rounded-[2rem] bg-ground-2">
           {/* Banner: mảng navy phẳng + lục giác motif bị cắt ở mép phải */}
           <div className="relative h-32 overflow-hidden bg-motif sm:h-40" aria-hidden="true">
             <div className="hex hex-ratio absolute -right-6 top-1/2 w-40 -translate-y-1/2 bg-action sm:right-16 sm:w-48" />
@@ -179,7 +179,7 @@ export default function AccountPage() {
                 </span>
                 <div className="min-w-0 sm:pb-2">
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                    <h1 className="break-words text-[2rem] font-extrabold leading-tight tracking-[-0.03em]">{user.fullName}</h1>
+                    <h1 className="break-words font-display text-[2.25rem] font-normal leading-tight">{user.fullName}</h1>
                     <span className={`px-2.5 py-1 text-sm font-semibold ${isAdmin ? 'bg-[color-mix(in_srgb,var(--signal)_14%,var(--ground))] text-signal' : 'bg-ground-3 text-ink'}`}>
                       {isAdmin ? 'Quản trị viên' : 'Thành viên'}
                     </span>
@@ -199,7 +199,7 @@ export default function AccountPage() {
                 ['Đăng nhập gần nhất', fmtDateTime(user.lastLoginAt), timeAgo(user.lastLoginAt)],
                 ['Mã thành viên', memberCode(user.id), 'Đọc mã này khi liên hệ hỗ trợ'],
               ].map(([label, value, sub]) => (
-                <div key={label} className="bg-ground px-5 py-4">
+                <div key={label} className="rounded-2xl bg-ground px-5 py-4">
                   <dt className="text-sm font-medium text-ink-2">{label}</dt>
                   <dd className="mt-1 text-[19px] font-bold tabular-nums">{value}</dd>
                   <dd className="text-sm text-ink-2">{sub}</dd>
@@ -252,7 +252,7 @@ export default function AccountPage() {
                   ['Phiên đăng nhập', 'Đang hoạt động trên thiết bị này.'],
                   ['Hoạt động gần nhất', fmtDateTime(user.lastLoginAt)],
                 ].map(([t, d]) => (
-                  <li key={t} className="flex items-start gap-3 bg-ground px-5 py-4">
+                  <li key={t} className="flex items-start gap-3 rounded-2xl bg-ground px-5 py-4">
                     <span className="hex hex-ratio mt-1.5 w-3 shrink-0 bg-success" aria-hidden="true" />
                     <span>
                       <span className="block font-semibold">{t}</span>

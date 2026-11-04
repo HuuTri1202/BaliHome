@@ -62,6 +62,8 @@
 
 @theme {
   --font-sans: "Be Vietnam Pro", ui-sans-serif, system-ui, sans-serif;
+  /* Tiêu đề: serif hiện đại (hỗ trợ đủ dấu tiếng Việt) — cặp với sans cho chữ thường */
+  --font-display: "Playfair Display", "Times New Roman", serif;
 
   /* Bảng màu thương hiệu gốc (vẫn giữ cho các chỗ cần mã màu cố định) */
   --color-brand-50: #eef4ff;
@@ -78,12 +80,12 @@
   --color-accent-600: #c81e2b;
 
   /* Thang chữ: 5 cỡ, không hơn (taste-skill: lớn rất lớn, nhỏ vừa đủ, không có cỡ lưng chừng) */
-  --text-display: clamp(2.75rem, 6.2vw, 6.5rem);
+  --text-display: clamp(3rem, 6.4vw, 6.75rem);
   --text-display--line-height: 0.98;
-  --text-display--letter-spacing: -0.04em;
-  --text-title: clamp(2.125rem, 4.4vw, 4.25rem);
-  --text-title--line-height: 1.02;
-  --text-title--letter-spacing: -0.035em;
+  --text-display--letter-spacing: -0.02em;
+  --text-title: clamp(2.25rem, 4.4vw, 4.25rem);
+  --text-title--line-height: 1.05;
+  --text-title--letter-spacing: -0.015em;
   --text-lead: clamp(1.1875rem, 1.6vw, 1.5rem);
   --text-lead--line-height: 1.45;
 
@@ -108,6 +110,47 @@ body {
 }
 ::selection { background: var(--action); color: var(--on-action); }
 :focus-visible { outline: 3px solid var(--action); outline-offset: 3px; }
+
+/* =============================================================================
+   PHONG CÁCH "LIGHT LUXURY" (theo mẫu tham khảo): khung hero bo lớn, kính mờ, viên thuốc
+   ============================================================================= */
+:root {
+  /* Cảnh nền hero (vẽ bằng SVG): trời → đồi xa → đồi gần */
+  --sky-top: #e6ecf5;
+  --sky-bottom: #f7f3ec;
+  --sun: #fff6e3;
+  --hill-1: #d3dbe8;
+  --hill-2: #b4c1d6;
+  --hill-3: #8d9cb8;
+  --hill-4: #6b7c9c;
+  --glass-bg: rgb(255 255 255 / 0.58);
+  --glass-line: rgb(255 255 255 / 0.7);
+  --shadow-float: 0 24px 60px -24px rgb(11 21 51 / 0.28);
+}
+.dark {
+  --sky-top: #070e24;
+  --sky-bottom: #13204a;
+  --sun: #2a3f86;
+  --hill-1: #17255a;
+  --hill-2: #111d48;
+  --hill-3: #0c1638;
+  --hill-4: #081029;
+  --glass-bg: rgb(12 21 48 / 0.6);
+  --glass-line: rgb(255 255 255 / 0.1);
+  --shadow-float: 0 24px 60px -24px rgb(0 0 0 / 0.6);
+}
+
+/* Bề mặt kính: dùng cho menu, thẻ nổi trên cảnh nền */
+.glass {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-line);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  backdrop-filter: blur(18px) saturate(140%);
+}
+.float-shadow { box-shadow: var(--shadow-float); }
+
+/* Chữ nhỏ giãn rộng (nhãn phụ) */
+.eyebrow { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.28em; text-transform: uppercase; }
 
 /* =============================================================================
    MOTIF — lục giác của logo Bali Home

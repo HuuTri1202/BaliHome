@@ -8,16 +8,13 @@ export function LogoHex({ className = 'h-11 w-11' }) {
   return <img src="/logo.png" alt="" width="44" height="44" className={`object-contain ${className}`} style={{ clipPath: LOGO_CLIP }} />;
 }
 
-/** Logo + tên thương hiệu. light = chữ trắng (đặt trên mảng navy cố định) */
+/** Logo + chữ "BALI HOME" giãn rộng. light = chữ trắng (đặt trên mảng tối cố định) */
 export default function BrandMark({ light = false }) {
   return (
-    <Link to="/" className="group inline-flex items-center gap-2.5" aria-label="Bali Home — về trang chủ">
-      <LogoHex className="h-11 w-11 transition-transform duration-500 group-hover:rotate-[60deg]" />
-      <span className="leading-none">
-        <span className={`block text-[19px] font-extrabold tracking-tight ${light ? 'text-white' : 'text-ink'}`}>Bali Home</span>
-        <span className={`mt-1 block whitespace-nowrap text-[13px] font-medium ${light ? 'text-on-motif-2' : 'text-ink-2'}`}>
-          Thương mại &amp; Dịch vụ
-        </span>
+    <Link to="/" className="group inline-flex items-center gap-3" aria-label="Bali Home — về trang chủ">
+      <LogoHex className="h-10 w-10 transition-transform duration-500 group-hover:rotate-[60deg]" />
+      <span className={`hidden text-[13px] font-semibold uppercase tracking-[0.32em] sm:inline ${light ? 'text-white' : 'text-ink'}`}>
+        Bali Home
       </span>
     </Link>
   );
