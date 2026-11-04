@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import Navbar, { CONTAINER } from '../components/Navbar.jsx';
 import Footer from '../components/Footer.jsx';
 import Reveal, { item } from '../components/Reveal.jsx';
@@ -45,10 +45,24 @@ export default function ServiceDetailPage() {
   const group = GROUPS.find((g) => g.id === service?.group);
   const others = services.filter((s) => s.slug !== slug);
 
+  const { hash } = useLocation();
+  const process = Array.isArray(service?.process) ? service.process : [];
+  const faqs = Array.isArray(service?.faqs) ? service.faqs : [];
+
   useEffect(() => {
     document.title = service ? `${service.name} — Dịch vụ Bali Home` : 'Dịch vụ — Bali Home';
-    window.scrollTo({ top: 0 });
-  }, [service, slug]);
+  }, [service]);
+
+  // Mở trang: có #bao-gia (từ nút "Nhận báo giá") → cuộn tới form; không có → về đầu trang
+  useEffect(() => {
+    if (!service) return undefined;
+    const id = setTimeout(() => {
+      const target = hash ? document.getElementById(hash.slice(1)) : null;
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      else window.scrollTo({ top: 0 });
+    }, 0);
+    return () => clearTimeout(id);
+  }, [slug, hash, Boolean(service)]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="min-h-dvh bg-ground">
@@ -103,6 +117,46 @@ export default function ServiceDetailPage() {
                 </div>
               </Reveal>
             </section>
+
+            {/* ========== Quy trình · Câu hỏi thường gặp (nội dung riêng từng dịch vụ) ========== */}
+            {(process.length > 0 || faqs.length > 0) && (
+              <section aria-labelledby="sv-process" className="py-20 lg:py-28">
+                <Reveal key={slug + 'p'} className={`${CONTAINER} grid gap-14 lg:grid-cols-12`}>
+                  {process.length > 0 && (
+                    <div className="lg:col-span-7">
+                      <h2 id="sv-process" {...item(0, 'font-display text-title font-normal')}>Quy trình</h2>
+                      <ol className="mt-10 grid gap-3">
+                        {process.map((p, i) => (
+                          <li key={p.title} {...item(1 + i, 'flex gap-5 rounded-3xl bg-ground-2 p-6 sm:p-7')}>
+                            <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-ink font-display text-xl text-ground" aria-hidden="true">{i + 1}</span>
+                            <span>
+                              <span className="block text-lead font-bold">{p.title}</span>
+                              <span className="mt-1 block text-ink-2">{p.text}</span>
+                            </span>
+                          </li>
+                        ))}
+                      </ol>
+                    </div>
+                  )}
+                  {faqs.length > 0 && (
+                    <div className="lg:col-span-5">
+                      <h2 {...item(1, 'font-display text-title font-normal')}>Câu hỏi thường gặp</h2>
+                      <div {...item(2, 'mt-10 grid gap-2')}>
+                        {faqs.map((f) => (
+                          <details key={f.q} className="group rounded-3xl bg-ground-2 px-6 py-5">
+                            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[17px] font-semibold [&::-webkit-details-marker]:hidden">
+                              {f.q}
+                              <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-ground text-xl leading-none transition-transform group-open:rotate-45" aria-hidden="true">+</span>
+                            </summary>
+                            <p className="mt-3 text-ink-2">{f.a}</p>
+                          </details>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </Reveal>
+              </section>
+            )}
 
             {/* ========== Báo giá (form chọn sẵn dịch vụ này) ========== */}
             <ContactSection

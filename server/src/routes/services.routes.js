@@ -2,9 +2,10 @@ import { Router } from 'express';
 import { prisma } from '../lib/prisma.js';
 import { AppError } from '../utils/AppError.js';
 
+// Trường công khai trả về cho trang web (process/faqs = nội dung riêng từng dịch vụ)
 const PUBLIC_FIELDS = {
   slug: true, name: true, group: true, tagline: true, summary: true,
-  deliverables: true, idealFor: true, priceFrom: true, sortOrder: true,
+  deliverables: true, idealFor: true, process: true, faqs: true, priceFrom: true, sortOrder: true,
 };
 
 const router = Router();

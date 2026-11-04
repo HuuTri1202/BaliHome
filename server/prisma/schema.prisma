@@ -44,6 +44,8 @@ model Service {
   summary      String   // đoạn giới thiệu
   deliverables String[] // "Bạn nhận được"
   idealFor     String[] @map("ideal_for") // "Phù hợp khi"
+  process      Json     @default("[]") // Quy trình riêng: [{ "title": "...", "text": "..." }]
+  faqs         Json     @default("[]") // Câu hỏi thường gặp: [{ "q": "...", "a": "..." }]
   priceFrom    Int?     @map("price_from") // VND; null = báo giá theo yêu cầu
   sortOrder    Int      @default(0) @map("sort_order")
   isActive     Boolean  @default(true) @map("is_active")

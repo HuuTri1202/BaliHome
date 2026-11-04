@@ -4,12 +4,10 @@ import Footer from '../components/Footer.jsx';
 import HeroScene from '../components/home/HeroScene.jsx';
 import Reveal, { item } from '../components/Reveal.jsx';
 import ContactSection from '../components/home/ContactSection.jsx';
+import ServiceExplorer from '../components/services/ServiceExplorer.jsx';
 import { Button } from '../components/ui/Button.jsx';
 import { ArrowRightIcon } from '../components/ui/icons.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
-import { useServices } from '../hooks/useServices.js';
-import { groupServices } from '../data/needs.js';
-import { ServicesSkeleton, ServicesError } from '../components/services/ServiceStates.jsx';
 
 /* =============================================================================
  * Trang chủ Bali Home — hướng "One motif" (taste-skill)
@@ -41,49 +39,6 @@ const VALUES = [
 
 /** Gạch đầu dòng = lục giác nhỏ (motif ở cỡ chữ) */
 const HexDot = ({ className = 'bg-action' }) => <span className={`hex hex-ratio mt-[0.45em] w-3 shrink-0 ${className}`} aria-hidden="true" />;
-
-/**
- * Bảng dịch vụ theo nhóm: mỗi nhóm 1 hàng (tên nhóm | các dịch vụ dạng liên kết).
- * Mỗi dịch vụ dẫn tới trang chi tiết /dich-vu/:slug.
- */
-function ServiceIndex() {
-  const { services, status, error, reload } = useServices();
-  if (status === 'loading') return <ServicesSkeleton rows={3} />;
-  if (status === 'error') return <ServicesError error={error} onRetry={reload} />;
-  return (
-    <div className="grid gap-1">
-      {groupServices(services).map((g, gi) => (
-        <div key={g.id} className={`grid gap-6 rounded-3xl p-7 sm:p-10 lg:grid-cols-12 lg:gap-10 ${gi % 2 ? 'bg-ground-3' : 'bg-ground-2'}`}>
-          <div className="lg:col-span-4">
-            <h3 className="text-lead font-bold">{g.name}</h3>
-            <p className="mt-2 max-w-[32ch] text-ink-2">{g.intro}</p>
-          </div>
-          <ul className="grid gap-x-10 gap-y-2 sm:grid-cols-2 lg:col-span-8">
-            {g.services.map((s) => (
-              <li key={s.slug}>
-                <Link to={`/dich-vu/${s.slug}`} className="group flex items-start gap-4 py-3">
-                  <HexDot />
-                  <span className="min-w-0 flex-1">
-                    <span className="flex items-center gap-2 text-[20px] font-bold group-hover:text-action">
-                      {s.name}
-                      <ArrowRightIcon className="h-4 w-4 -translate-x-1 opacity-0 transition-all group-hover:translate-x-0 group-hover:opacity-100" />
-                    </span>
-                    <span className="mt-1 block text-ink-2">{s.tagline}</span>
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
-      <div className="flex justify-end pt-6">
-        <Button as={Link} to="/dich-vu" variant="soft">
-          Xem chi tiết tất cả dịch vụ <ArrowRightIcon className="h-4 w-4" />
-        </Button>
-      </div>
-    </div>
-  );
-}
 
 /* Mảnh giao diện tài khoản thật (data-ui) — minh hoạ trang "Yêu cầu tư vấn" của thành viên */
 function RequestsFragment() {
@@ -134,7 +89,7 @@ export default function HomePage() {
               </p>
             </div>
             <div {...item(2, 'mt-16')}>
-              <ServiceIndex />
+              <ServiceExplorer idPrefix="home-sv" />
             </div>
           </Reveal>
         </section>
