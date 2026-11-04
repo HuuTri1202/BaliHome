@@ -57,6 +57,11 @@ export async function request(path, options) {
   }
 }
 
+export const contactApi = {
+  send: (payload) => request('/contact', { method: 'POST', body: payload }),
+  mine: () => request('/contact/mine'),
+};
+
 export const authApi = {
   me: () => request('/auth/me'),
   login: (payload) => request('/auth/login', { method: 'POST', body: payload }),

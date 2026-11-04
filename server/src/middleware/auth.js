@@ -22,6 +22,18 @@ export function requireAuth(req, _res, next) {
   }
 }
 
+/** Không bắt buộc đăng nhập: có token hợp lệ thì gắn req.auth, không thì bỏ qua */
+export function optionalAuth(req, _res, next) {
+  const token = req.cookies?.[ACCESS_COOKIE];
+  if (token) {
+    try {
+      const payload = verifyAccessToken(token);
+      req.auth = { userId: payload.sub, role: payload.role };
+    } catch { /* token hỏng/hết hạn → coi như khách */ }
+  }
+  next();
+}
+
 /** Giới hạn theo vai trò, dùng sau requireAuth: requireRole('ADMIN') */
 export const requireRole = (...roles) => (req, _res, next) => {
   if (!roles.includes(req.auth?.role)) throw new AppError(403, 'FORBIDDEN', 'Bạn không có quyền truy cập.');

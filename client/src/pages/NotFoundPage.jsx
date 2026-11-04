@@ -1,19 +1,22 @@
 import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/Button.jsx';
-import BrandMark from '../components/BrandMark.jsx';
-import ThemeToggle from '../components/ThemeToggle.jsx';
+import Navbar, { CONTAINER } from '../components/Navbar.jsx';
 
 export default function NotFoundPage() {
   return (
-    <div className="relative grid min-h-dvh place-items-center bg-gradient-to-b from-brand-50 to-white px-4 text-center dark:from-brand-950/60 dark:to-[#050a18]">
-      <ThemeToggle className="absolute right-4 top-5 sm:right-8" />
-      <div className="animate-rise">
-        <BrandMark />
-        <p className="mt-10 text-7xl font-black tracking-tight text-brand-500 dark:text-brand-400">404</p>
-        <h1 className="mt-2 text-2xl font-bold text-slate-900 dark:text-white">Không tìm thấy trang</h1>
-        <p className="mt-2 text-slate-500 dark:text-slate-400">Đường dẫn có thể đã thay đổi hoặc không tồn tại.</p>
-        <Button as={Link} to="/" className="mt-8">Về trang chủ</Button>
-      </div>
+    <div className="min-h-dvh bg-ground">
+      <Navbar />
+      <main className={`${CONTAINER} grid min-h-[calc(100dvh-5rem)] items-center gap-12 py-16 lg:grid-cols-12`}>
+        <div className="lg:col-span-6">
+          <h1 className="text-display font-extrabold">Không tìm thấy trang</h1>
+          <p className="mt-6 max-w-[38ch] text-lead">Đường dẫn có thể đã thay đổi hoặc không tồn tại. Hãy quay về trang chủ.</p>
+          <Button as={Link} to="/" size="lg" className="mt-10">Về trang chủ</Button>
+        </div>
+        {/* motif: lục giác lớn mang mã lỗi */}
+        <div className="hex hex-ratio mx-auto grid w-[min(80vw,420px)] place-items-center bg-motif lg:col-span-6" aria-hidden="true">
+          <span className="text-[7rem] font-extrabold tracking-[-0.05em] text-on-motif">404</span>
+        </div>
+      </main>
     </div>
   );
 }

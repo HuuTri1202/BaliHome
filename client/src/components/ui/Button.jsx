@@ -1,22 +1,24 @@
 import { forwardRef } from 'react';
 
+/**
+ * Nút bấm theo motif lục giác (2 đầu vát giống khung logo).
+ * Màu nền đặt qua biến --fill (vẽ ở ::before của .hex-pill) → outline focus không bị cắt.
+ * Tất cả màu lấy từ token nên tự đúng ở chế độ sáng/tối.
+ */
 const VARIANTS = {
-  primary:
-    'bg-brand-500 text-white shadow-lg shadow-brand-500/25 hover:bg-brand-600 hover:shadow-brand-500/35 active:bg-brand-700 ' +
-    'dark:shadow-brand-500/15 dark:hover:bg-brand-400',
-  dark: 'bg-slate-900 text-white shadow-lg shadow-slate-900/20 hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200',
-  outline:
-    'border border-slate-300 bg-white/70 text-slate-700 backdrop-blur hover:border-slate-400 hover:bg-white ' +
-    'dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-200 dark:hover:border-slate-500 dark:hover:bg-slate-800',
-  ghost: 'text-slate-600 hover:bg-slate-900/5 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white',
+  primary: 'text-on-action [--fill:var(--action)] hover:[--fill:var(--action-hover)]',
+  soft: 'text-ink [--fill:var(--ground-3)] hover:[--fill:var(--line)]',
+  outline: 'text-ink [--fill:var(--ground-3)] hover:[--fill:var(--line)]', // giữ tên cũ = soft
+  dark: 'text-ground [--fill:var(--ink)] hover:[--fill:var(--ink-2)]',
+  onMotif: 'text-motif [--fill:var(--on-motif)] hover:[--fill:var(--on-motif-2)]',
   danger:
-    'border border-accent-500/30 bg-white text-accent-600 hover:bg-accent-500/5 ' +
-    'dark:border-accent-400/40 dark:bg-transparent dark:text-accent-400 dark:hover:bg-accent-500/10',
+    'text-signal [--fill:color-mix(in_srgb,var(--signal)_12%,transparent)] hover:[--fill:color-mix(in_srgb,var(--signal)_22%,transparent)]',
+  ghost: 'text-ink-2 hover:text-ink [--fill:transparent] hover:[--fill:var(--ground-2)]',
 };
 const SIZES = {
-  sm: 'h-9 px-4 text-sm',
-  md: 'h-11 px-5 text-sm',
-  lg: 'h-12 px-6 text-[15px]',
+  sm: 'h-10 px-5 text-sm [--cut:0.7rem]',
+  md: 'h-12 px-6 text-[15px]',
+  lg: 'h-14 px-8 text-base [--cut:1.05rem]',
 };
 
 export function Spinner({ className = 'h-5 w-5' }) {
@@ -40,9 +42,9 @@ export const Button = forwardRef(function Button(
       {...(isButton && { type: props.type ?? 'button', disabled: disabled || loading })}
       aria-busy={loading || undefined}
       className={
-        'relative inline-flex select-none items-center justify-center gap-2 rounded-xl font-bold transition-all duration-200 ' +
-        'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 ' +
-        'disabled:cursor-not-allowed disabled:opacity-60 ' +
+        'hex-pill inline-flex select-none items-center justify-center gap-2 font-bold whitespace-nowrap ' +
+        'transition-transform duration-200 hover:-translate-y-px active:translate-y-0 active:scale-[.98] ' +
+        'disabled:pointer-events-none disabled:opacity-60 ' +
         `${VARIANTS[variant]} ${SIZES[size]} ${className}`
       }
       {...props}

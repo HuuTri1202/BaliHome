@@ -28,9 +28,35 @@ model User {
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")
 
-  sessions Session[]
+  sessions        Session[]
+  contactRequests ContactRequest[]
 
   @@map("users")
+}
+
+enum ContactStatus {
+  NEW       // mới gửi, chưa ai xử lý
+  CONTACTED // đã gọi lại
+  DONE      // đã xong
+}
+
+// Yêu cầu tư vấn gửi từ form "Liên hệ" trên trang chủ (khách hoặc thành viên)
+model ContactRequest {
+  id        String        @id @default(uuid()) @db.Uuid
+  fullName  String        @map("full_name")
+  phone     String
+  email     String?
+  need      String        // products | installation | maintenance | other
+  message   String?
+  status    ContactStatus @default(NEW)
+  userId    String?       @map("user_id") @db.Uuid // có nếu người gửi đang đăng nhập
+  ip        String?
+  createdAt DateTime      @default(now()) @map("created_at")
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
+  @@map("contact_requests")
 }
 
 // Mỗi lần đăng nhập trên 1 thiết bị = 1 session.

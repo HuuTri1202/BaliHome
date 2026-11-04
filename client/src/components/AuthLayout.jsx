@@ -3,82 +3,67 @@ import BrandMark from './BrandMark.jsx';
 import ThemeToggle from './ThemeToggle.jsx';
 import LogoCanvas from './LazyLogoCanvas.jsx';
 import { THEMES } from '../data/themes.js';
-import { ArrowLeftIcon, ShieldIcon, SparkIcon, ClockIcon } from './ui/icons.jsx';
+import { ArrowLeftIcon } from './ui/icons.jsx';
 
 const PERKS = [
-  [ShieldIcon, 'Bảo mật', 'Mật khẩu được mã hoá, phiên đăng nhập an toàn.'],
-  [SparkIcon, 'Ưu đãi riêng', 'Nhận thông tin khuyến mãi dành cho thành viên.'],
-  [ClockIcon, 'Theo dõi dễ dàng', 'Quản lý yêu cầu và lịch sử giao dịch ở một nơi.'],
+  ['Theo dõi yêu cầu', 'Mỗi yêu cầu tư vấn được lưu lại cùng trạng thái xử lý.'],
+  ['Không phải khai lại', 'Họ tên, số điện thoại được điền sẵn cho lần sau.'],
+  ['An toàn', 'Mật khẩu được mã hoá; phiên đăng nhập có thể thu hồi.'],
 ];
 
 /**
- * Bố cục trang xác thực:
- *  - Desktop: panel thương hiệu (logo 3D) bên trái, form bên phải
- *  - Mobile : chỉ form, logo nhỏ trên cùng → tập trung vào nhiệm vụ chính
+ * Bố cục trang xác thực (app screen):
+ *  - Desktop: mảng navy phẳng bên trái — lục giác motif làm sân khấu cho logo 3D; form bên phải
+ *  - Mobile : chỉ form → tập trung vào nhiệm vụ chính
  */
 export default function AuthLayout({ title, subtitle, children, footer }) {
   return (
-    <div className="flex min-h-dvh bg-white dark:bg-[#050a18]">
-      {/* ---------- Panel thương hiệu ---------- */}
-      <aside className="relative hidden w-[46%] max-w-[720px] flex-col overflow-hidden bg-brand-950 p-10 text-white lg:flex xl:p-14">
-        <div className="pointer-events-none absolute inset-0" aria-hidden="true">
-          <div className="absolute -left-32 -top-32 h-[480px] w-[480px] rounded-full bg-brand-500/40 blur-[120px]" />
-          <div className="absolute -bottom-40 -right-20 h-[420px] w-[420px] rounded-full bg-accent-500/25 blur-[120px]" />
-          <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,.07)_1px,transparent_1px)] [background-size:22px_22px]" />
+    <div className="flex min-h-dvh bg-ground">
+      {/* ---------- Mảng thương hiệu ---------- */}
+      <aside className="relative hidden w-[44%] max-w-[700px] flex-col overflow-hidden bg-motif p-10 text-on-motif lg:flex xl:p-14">
+        <BrandMark light />
+
+        <div className="relative my-8 flex flex-1 items-center justify-center">
+          <div className="hex hex-ratio hex-hero relative w-[min(78%,420px)] bg-brand-950">
+            <LogoCanvas theme={THEMES[0]} className="absolute left-[8%] top-[18%] h-[64%] w-[84%]" />
+          </div>
         </div>
 
-        <div className="relative">
-          <BrandMark light />
-        </div>
-
-        <div className="relative -mx-6 my-4 min-h-[320px] flex-1">
-          <LogoCanvas theme={THEMES[0]} />
-        </div>
-
-        <div className="relative">
-          <h2 className="text-3xl font-black leading-tight tracking-tight xl:text-4xl">
-            Kiến tạo giá trị,<br />
-            <span className="bg-gradient-to-r from-brand-200 to-white bg-clip-text text-transparent">vững bước cùng bạn.</span>
-          </h2>
+        <div>
+          <h2 className="max-w-[14ch] text-[2.5rem] font-extrabold leading-[1.02] tracking-[-0.035em]">Thành viên Bali Home</h2>
           <ul className="mt-8 grid gap-5">
-            {PERKS.map(([Icon, title, text]) => (
-              <li key={title} className="flex gap-4">
-                <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white/10 ring-1 ring-white/15">
-                  <Icon className="h-5 w-5 text-brand-200" />
-                </span>
+            {PERKS.map(([t, d]) => (
+              <li key={t} className="flex gap-4">
+                <span className="hex hex-ratio mt-1.5 w-3 shrink-0 bg-accent-500" aria-hidden="true" />
                 <span>
-                  <span className="block font-bold">{title}</span>
-                  <span className="block text-sm text-white/60">{text}</span>
+                  <span className="block font-bold">{t}</span>
+                  <span className="block text-on-motif-2">{d}</span>
                 </span>
               </li>
             ))}
           </ul>
-          <p className="mt-10 text-xs text-white/40">© {new Date().getFullYear()} Công ty TNHH Thương mại Dịch vụ Bali Home</p>
         </div>
       </aside>
 
       {/* ---------- Form ---------- */}
-      <main className="relative flex flex-1 flex-col px-4 py-6 sm:px-10">
+      <main className="relative flex flex-1 flex-col px-5 py-5 sm:px-10">
         <div className="flex items-center justify-between gap-3">
           <div className="lg:hidden"><BrandMark /></div>
-          <div className="ml-auto flex items-center gap-2">
-            <Link
-              to="/"
-              className="hidden items-center gap-1.5 rounded-lg px-2 py-1 text-sm font-semibold text-slate-500 transition hover:text-slate-900 sm:inline-flex dark:text-slate-400 dark:hover:text-white"
-            >
+          <div className="ml-auto flex items-center gap-1">
+            <Link to="/" className="hidden items-center gap-1.5 px-3 py-2 text-[15px] font-semibold text-ink-2 transition-colors hover:text-ink sm:inline-flex">
               <ArrowLeftIcon className="h-4 w-4" /> Trang chủ
             </Link>
             <ThemeToggle />
           </div>
         </div>
 
-        <div className="mx-auto flex w-full max-w-[440px] flex-1 flex-col justify-center py-10">
+        <div className="mx-auto flex w-full max-w-[460px] flex-1 flex-col justify-center py-12">
           <div className="animate-rise">
-            <h1 className="text-3xl font-black tracking-tight text-slate-900 sm:text-[34px] dark:text-white">{title}</h1>
-            {subtitle && <p className="mt-2 text-[15px] text-slate-500 dark:text-slate-400">{subtitle}</p>}
+            <h1 className="text-[2.5rem] font-extrabold leading-[1.02] tracking-[-0.035em] sm:text-[3rem]">{title}</h1>
+            {subtitle && <p className="mt-3 text-[17px] text-ink-2">{subtitle}</p>}
           </div>
-          <div className="mt-8">{children}</div>
-          {footer && <div className="mt-8 text-center text-sm text-slate-500 dark:text-slate-400">{footer}</div>}
+          <div className="mt-10">{children}</div>
+          {footer && <div className="mt-10 text-[15px] text-ink-2">{footer}</div>}
         </div>
       </main>
     </div>

@@ -1,14 +1,69 @@
 @import "tailwindcss";
 
-/* Chế độ tối theo class .dark trên <html> (do ThemeContext điều khiển), không theo media query
-   → người dùng tự chọn được Sáng / Tối / Theo hệ thống. Dùng: dark:bg-slate-900 ... */
+/* Chế độ tối theo class .dark trên <html> (ThemeContext điều khiển) */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* ===== Design tokens (Tailwind v4: khai báo bằng CSS) =====
-   Dùng: bg-brand-500, text-accent-500, font-sans ... */
+/* =============================================================================
+   DESIGN TOKENS — Bali Home
+   Hướng thiết kế: "One motif" (taste-skill). Hình khối duy nhất = lục giác của logo.
+   Vai trò màu: 1 nền (ground) · 1 mực (ink) · 1 màu hành động (action, xanh thương hiệu)
+                · 1 mảng motif (navy) · đỏ thương hiệu chỉ dùng như tín hiệu rất ít.
+   Tách lớp bằng bậc tông nền (ground → ground-2 → ground-3), KHÔNG dùng viền/bóng/gradient.
+   ============================================================================= */
+:root {
+  --ground: #ffffff;
+  --ground-2: #f1f4fa;
+  --ground-3: #e3e9f4;
+  --ink: #0b1533;
+  --ink-2: #46516c;      /* chú thích phụ — vẫn ≥ 7:1 trên nền */
+  --line: #c9d2e3;       /* chỉ dùng cho ô nhập (form được phép có viền) */
+  --motif: #0e2a7a;      /* navy: mảng lục giác lớn, dải giá trị */
+  --on-motif: #ffffff;
+  --on-motif-2: #c9d6f5;
+  --action: #1e5bd8;
+  --action-hover: #1a4fbf;
+  --on-action: #ffffff;
+  --signal: #e5232d;     /* đỏ thương hiệu: lỗi + một điểm nhấn */
+  --success: #0f7a4d;
+}
+.dark {
+  --ground: #050a18;
+  --ground-2: #0c1530;
+  --ground-3: #152048;
+  --ink: #eef2ff;
+  --ink-2: #a6b1cf;
+  --line: #2a3866;
+  --motif: #15338c;
+  --on-motif: #ffffff;
+  --on-motif-2: #c9d6f5;
+  --action: #3a74ec;
+  --action-hover: #5b8def;
+  --on-action: #ffffff;
+  --signal: #ff5a62;
+  --success: #3ccf8e;
+}
+
+@theme inline {
+  --color-ground: var(--ground);
+  --color-ground-2: var(--ground-2);
+  --color-ground-3: var(--ground-3);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-line: var(--line);
+  --color-motif: var(--motif);
+  --color-on-motif: var(--on-motif);
+  --color-on-motif-2: var(--on-motif-2);
+  --color-action: var(--action);
+  --color-action-hover: var(--action-hover);
+  --color-on-action: var(--on-action);
+  --color-signal: var(--signal);
+  --color-success: var(--success);
+}
+
 @theme {
   --font-sans: "Be Vietnam Pro", ui-sans-serif, system-ui, sans-serif;
 
+  /* Bảng màu thương hiệu gốc (vẫn giữ cho các chỗ cần mã màu cố định) */
   --color-brand-50: #eef4ff;
   --color-brand-100: #dce8ff;
   --color-brand-200: #bcd2ff;
@@ -18,61 +73,105 @@
   --color-brand-700: #153f99;
   --color-brand-900: #0e2a7a;
   --color-brand-950: #081a52;
-
   --color-accent-400: #f0525a;
   --color-accent-500: #e5232d;
   --color-accent-600: #c81e2b;
 
-  --animate-rise: rise 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
-  --animate-shake: shake 0.4s ease-in-out;
+  /* Thang chữ: 5 cỡ, không hơn (taste-skill: lớn rất lớn, nhỏ vừa đủ, không có cỡ lưng chừng) */
+  --text-display: clamp(2.75rem, 6.2vw, 6.5rem);
+  --text-display--line-height: 0.98;
+  --text-display--letter-spacing: -0.04em;
+  --text-title: clamp(2.125rem, 4.4vw, 4.25rem);
+  --text-title--line-height: 1.02;
+  --text-title--letter-spacing: -0.035em;
+  --text-lead: clamp(1.1875rem, 1.6vw, 1.5rem);
+  --text-lead--line-height: 1.45;
 
-  @keyframes rise {
-    from { opacity: 0; transform: translateY(16px); }
-    to { opacity: 1; transform: none; }
-  }
+  --animate-shake: shake 0.4s ease-in-out;
+  --animate-rise: rise 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
   @keyframes shake {
     0%, 100% { transform: translateX(0); }
     20%, 60% { transform: translateX(-6px); }
     40%, 80% { transform: translateX(6px); }
   }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: none; }
+  }
 }
 
-html { -webkit-tap-highlight-color: transparent; }
-body {
-  @apply bg-slate-50 font-sans text-slate-900 antialiased dark:bg-[#050a18] dark:text-slate-100;
-}
-
-/* Scrollbar, checkbox, autofill... của trình duyệt cũng theo chế độ */
+html { -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; scroll-padding-top: 88px; }
 html.dark { color-scheme: dark; }
+body {
+  @apply bg-ground font-sans text-ink antialiased;
+  font-size: 1.0625rem;
+}
+::selection { background: var(--action); color: var(--on-action); }
+:focus-visible { outline: 3px solid var(--action); outline-offset: 3px; }
 
-/* Hiệu ứng chuyển sáng ↔ tối (View Transitions API): hoà màu toàn trang 0.35s */
+/* =============================================================================
+   MOTIF — lục giác của logo Bali Home
+   ============================================================================= */
+/* Lục giác đỉnh nhọn hướng lên (đúng như khung logo). Tỉ lệ rộng:cao = 0.866 */
+.hex {
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+}
+.hex-ratio { aspect-ratio: 0.866 / 1; }
+/* Trong hàng flex, phần tử bị giãn theo chiều cao hàng → mất tỉ lệ lục giác. Giữ nguyên tỉ lệ. */
+.flex > .hex-ratio { align-self: flex-start; }
+
+/* Lục giác nằm ngang (2 đầu vát) — hình của nút bấm và dải giá trị.
+   Nền vẽ ở ::before để outline focus không bị clip-path cắt mất. */
+.hex-pill {
+  --cut: 0.9rem;
+  position: relative;
+  isolation: isolate;
+}
+.hex-pill::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--fill, var(--action));
+  clip-path: polygon(var(--cut) 0, calc(100% - var(--cut)) 0, 100% 50%, calc(100% - var(--cut)) 100%, var(--cut) 100%, 0 50%);
+  transition: background-color 0.2s ease;
+}
+.hex-band {
+  clip-path: polygon(0 var(--notch, 3rem), var(--notch, 3rem) 0, calc(100% - var(--notch, 3rem)) 0, 100% var(--notch, 3rem),
+    100% calc(100% - var(--notch, 3rem)), calc(100% - var(--notch, 3rem)) 100%, var(--notch, 3rem) 100%, 0 calc(100% - var(--notch, 3rem)));
+}
+
+/* =============================================================================
+   MOTION — taste-skill §9: chỉ transform + opacity, có fallback giảm chuyển động
+   ============================================================================= */
+/* Phần tử chỉ bị ẩn khi JS đã "lên dây" (reveal-armed) → JS lỗi thì nội dung vẫn hiện */
+.reveal-armed .reveal-item {
+  opacity: 0;
+  transform: translateY(24px);
+}
+.reveal-in .reveal-item {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) calc(var(--i, 0) * 80ms),
+    transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) calc(var(--i, 0) * 80ms);
+}
+
+/* Dấu ấn: lục giác khổng lồ ở đầu trang "đóng khung" vào chỗ khi tải trang */
+@keyframes hex-settle {
+  from { opacity: 0; transform: scale(0.82) rotate(-10deg); }
+  to { opacity: 1; transform: scale(1) rotate(0); }
+}
+.hex-hero { animation: hex-settle 1.1s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* Chuyển sáng ↔ tối: hoà màu toàn trang */
 ::view-transition-old(root),
-::view-transition-new(root) {
-  animation-duration: 0.35s;
-  animation-timing-function: ease;
-}
+::view-transition-new(root) { animation-duration: 0.35s; animation-timing-function: ease; }
 
-/* Biến màu có thể transition → gradient nền đổi mượt theo phong cách logo */
-@property --c1 { syntax: "<color>"; inherits: true; initial-value: #dce8ff; }
-@property --c2 { syntax: "<color>"; inherits: true; initial-value: #ffffff; }
-@property --c3 { syntax: "<color>"; inherits: true; initial-value: #1e5bd8; }
-
-.theme-bg {
-  background:
-    radial-gradient(60% 55% at 50% 45%, color-mix(in srgb, var(--c3) 22%, transparent), transparent 70%),
-    radial-gradient(120% 90% at 0% 0%, var(--c2), transparent 60%),
-    linear-gradient(160deg, var(--c1), var(--c2));
-  transition: --c1 0.8s ease, --c2 0.8s ease, --c3 0.8s ease;
-}
-
-.outline-word {
-  -webkit-text-stroke: 2px color-mix(in srgb, var(--c3) 35%, transparent);
-  color: transparent;
-}
-
-/* Ẩn icon "hiện mật khẩu" mặc định của Edge (đã có nút riêng) */
 input::-ms-reveal { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal-armed .reveal-item { opacity: 1; transform: none; }
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }

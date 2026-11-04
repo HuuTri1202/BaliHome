@@ -3,3 +3,6 @@ dist/
 .env
 *.log
 .DS_Store
+# File làm việc của skill taste-skill / playwright-cli
+.taste-skill/
+.playwright-cli/
