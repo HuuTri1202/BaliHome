@@ -4,32 +4,37 @@ import LogoCanvas from '../components/LazyLogoCanvas.jsx';
 import { Button } from '../components/ui/Button.jsx';
 import { THEMES } from '../data/themes.js';
 import { useAuth } from '../context/AuthContext.jsx';
+import { useTheme } from '../context/ThemeContext.jsx';
 
 // Logo dùng màu nhận diện nguyên bản (xanh - đỏ). Muốn đổi: chọn phần tử khác trong THEMES.
 const theme = THEMES[0];
+const DARK_BG_FALLBACK = ['#0B1838', '#050A18', theme.primary];
 
 export default function HomePage() {
   const { user } = useAuth();
-  const accentStyle = { backgroundColor: theme.ui };
+  const { isDark } = useTheme();
+
+  const ui = isDark ? theme.uiDark ?? theme.ui : theme.ui;           // màu chữ nhấn
+  const bg = isDark ? theme.bgDark ?? DARK_BG_FALLBACK : theme.bg;  // gradient nền
+  const accentStyle = { backgroundColor: theme.ui };                // nút: giữ xanh đậm → chữ trắng luôn rõ
 
   return (
-    <div
-      className="theme-bg min-h-dvh overflow-x-hidden"
-      style={{ '--c1': theme.bg[0], '--c2': theme.bg[1], '--c3': theme.bg[2] }}
-    >
+    <div className="theme-bg min-h-dvh overflow-x-hidden" style={{ '--c1': bg[0], '--c2': bg[1], '--c3': bg[2] }}>
       <Navbar accent={theme.ui} />
 
       <main className="relative mx-auto grid max-w-7xl grid-cols-1 items-center gap-6 px-4 pb-10 sm:px-8 lg:grid-cols-[1fr_1.35fr_1fr] lg:gap-4">
         {/* Cột trái */}
         <section className="order-1 animate-rise text-center lg:text-left" id="gioi-thieu">
-          <p className="text-xs font-bold uppercase tracking-[.25em]" style={{ color: theme.ui }}>
+          <p className="text-xs font-bold uppercase tracking-[.25em]" style={{ color: ui }}>
             Thương mại · Dịch vụ
           </p>
-          <h1 className="mt-3 text-5xl font-black leading-[1.02] tracking-tight text-slate-900 sm:text-6xl">
-            BALI <span style={{ color: theme.ui }}>HOME</span>
+          <h1 className="mt-3 text-5xl font-black leading-[1.02] tracking-tight text-slate-900 sm:text-6xl dark:text-white">
+            BALI <span style={{ color: ui }}>HOME</span>
           </h1>
-          <p className="mt-2 text-sm font-bold uppercase tracking-wide text-slate-500">Công ty TNHH Thương mại Dịch vụ Bali Home</p>
-          <p className="mx-auto mt-4 max-w-sm text-[15px] leading-relaxed text-slate-600 lg:mx-0">
+          <p className="mt-2 text-sm font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+            Công ty TNHH Thương mại Dịch vụ Bali Home
+          </p>
+          <p className="mx-auto mt-4 max-w-sm text-[15px] leading-relaxed text-slate-600 lg:mx-0 dark:text-slate-300">
             Uy tín, chất lượng và tận tâm: Bali Home đồng hành cùng khách hàng trong từng sản phẩm và dịch vụ.
           </p>
           <div className="mt-6 flex items-center justify-center gap-3 lg:justify-start">
@@ -48,15 +53,15 @@ export default function HomePage() {
             <span className="outline-word select-none whitespace-nowrap text-[24vw] font-black uppercase leading-none lg:text-[14vw]">Bali</span>
           </div>
           <LogoCanvas theme={theme} />
-          <p className="pointer-events-none absolute bottom-2 left-0 right-0 text-center text-xs font-medium text-slate-500">
+          <p className="pointer-events-none absolute bottom-2 left-0 right-0 text-center text-xs font-medium text-slate-500 dark:text-slate-400">
             Rê chuột hoặc kéo để xoay logo
           </p>
         </section>
 
         {/* Cột phải */}
         <aside className="order-3" id="dich-vu">
-          <div className="mx-auto max-w-sm rounded-3xl border border-white/70 bg-white/55 p-6 shadow-xl shadow-slate-900/5 backdrop-blur-md">
-            <h2 className="text-sm font-bold uppercase tracking-[.18em] text-slate-500">Giá trị cốt lõi</h2>
+          <div className="mx-auto max-w-sm rounded-3xl border border-white/70 bg-white/55 p-6 shadow-xl shadow-slate-900/5 backdrop-blur-md dark:border-white/10 dark:bg-slate-900/55 dark:shadow-black/30">
+            <h2 className="text-sm font-bold uppercase tracking-[.18em] text-slate-500 dark:text-slate-400">Giá trị cốt lõi</h2>
             <ul className="mt-4 space-y-4">
               {[
                 ['Uy tín', 'Cam kết minh bạch trong từng giao dịch.'],
@@ -66,8 +71,8 @@ export default function HomePage() {
                 <li key={title} className="flex gap-3">
                   <span className="mt-1.5 h-2.5 w-2.5 shrink-0 rotate-45" style={{ backgroundColor: theme.secondary }} />
                   <div>
-                    <div className="text-[15px] font-bold text-slate-800">{title}</div>
-                    <div className="text-sm text-slate-500">{text}</div>
+                    <div className="text-[15px] font-bold text-slate-800 dark:text-slate-100">{title}</div>
+                    <div className="text-sm text-slate-500 dark:text-slate-400">{text}</div>
                   </div>
                 </li>
               ))}

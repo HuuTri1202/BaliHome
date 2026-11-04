@@ -54,7 +54,7 @@ export default function RegisterPage() {
       footer={
         <>
           Đã có tài khoản?{' '}
-          <Link to="/dang-nhap" state={location.state} className="font-bold text-brand-500 hover:text-brand-700 hover:underline">
+          <Link to="/dang-nhap" state={location.state} className="font-bold text-brand-500 hover:text-brand-700 hover:underline dark:text-brand-400 dark:hover:text-brand-200">
             Đăng nhập
           </Link>
         </>
@@ -90,7 +90,7 @@ export default function RegisterPage() {
         />
 
         <div>
-          <label className="flex cursor-pointer select-none items-start gap-2.5 text-sm leading-relaxed text-slate-600">
+          <label className="flex cursor-pointer select-none items-start gap-2.5 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
             <input
               type="checkbox"
               checked={agreed}
@@ -99,12 +99,12 @@ export default function RegisterPage() {
               className="mt-0.5 h-4.5 w-4.5 shrink-0 cursor-pointer accent-brand-500"
             />
             <span>
-              Tôi đồng ý với <a href="#" className="font-semibold text-brand-500 hover:underline">Điều khoản sử dụng</a> và{' '}
-              <a href="#" className="font-semibold text-brand-500 hover:underline">Chính sách bảo mật</a> của Bali Home.
+              Tôi đồng ý với <a href="#" className="font-semibold text-brand-500 hover:underline dark:text-brand-400">Điều khoản sử dụng</a> và{' '}
+              <a href="#" className="font-semibold text-brand-500 hover:underline dark:text-brand-400">Chính sách bảo mật</a> của Bali Home.
             </span>
           </label>
           {agreeError && (
-            <p role="alert" className="mt-1.5 flex items-center gap-1.5 text-[13px] font-medium text-accent-600">
+            <p role="alert" className="mt-1.5 flex items-center gap-1.5 text-[13px] font-medium text-accent-600 dark:text-accent-400">
               <AlertIcon className="h-4 w-4" /> {agreeError}
             </p>
           )}

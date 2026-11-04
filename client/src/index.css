@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* Chế độ tối theo class .dark trên <html> (do ThemeContext điều khiển), không theo media query
+   → người dùng tự chọn được Sáng / Tối / Theo hệ thống. Dùng: dark:bg-slate-900 ... */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* ===== Design tokens (Tailwind v4: khai báo bằng CSS) =====
    Dùng: bg-brand-500, text-accent-500, font-sans ... */
 @theme {
@@ -35,7 +39,17 @@
 
 html { -webkit-tap-highlight-color: transparent; }
 body {
-  @apply bg-slate-50 font-sans text-slate-900 antialiased;
+  @apply bg-slate-50 font-sans text-slate-900 antialiased dark:bg-[#050a18] dark:text-slate-100;
+}
+
+/* Scrollbar, checkbox, autofill... của trình duyệt cũng theo chế độ */
+html.dark { color-scheme: dark; }
+
+/* Hiệu ứng chuyển sáng ↔ tối (View Transitions API): hoà màu toàn trang 0.35s */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.35s;
+  animation-timing-function: ease;
 }
 
 /* Biến màu có thể transition → gradient nền đổi mượt theo phong cách logo */

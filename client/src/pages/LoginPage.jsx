@@ -36,7 +36,7 @@ export default function LoginPage() {
       footer={
         <>
           Chưa có tài khoản?{' '}
-          <Link to="/dang-ky" state={location.state} className="font-bold text-brand-500 hover:text-brand-700 hover:underline">
+          <Link to="/dang-ky" state={location.state} className="font-bold text-brand-500 hover:text-brand-700 hover:underline dark:text-brand-400 dark:hover:text-brand-200">
             Đăng ký ngay
           </Link>
         </>
@@ -69,7 +69,7 @@ export default function LoginPage() {
           {...register('password')}
         />
 
-        <label className="flex cursor-pointer select-none items-center gap-2.5 text-sm font-medium text-slate-600">
+        <label className="flex cursor-pointer select-none items-center gap-2.5 text-sm font-medium text-slate-600 dark:text-slate-300">
           <input
             type="checkbox"
             checked={remember}

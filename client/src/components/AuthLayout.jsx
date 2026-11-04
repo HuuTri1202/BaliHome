@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import BrandMark from './BrandMark.jsx';
+import ThemeToggle from './ThemeToggle.jsx';
 import LogoCanvas from './LazyLogoCanvas.jsx';
 import { THEMES } from '../data/themes.js';
 import { ArrowLeftIcon, ShieldIcon, SparkIcon, ClockIcon } from './ui/icons.jsx';
@@ -17,7 +18,7 @@ const PERKS = [
  */
 export default function AuthLayout({ title, subtitle, children, footer }) {
   return (
-    <div className="flex min-h-dvh bg-white">
+    <div className="flex min-h-dvh bg-white dark:bg-[#050a18]">
       {/* ---------- Panel thương hiệu ---------- */}
       <aside className="relative hidden w-[46%] max-w-[720px] flex-col overflow-hidden bg-brand-950 p-10 text-white lg:flex xl:p-14">
         <div className="pointer-events-none absolute inset-0" aria-hidden="true">
@@ -58,20 +59,26 @@ export default function AuthLayout({ title, subtitle, children, footer }) {
 
       {/* ---------- Form ---------- */}
       <main className="relative flex flex-1 flex-col px-4 py-6 sm:px-10">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-3">
           <div className="lg:hidden"><BrandMark /></div>
-          <Link to="/" className="ml-auto inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-sm font-semibold text-slate-500 transition hover:text-slate-900">
-            <ArrowLeftIcon className="h-4 w-4" /> Trang chủ
-          </Link>
+          <div className="ml-auto flex items-center gap-2">
+            <Link
+              to="/"
+              className="hidden items-center gap-1.5 rounded-lg px-2 py-1 text-sm font-semibold text-slate-500 transition hover:text-slate-900 sm:inline-flex dark:text-slate-400 dark:hover:text-white"
+            >
+              <ArrowLeftIcon className="h-4 w-4" /> Trang chủ
+            </Link>
+            <ThemeToggle />
+          </div>
         </div>
 
         <div className="mx-auto flex w-full max-w-[440px] flex-1 flex-col justify-center py-10">
           <div className="animate-rise">
-            <h1 className="text-3xl font-black tracking-tight text-slate-900 sm:text-[34px]">{title}</h1>
-            {subtitle && <p className="mt-2 text-[15px] text-slate-500">{subtitle}</p>}
+            <h1 className="text-3xl font-black tracking-tight text-slate-900 sm:text-[34px] dark:text-white">{title}</h1>
+            {subtitle && <p className="mt-2 text-[15px] text-slate-500 dark:text-slate-400">{subtitle}</p>}
           </div>
           <div className="mt-8">{children}</div>
-          {footer && <div className="mt-8 text-center text-sm text-slate-500">{footer}</div>}
+          {footer && <div className="mt-8 text-center text-sm text-slate-500 dark:text-slate-400">{footer}</div>}
         </div>
       </main>
     </div>

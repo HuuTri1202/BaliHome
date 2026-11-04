@@ -6,12 +6,16 @@
  *  plate     : màu tấm nền bên trong logo
  *  metalness / roughness : chất liệu (1 = kim loại; roughness nhỏ = bóng)
  *  bg        : [c1, c2, c3] gradient nền trang
+ *  uiDark / bgDark : phiên bản cho chế độ tối (thiếu → dùng mặc định trong HomePage)
  */
 export const THEMES = [
   {
     id: 'classic', name: 'Nguyên bản', short: 'Classic',
     ui: '#1E5BD8', primary: '#1E5BD8', secondary: '#E5232D', plate: '#F4F6FB', metalness: 0.15, roughness: 0.3,
     bg: ['#DCE8FF', '#FFFFFF', '#1E5BD8'],
+    // Chế độ tối: xanh sáng hơn để chữ đủ tương phản trên nền tối; nền xanh-đen ngả màu thương hiệu
+    uiDark: '#5B8DEF',
+    bgDark: ['#0B1838', '#050A18', '#2F6BE8'],
     desc: 'Xanh dương và đỏ: hai màu nhận diện của Bali Home, thể hiện sự tin cậy và nhiệt huyết.',
   },
   {
