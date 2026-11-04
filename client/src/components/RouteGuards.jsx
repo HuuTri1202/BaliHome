@@ -19,6 +19,16 @@ export function ProtectedRoute() {
   return <Outlet />;
 }
 
+/** Trang quản trị: phải đăng nhập + vai trò ADMIN (server vẫn kiểm tra quyền ở mọi API) */
+export function AdminRoute() {
+  const { status, isAdmin } = useAuth();
+  const location = useLocation();
+  if (status === 'loading') return <FullScreenLoader />;
+  if (status === 'guest') return <Navigate to="/dang-nhap" replace state={{ from: location }} />;
+  if (!isAdmin) return <Navigate to="/tai-khoan" replace />;
+  return <Outlet />;
+}
+
 /** Trang chỉ dành cho khách (đăng nhập/đăng ký). Đã đăng nhập → về trang tài khoản. */
 export function GuestRoute() {
   const { status } = useAuth();

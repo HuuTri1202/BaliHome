@@ -111,3 +111,33 @@ export async function revokeSession(refreshToken) {
 export async function getUserById(id) {
   return prisma.user.findUnique({ where: { id } });
 }
+
+/** Cập nhật họ tên / số điện thoại. Số điện thoại phải chưa thuộc tài khoản khác. */
+export async function updateProfile(userId, { fullName, phone }) {
+  if (phone) {
+    const taken = await prisma.user.findFirst({ where: { phone, NOT: { id: userId } }, select: { id: true } });
+    if (taken) throw new AppError(409, 'PHONE_TAKEN', 'Số điện thoại đã được dùng.', { phone: 'Số điện thoại này đã thuộc tài khoản khác' });
+  }
+  return prisma.user.update({
+    where: { id: userId },
+    data: { fullName, ...(phone !== undefined && { phone }) },
+  });
+}
+
+/**
+ * Đổi mật khẩu: kiểm tra mật khẩu hiện tại, lưu hash mới, THU HỒI MỌI phiên (kể cả thiết bị khác).
+ * Controller cấp lại phiên mới cho thiết bị đang dùng.
+ */
+export async function changePassword(userId, { currentPassword, newPassword }) {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) throw new AppError(401, 'UNAUTHORIZED', 'Vui lòng đăng nhập.');
+  const ok = await bcrypt.compare(currentPassword, user.passwordHash);
+  if (!ok) throw new AppError(422, 'VALIDATION_ERROR', 'Mật khẩu hiện tại không đúng.', { currentPassword: 'Mật khẩu hiện tại không đúng' });
+
+  const passwordHash = await bcrypt.hash(newPassword, BCRYPT_ROUNDS);
+  const [updated] = await prisma.$transaction([
+    prisma.user.update({ where: { id: userId }, data: { passwordHash } }),
+    prisma.session.updateMany({ where: { userId, revokedAt: null }, data: { revokedAt: new Date() } }),
+  ]);
+  return updated;
+}

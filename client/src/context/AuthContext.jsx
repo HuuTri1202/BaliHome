@@ -46,7 +46,13 @@ export function AuthProvider({ children }) {
     }
   }, [applyUser]);
 
-  const value = useMemo(() => ({ user, status, login, register, logout }), [user, status, login, register, logout]);
+  // Sau khi sửa hồ sơ / đổi mật khẩu: cập nhật user hiện tại mà không cần gọi lại /me
+  const updateUser = useCallback((u) => applyUser(u), [applyUser]);
+
+  const value = useMemo(
+    () => ({ user, status, isAdmin: user?.role === 'ADMIN', login, register, logout, updateUser }),
+    [user, status, login, register, logout, updateUser]
+  );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 

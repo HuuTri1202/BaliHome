@@ -10,6 +10,8 @@ import { prisma } from './lib/prisma.js';
 import authRoutes from './routes/auth.routes.js';
 import contactRoutes from './routes/contact.routes.js';
 import servicesRoutes from './routes/services.routes.js';
+import uploadsRoutes from './routes/uploads.routes.js';
+import adminRoutes from './routes/admin.routes.js';
 import { notFound, errorHandler } from './middleware/error.js';
 
 export const app = express();
@@ -34,6 +36,8 @@ app.get('/api/health', async (_req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/services', servicesRoutes);
+app.use('/api/uploads', uploadsRoutes);
+app.use('/api/admin', adminRoutes);
 app.use('/api', notFound);
 
 /* ---------- Production: phục vụ luôn frontend đã build (client/dist) ----------

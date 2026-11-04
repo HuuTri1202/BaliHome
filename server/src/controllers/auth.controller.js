@@ -9,6 +9,8 @@ import {
   revokeSession,
   getUserById,
   toPublicUser,
+  updateProfile,
+  changePassword,
 } from '../services/auth.service.js';
 
 const requestMeta = (req) => ({
@@ -53,6 +55,19 @@ export async function logout(req, res) {
   await revokeSession(req.cookies?.[REFRESH_COOKIE]);
   clearAuthCookies(res);
   res.status(204).end();
+}
+
+// PATCH /api/auth/me — cập nhật họ tên, số điện thoại
+export async function updateMe(req, res) {
+  const user = await updateProfile(req.auth.userId, req.body);
+  res.json({ user: toPublicUser(user) });
+}
+
+// POST /api/auth/change-password — đổi mật khẩu, thu hồi mọi phiên, cấp phiên mới cho thiết bị này
+export async function changeMyPassword(req, res) {
+  const user = await changePassword(req.auth.userId, req.body);
+  await issueTokens(req, res, user, false);
+  res.json({ user: toPublicUser(user) });
 }
 
 // GET /api/auth/me

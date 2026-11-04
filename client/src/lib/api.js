@@ -65,6 +65,22 @@ export const servicesApi = {
 export const contactApi = {
   send: (payload) => request('/contact', { method: 'POST', body: payload }),
   mine: () => request('/contact/mine'),
+  mineOne: (id) => request(`/contact/mine/${encodeURIComponent(id)}`),
+};
+
+export const uploadsApi = {
+  config: () => request('/uploads/config'),
+  sign: () => request('/uploads/signature', { method: 'POST' }),
+};
+
+export const adminApi = {
+  stats: () => request('/admin/stats'),
+  list: ({ status = '', q = '', page = 1 } = {}) => {
+    const qs = new URLSearchParams({ ...(status && { status }), ...(q && { q }), page: String(page) });
+    return request(`/admin/requests?${qs}`);
+  },
+  get: (id) => request(`/admin/requests/${encodeURIComponent(id)}`),
+  update: (id, payload) => request(`/admin/requests/${encodeURIComponent(id)}`, { method: 'PATCH', body: payload }),
 };
 
 export const authApi = {
@@ -72,4 +88,6 @@ export const authApi = {
   login: (payload) => request('/auth/login', { method: 'POST', body: payload }),
   register: (payload) => request('/auth/register', { method: 'POST', body: payload }),
   logout: () => request('/auth/logout', { method: 'POST' }),
+  updateMe: (payload) => request('/auth/me', { method: 'PATCH', body: payload }),
+  changePassword: (payload) => request('/auth/change-password', { method: 'POST', body: payload }),
 };

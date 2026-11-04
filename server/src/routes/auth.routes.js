@@ -2,7 +2,7 @@ import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
 import { validate } from '../middleware/validate.js';
 import { requireAuth } from '../middleware/auth.js';
-import { registerSchema, loginSchema } from '../validators/auth.schema.js';
+import { registerSchema, loginSchema, profileSchema, changePasswordSchema } from '../validators/auth.schema.js';
 import * as auth from '../controllers/auth.controller.js';
 
 // Chống dò mật khẩu: tối đa 10 lần / 15 phút / IP cho đăng nhập & đăng ký
@@ -24,5 +24,7 @@ router.post('/login', authLimiter, validate(loginSchema), auth.login);
 router.post('/refresh', auth.refresh);
 router.post('/logout', auth.logout);
 router.get('/me', requireAuth, auth.me);
+router.patch('/me', requireAuth, validate(profileSchema), auth.updateMe);
+router.post('/change-password', authLimiter, requireAuth, validate(changePasswordSchema), auth.changeMyPassword);
 
 export default router;

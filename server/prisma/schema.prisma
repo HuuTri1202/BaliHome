@@ -30,6 +30,7 @@ model User {
 
   sessions        Session[]
   contactRequests ContactRequest[]
+  authoredEvents  RequestEvent[]   @relation("EventAuthor")
 
   @@map("users")
 }
@@ -57,28 +58,73 @@ model Service {
 }
 
 enum ContactStatus {
-  NEW       // mới gửi, chưa ai xử lý
-  CONTACTED // đã gọi lại
-  DONE      // đã xong
+  NEW         // Mới tiếp nhận
+  CONTACTED   // Đã liên hệ
+  IN_PROGRESS // Đang xử lý
+  DONE        // Hoàn thành
+  CANCELLED   // Đã huỷ
 }
 
-// Yêu cầu tư vấn gửi từ form "Liên hệ" trên trang chủ (khách hoặc thành viên)
+// Yêu cầu tư vấn / báo giá (form nhanh ở trang chủ hoặc form nhiều bước /bao-gia)
 model ContactRequest {
   id        String        @id @default(uuid()) @db.Uuid
   fullName  String        @map("full_name")
   phone     String
   email     String?
+  company   String?
   need      String        // slug của Service, hoặc "other"
+  industry  String?       // lĩnh vực kinh doanh của khách
+  budget    String?       // khoảng ngân sách (khoá, xem validators/contact.schema.js)
+  deadline  DateTime?     // ngày mong muốn hoàn thành
   message   String?
   status    ContactStatus @default(NEW)
   userId    String?       @map("user_id") @db.Uuid // có nếu người gửi đang đăng nhập
   ip        String?
   createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @default(now()) @updatedAt @map("updated_at")
 
-  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user        User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  events      RequestEvent[]
+  attachments Attachment[]
 
   @@index([status, createdAt])
+  @@index([userId, createdAt])
   @@map("contact_requests")
+}
+
+// Dòng thời gian của 1 yêu cầu: tạo mới, đổi trạng thái, ghi chú gửi khách
+model RequestEvent {
+  id         String         @id @default(uuid()) @db.Uuid
+  requestId  String         @map("request_id") @db.Uuid
+  kind       String         // created | status | note
+  fromStatus ContactStatus? @map("from_status")
+  toStatus   ContactStatus? @map("to_status")
+  note       String?        // khách NHÌN THẤY ghi chú này
+  authorId   String?        @map("author_id") @db.Uuid
+  createdAt  DateTime       @default(now()) @map("created_at")
+
+  request ContactRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  author  User?          @relation("EventAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+
+  @@index([requestId, createdAt])
+  @@map("request_events")
+}
+
+// Tệp đính kèm của yêu cầu — file nằm trên Cloudinary, DB chỉ lưu đường dẫn
+model Attachment {
+  id        String   @id @default(uuid()) @db.Uuid
+  requestId String   @map("request_id") @db.Uuid
+  url       String
+  publicId  String   @map("public_id")
+  fileName  String   @map("file_name")
+  bytes     Int
+  format    String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  request ContactRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  @@index([requestId])
+  @@map("attachments")
 }
 
 // Mỗi lần đăng nhập trên 1 thiết bị = 1 session.

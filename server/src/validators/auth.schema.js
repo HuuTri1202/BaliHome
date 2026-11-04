@@ -40,6 +40,23 @@ export const registerSchema = z.object({
   password: newPassword,
 });
 
+/** Cập nhật hồ sơ: chỉ họ tên + số điện thoại (email là định danh đăng nhập, không cho đổi ở đây) */
+export const profileSchema = z.object({
+  fullName: z
+    .string({ required_error: 'Vui lòng nhập họ tên' })
+    .trim()
+    .min(2, 'Họ tên tối thiểu 2 ký tự')
+    .max(100, 'Họ tên tối đa 100 ký tự'),
+  phone: z.preprocess((v) => (v === '' ? null : v), phone.nullable()),
+});
+
+export const changePasswordSchema = z
+  .object({
+    currentPassword: z.string({ required_error: 'Vui lòng nhập mật khẩu hiện tại' }).min(1, 'Vui lòng nhập mật khẩu hiện tại').max(200),
+    newPassword: newPassword,
+  })
+  .refine((v) => v.currentPassword !== v.newPassword, { message: 'Mật khẩu mới phải khác mật khẩu hiện tại', path: ['newPassword'] });
+
 export const loginSchema = z.object({
   email,
   password: z.string({ required_error: 'Vui lòng nhập mật khẩu' }).min(1, 'Vui lòng nhập mật khẩu').max(200),

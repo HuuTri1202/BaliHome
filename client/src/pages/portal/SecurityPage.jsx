@@ -1,0 +1,58 @@
+import { useState } from 'react';
+import PortalLayout, { Panel } from '../../components/portal/PortalLayout.jsx';
+import { PasswordField } from '../../components/ui/Field.jsx';
+import PasswordStrength from '../../components/ui/PasswordStrength.jsx';
+import { ThemeSelector } from '../../components/ThemeToggle.jsx';
+import { Button } from '../../components/ui/Button.jsx';
+import Alert from '../../components/ui/Alert.jsx';
+import { LockIcon } from '../../components/ui/icons.jsx';
+import { useAuth } from '../../context/AuthContext.jsx';
+import { useForm } from '../../hooks/useForm.js';
+import { rules } from '../../lib/validators.js';
+import { authApi } from '../../lib/api.js';
+
+const schema = {
+  currentPassword: rules.password,
+  newPassword: (v, all) => rules.newPassword(v) ?? (v && v === all.currentPassword ? 'Mật khẩu mới phải khác mật khẩu hiện tại' : undefined),
+  confirmPassword: (v, all) => (!v ? 'Vui lòng nhập lại mật khẩu mới' : v !== all.newPassword ? 'Mật khẩu nhập lại không khớp' : undefined),
+};
+const EMPTY = { currentPassword: '', newPassword: '', confirmPassword: '' };
+
+/** /tai-khoan/bao-mat — đổi mật khẩu (đăng xuất mọi thiết bị khác) + chế độ giao diện */
+export default function SecurityPage() {
+  const { updateUser } = useAuth();
+  const [done, setDone] = useState(false);
+  const { values, setValues, register, handleSubmit, formError, submitting } = useForm(EMPTY, schema);
+
+  const onSubmit = handleSubmit(async (v) => {
+    const { user } = await authApi.changePassword({ currentPassword: v.currentPassword, newPassword: v.newPassword });
+    updateUser(user);
+    setValues(EMPTY);
+    setDone(true);
+  });
+
+  return (
+    <PortalLayout title="Bảo mật & giao diện">
+      <div className="grid items-start gap-6 xl:grid-cols-5">
+        <Panel title="Đổi mật khẩu" className="xl:col-span-3">
+          <form onSubmit={onSubmit} noValidate className="grid gap-6">
+            <Alert>{formError}</Alert>
+            {done && <Alert type="success">Đã đổi mật khẩu. Các thiết bị khác đã bị đăng xuất.</Alert>}
+            <PasswordField label="Mật khẩu hiện tại" icon={LockIcon} autoComplete="current-password" {...register('currentPassword')} />
+            <div>
+              <PasswordField label="Mật khẩu mới" icon={LockIcon} autoComplete="new-password" placeholder="Tối thiểu 8 ký tự, gồm chữ và số" {...register('newPassword')} />
+              <PasswordStrength value={values.newPassword} />
+            </div>
+            <PasswordField label="Nhập lại mật khẩu mới" icon={LockIcon} autoComplete="new-password" {...register('confirmPassword')} />
+            <p className="text-sm text-ink-2">Sau khi đổi, mọi thiết bị khác đang đăng nhập tài khoản này sẽ bị đăng xuất.</p>
+            <div><Button type="submit" loading={submitting}>Đổi mật khẩu</Button></div>
+          </form>
+        </Panel>
+        <Panel title="Giao diện" className="xl:col-span-2">
+          <ThemeSelector />
+          <p className="mt-3 text-sm text-ink-2">“Theo hệ thống” tự đổi sáng/tối theo cài đặt của máy hoặc điện thoại.</p>
+        </Panel>
+      </div>
+    </PortalLayout>
+  );
+}

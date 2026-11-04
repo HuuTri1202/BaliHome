@@ -59,7 +59,7 @@ export default function Navbar({ floating = false }) {
               <UserIcon className="h-5 w-5" />
             </Link>
           )}
-          <Button as="a" href="/#lien-he" size="md" bubble className="hidden sm:inline-flex">
+          <Button as={Link} to="/bao-gia" size="md" bubble className="hidden sm:inline-flex">
             Bắt đầu dự án
           </Button>
         </div>

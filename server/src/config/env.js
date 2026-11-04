@@ -13,6 +13,10 @@ const schema = z.object({
   REFRESH_TOKEN_TTL_DAYS: z.coerce.number().int().positive().default(7),
   REFRESH_TOKEN_REMEMBER_DAYS: z.coerce.number().int().positive().default(30),
   CLIENT_ORIGIN: z.string().default('http://localhost:5173'),
+  // Cloudinary (lưu file đính kèm). Không đặt → tính năng tải file tự tắt, phần còn lại vẫn chạy.
+  CLOUDINARY_CLOUD_NAME: z.string().optional(),
+  CLOUDINARY_API_KEY: z.string().optional(),
+  CLOUDINARY_API_SECRET: z.string().optional(),
   // Số tầng proxy đứng trước app (Render = 1). Dev: chỉ tin proxy local (Vite).
   TRUST_PROXY: z
     .string()

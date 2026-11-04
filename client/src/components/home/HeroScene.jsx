@@ -178,7 +178,7 @@ function FactsCard() {
 /** Thẻ tối kêu gọi hành động */
 function CtaCard() {
   return (
-    <a href="#lien-he" className="group float-shadow flex min-h-[188px] flex-col justify-between rounded-[1.75rem] bg-ink p-5 text-ground transition-transform hover:-translate-y-0.5">
+    <a href="/bao-gia" className="group float-shadow flex min-h-[188px] flex-col justify-between rounded-[1.75rem] bg-ink p-5 text-ground transition-transform hover:-translate-y-0.5">
       <div className="flex items-start justify-between">
         <span className="grid h-14 w-14 place-items-center rounded-full bg-ground" aria-hidden="true">
           <LogoHex className="h-9 w-9" />

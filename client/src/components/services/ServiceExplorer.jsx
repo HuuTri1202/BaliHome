@@ -103,7 +103,7 @@ function DetailPanel({ service, groupName, panelId, tabId }) {
             <Link to={`/dich-vu/${service.slug}`} className="inline-flex items-center gap-1.5 px-2 py-2 font-semibold hover:text-action">
               Trang chi tiết <ArrowRightIcon className="h-4 w-4" />
             </Link>
-            <Button as={Link} to={`/dich-vu/${service.slug}#bao-gia`} bubble>
+            <Button as={Link} to={`/bao-gia?dv=${service.slug}`} bubble>
               Nhận báo giá {service.name}
             </Button>
           </div>
