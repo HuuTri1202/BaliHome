@@ -7,7 +7,7 @@ import Alert from '../components/ui/Alert.jsx';
 import { LogoutIcon, CopyIcon, CheckIcon, ArrowRightIcon } from '../components/ui/icons.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { contactApi } from '../lib/api.js';
-import { needLabel, STATUS_LABEL } from '../data/needs.js';
+import { STATUS_LABEL } from '../data/needs.js';
 
 /* =============================================================================
  * Trang tài khoản — app screen (taste-skill references/app-screens):
@@ -122,7 +122,7 @@ function RequestsPanel() {
           {state.items.map((r) => (
             <li key={r.id} className="flex items-center justify-between gap-4 bg-ground px-5 py-4">
               <div className="min-w-0">
-                <p className="font-semibold">{needLabel(r.need)}</p>
+                <p className="font-semibold">{r.needLabel ?? r.need}</p>
                 <p className="text-sm text-ink-2">
                   Gửi lúc {fmtDateTime(r.createdAt)}
                   {r.message ? ` · ${r.message.length > 60 ? r.message.slice(0, 60) + '…' : r.message}` : ''}

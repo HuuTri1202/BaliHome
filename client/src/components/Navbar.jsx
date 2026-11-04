@@ -6,7 +6,7 @@ import { Button } from './ui/Button.jsx';
 
 /* taste-skill: thanh điều hướng phẳng — wordmark, 3–5 link, MỘT hành động. Không kính mờ, không viên thuốc nổi. */
 const LINKS = [
-  ['Sản phẩm & dịch vụ', '/#san-pham'],
+  ['Dịch vụ', '/dich-vu'],
   ['Cách làm việc', '/#cach-lam-viec'],
   ['Thành viên', '/#thanh-vien'],
   ['Liên hệ', '/#lien-he'],
@@ -26,11 +26,15 @@ export default function Navbar() {
         <BrandMark />
 
         <nav className="hidden items-center gap-8 text-[15px] font-semibold text-ink-2 lg:flex" aria-label="Điều hướng chính">
-          {LINKS.map(([label, href]) => (
-            <a key={href} href={href} className="py-2 transition-colors hover:text-ink">
-              {label}
-            </a>
-          ))}
+          {LINKS.map(([label, href]) =>
+            href.startsWith('/#') ? (
+              <a key={href} href={href} className="py-2 transition-colors hover:text-ink">{label}</a>
+            ) : (
+              <NavLink key={href} to={href} className={({ isActive }) => `py-2 transition-colors hover:text-ink ${isActive ? 'text-action' : ''}`}>
+                {label}
+              </NavLink>
+            )
+          )}
         </nav>
 
         <div className="flex items-center gap-1 sm:min-w-[200px] sm:justify-end">

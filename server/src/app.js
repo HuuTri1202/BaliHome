@@ -9,6 +9,7 @@ import { env } from './config/env.js';
 import { prisma } from './lib/prisma.js';
 import authRoutes from './routes/auth.routes.js';
 import contactRoutes from './routes/contact.routes.js';
+import servicesRoutes from './routes/services.routes.js';
 import { notFound, errorHandler } from './middleware/error.js';
 
 export const app = express();
@@ -32,6 +33,7 @@ app.get('/api/health', async (_req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/api/services', servicesRoutes);
 app.use('/api', notFound);
 
 /* ---------- Production: phục vụ luôn frontend đã build (client/dist) ----------

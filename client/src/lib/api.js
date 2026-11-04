@@ -57,6 +57,11 @@ export async function request(path, options) {
   }
 }
 
+export const servicesApi = {
+  list: () => request('/services'),
+  get: (slug) => request(`/services/${encodeURIComponent(slug)}`),
+};
+
 export const contactApi = {
   send: (payload) => request('/contact', { method: 'POST', body: payload }),
   mine: () => request('/contact/mine'),

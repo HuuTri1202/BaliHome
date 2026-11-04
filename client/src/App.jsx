@@ -1,6 +1,8 @@
 import { Route, Routes } from 'react-router-dom';
 import { ProtectedRoute, GuestRoute } from './components/RouteGuards.jsx';
 import HomePage from './pages/HomePage.jsx';
+import ServicesPage from './pages/ServicesPage.jsx';
+import ServiceDetailPage from './pages/ServiceDetailPage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import RegisterPage from './pages/RegisterPage.jsx';
 import AccountPage from './pages/AccountPage.jsx';
@@ -10,6 +12,8 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
+      <Route path="/dich-vu" element={<ServicesPage />} />
+      <Route path="/dich-vu/:slug" element={<ServiceDetailPage />} />
 
       {/* Chỉ dành cho khách chưa đăng nhập */}
       <Route element={<GuestRoute />}>
