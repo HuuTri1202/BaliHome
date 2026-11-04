@@ -17,6 +17,8 @@ const schema = z.object({
   CLOUDINARY_CLOUD_NAME: z.string().optional(),
   CLOUDINARY_API_KEY: z.string().optional(),
   CLOUDINARY_API_SECRET: z.string().optional(),
+  // Hoặc dán 1 dòng gộp từ trang Cloudinary: cloudinary://<api_key>:<api_secret>@<cloud_name>
+  CLOUDINARY_URL: z.string().optional(),
   // Số tầng proxy đứng trước app (Render = 1). Dev: chỉ tin proxy local (Vite).
   TRUST_PROXY: z
     .string()
@@ -30,4 +32,22 @@ if (!parsed.success) {
   process.exit(1);
 }
 
-export const env = { ...parsed.data, isProd: parsed.data.NODE_ENV === 'production' };
+/** Tách CLOUDINARY_URL → 3 biến riêng (biến riêng nếu đã đặt thì được ưu tiên) */
+function cloudinaryFromUrl(raw) {
+  // Không chấp nhận chữ mẫu "<your_api_key>" (dán nhầm từ trang Cloudinary khi chưa thay khoá thật)
+  const m = /^cloudinary:\/\/([^:@\s<>]+):([^@\s<>]+)@([^/\s?<>]+)\/?$/.exec((raw ?? '').trim());
+  if (!m) {
+    if (raw) console.warn('⚠ CLOUDINARY_URL sai định dạng hoặc còn chữ mẫu <your_api_key> — cần cloudinary://KHOA:BI_MAT@cloud_name → tắt tải tệp.');
+    return {};
+  }
+  return { CLOUDINARY_API_KEY: m[1], CLOUDINARY_API_SECRET: m[2], CLOUDINARY_CLOUD_NAME: m[3] };
+}
+
+const fromUrl = cloudinaryFromUrl(parsed.data.CLOUDINARY_URL);
+export const env = {
+  ...parsed.data,
+  CLOUDINARY_CLOUD_NAME: parsed.data.CLOUDINARY_CLOUD_NAME || fromUrl.CLOUDINARY_CLOUD_NAME,
+  CLOUDINARY_API_KEY: parsed.data.CLOUDINARY_API_KEY || fromUrl.CLOUDINARY_API_KEY,
+  CLOUDINARY_API_SECRET: parsed.data.CLOUDINARY_API_SECRET || fromUrl.CLOUDINARY_API_SECRET,
+  isProd: parsed.data.NODE_ENV === 'production',
+};
