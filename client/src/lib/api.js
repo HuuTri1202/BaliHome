@@ -81,6 +81,15 @@ export const adminApi = {
   },
   get: (id) => request(`/admin/requests/${encodeURIComponent(id)}`),
   update: (id, payload) => request(`/admin/requests/${encodeURIComponent(id)}`, { method: 'PATCH', body: payload }),
+  overview: () => request('/admin/overview'),
+  series: (days) => request(`/admin/series?days=${days}`),
+  users: ({ q = '', role = '', page = 1 } = {}) => {
+    const qs = new URLSearchParams({ ...(q && { q }), ...(role && { role }), page: String(page) });
+    return request(`/admin/users?${qs}`);
+  },
+  setRole: (id, role) => request(`/admin/users/${encodeURIComponent(id)}/role`, { method: 'PATCH', body: { role } }),
+  services: () => request('/admin/services'),
+  updateService: (slug, payload) => request(`/admin/services/${encodeURIComponent(slug)}`, { method: 'PATCH', body: payload }),
 };
 
 export const authApi = {

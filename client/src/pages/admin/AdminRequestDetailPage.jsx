@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import PortalLayout, { Panel } from '../../components/portal/PortalLayout.jsx';
+import AdminLayout from '../../components/admin/AdminLayout.jsx';
+import { Panel } from '../../components/portal/PortalLayout.jsx';
 import { StatusBadge, StatusStepper } from '../../components/portal/StatusBadge.jsx';
 import Timeline from '../../components/portal/Timeline.jsx';
 import Attachments from '../../components/portal/Attachments.jsx';
@@ -31,18 +32,18 @@ export default function AdminRequestDetailPage() {
 
   const r = data.request;
   const back = (
-    <Link to="/quan-tri" className="inline-flex items-center gap-1.5 font-semibold text-ink-2 hover:text-ink">
+    <Link to="/quan-tri/yeu-cau" className="inline-flex items-center gap-1.5 font-semibold text-ink-2 hover:text-ink">
       <ArrowLeftIcon className="h-4 w-4" /> Danh sách yêu cầu
     </Link>
   );
 
   if (data.status !== 'ready') {
     return (
-      <PortalLayout admin title="Chi tiết yêu cầu" actions={back}>
+      <AdminLayout title="Chi tiết yêu cầu" actions={back}>
         {data.status === 'loading'
           ? <div className="grid place-items-center py-16 text-action" role="status" aria-label="Đang tải"><Spinner className="h-7 w-7" /></div>
           : <Alert>{data.message}</Alert>}
-      </PortalLayout>
+      </AdminLayout>
     );
   }
 
@@ -78,7 +79,7 @@ export default function AdminRequestDetailPage() {
   ];
 
   return (
-    <PortalLayout admin title={r.fullName} subtitle={`${shortId(r.id)} · ${r.needLabel}`} actions={back}>
+    <AdminLayout title={r.fullName} subtitle={`${shortId(r.id)} · ${r.needLabel}`} actions={back}>
       <Panel>
         <div className="mb-5 flex items-center justify-between gap-3">
           <p className="font-semibold">Tiến độ hiện tại</p>
@@ -137,6 +138,6 @@ export default function AdminRequestDetailPage() {
           </Panel>
         </div>
       </div>
-    </PortalLayout>
+    </AdminLayout>
   );
 }

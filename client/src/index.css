@@ -140,6 +140,25 @@ body {
   --shadow-float: 0 24px 60px -24px rgb(0 0 0 / 0.6);
 }
 
+/* Khung quản trị: luôn tối, nhấn vàng (dark luxury). Ghi đè token trong phạm vi .admin-shell */
+.admin-shell.dark {
+  --ground: #070b18;
+  --ground-2: #0e1428;
+  --ground-3: #19213b;
+  --ink: #f4f1ea;
+  --ink-2: #a9aec0;
+  --line: #2b3555;
+  --action: #e9b872;
+  --action-hover: #f3cb90;
+  --on-action: #141a2e;
+  --motif: #141d3a;
+  --signal: #ff7a80;
+  --success: #5ad8a6;
+  --glass-bg: rgb(14 20 40 / 0.62);
+  --glass-line: rgb(255 255 255 / 0.09);
+  color-scheme: dark;
+}
+
 /* Bề mặt kính: dùng cho menu, thẻ nổi trên cảnh nền */
 .glass {
   background: var(--glass-bg);

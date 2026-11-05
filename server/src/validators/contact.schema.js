@@ -59,6 +59,34 @@ export const contactSchema = z.object({
   attachments: z.array(attachment).max(MAX_FILES, `Tối đa ${MAX_FILES} tệp`).optional().default([]),
 });
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+export const isUuid = (v) => UUID_RE.test(String(v));
+
+/** Admin đổi vai trò của 1 tài khoản */
+export const adminRoleSchema = z.object({ role: z.enum(['USER', 'ADMIN'], { errorMap: () => ({ message: 'Vai trò không hợp lệ' }) }) });
+
+const line = (max) => z.string().trim().min(1, 'Không được để trống').max(max, `Tối đa ${max} ký tự`);
+
+// Trang quản trị sửa danh sách theo từng dòng, quy trình / FAQ theo dạng "Tiêu đề | Nội dung".
+// Chặn ký tự phá vỡ định dạng đó để lưu lại không làm sai lệch dữ liệu.
+const listItem = (max) => line(max).regex(/^[^\r\n]*$/, 'Mỗi mục chỉ nằm trên một dòng');
+const pairTitle = (max) => listItem(max).refine((v) => !v.includes('|'), 'Phần tiêu đề không được chứa dấu |');
+
+/** Admin sửa nội dung dịch vụ (slug giữ nguyên vì đang dùng trong URL và trong các yêu cầu cũ) */
+export const adminServiceSchema = z.object({
+  name: line(60),
+  group: z.enum(['creative', 'digital', 'growth'], { errorMap: () => ({ message: 'Nhóm không hợp lệ' }) }),
+  tagline: line(160),
+  summary: line(800),
+  deliverables: z.array(listItem(200)).min(1, 'Cần ít nhất 1 mục').max(12, 'Tối đa 12 mục'),
+  idealFor: z.array(listItem(200)).max(8, 'Tối đa 8 mục'),
+  process: z.array(z.object({ title: pairTitle(100), text: listItem(300) })).max(8, 'Tối đa 8 bước'),
+  faqs: z.array(z.object({ q: pairTitle(200), a: listItem(600) })).max(12, 'Tối đa 12 câu'),
+  priceFrom: z.number().int().min(0).max(2_000_000_000).nullable(),
+  sortOrder: z.number().int().min(0).max(100_000),
+  isActive: z.boolean(),
+});
+
 /** Admin cập nhật yêu cầu: đổi trạng thái và/hoặc gửi ghi chú cho khách */
 export const adminUpdateSchema = z
   .object({

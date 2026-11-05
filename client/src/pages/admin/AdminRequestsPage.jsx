@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import PortalLayout, { Panel } from '../../components/portal/PortalLayout.jsx';
+import AdminLayout from '../../components/admin/AdminLayout.jsx';
+import { Panel } from '../../components/portal/PortalLayout.jsx';
 import { StatusBadge } from '../../components/portal/StatusBadge.jsx';
 import { Button, Spinner } from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
@@ -8,13 +9,12 @@ import { ArrowRightIcon, ArrowLeftIcon } from '../../components/ui/icons.jsx';
 import { adminApi } from '../../lib/api.js';
 import { STATUS, budgetLabel, fmtDateTime, shortId } from '../../data/requests.js';
 
-/** /quan-tri — danh sách yêu cầu: lọc theo trạng thái, tìm kiếm, phân trang (lưu trên URL) */
+/** /quan-tri/yeu-cau — danh sách yêu cầu: lọc theo trạng thái, phân trang (lưu trên URL). Ô tìm kiếm nằm ở thanh trên của AdminLayout. */
 export default function AdminRequestsPage() {
   const [params, setParams] = useSearchParams();
   const status = params.get('status') ?? '';
   const q = params.get('q') ?? '';
   const page = Math.max(1, Number(params.get('page')) || 1);
-  const [search, setSearch] = useState(q);
   const [stats, setStats] = useState(null);
   const [data, setData] = useState({ status: 'loading' });
 
@@ -25,7 +25,10 @@ export default function AdminRequestsPage() {
       return next;
     });
 
-  useEffect(() => { adminApi.stats().then(setStats).catch(() => setStats(null)); }, []);
+  useEffect(() => {
+    document.title = 'Yêu cầu — Quản trị Bali Home';
+    adminApi.stats().then(setStats).catch(() => setStats(null));
+  }, []);
 
   useEffect(() => {
     let alive = true;
@@ -41,7 +44,10 @@ export default function AdminRequestsPage() {
   const chips = [['', 'Tất cả', stats?.total], ...Object.keys(STATUS).map((s) => [s, STATUS[s].label, stats?.byStatus?.[s]])];
 
   return (
-    <PortalLayout admin title="Yêu cầu khách hàng" subtitle="Tiếp nhận, cập nhật tiến độ và gửi ghi chú cho khách.">
+    <AdminLayout
+      title="Yêu cầu khách hàng"
+      subtitle={q ? `Kết quả tìm “${q}”` : 'Tiếp nhận, cập nhật tiến độ và gửi ghi chú cho khách.'}
+    >
       <div className="flex flex-wrap gap-2" role="group" aria-label="Lọc theo trạng thái">
         {chips.map(([value, label, n]) => (
           <button
@@ -55,23 +61,6 @@ export default function AdminRequestsPage() {
           </button>
         ))}
       </div>
-
-      <form
-        className="mt-4 flex gap-2"
-        role="search"
-        onSubmit={(e) => { e.preventDefault(); setParam({ q: search.trim(), page: '' }); }}
-      >
-        <label htmlFor="admin-search" className="sr-only">Tìm yêu cầu</label>
-        <input
-          id="admin-search"
-          type="search"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Tìm theo tên, số điện thoại, email, doanh nghiệp…"
-          className="h-12 min-w-0 flex-1 rounded-full border border-line bg-ground px-5 text-[15px] outline-none focus:border-action focus:ring-4 focus:ring-[color-mix(in_srgb,var(--action)_18%,transparent)]"
-        />
-        <Button type="submit">Tìm</Button>
-      </form>
 
       <Panel className="mt-6">
         {data.status === 'error' && <Alert>{data.message}</Alert>}
@@ -113,6 +102,6 @@ export default function AdminRequestsPage() {
           </nav>
         )}
       </Panel>
-    </PortalLayout>
+    </AdminLayout>
   );
 }

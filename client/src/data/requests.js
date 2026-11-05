@@ -3,7 +3,7 @@
 /** Trạng thái yêu cầu theo thứ tự tiến độ (CANCELLED nằm ngoài chuỗi) */
 export const STATUS = {
   NEW: { label: 'Mới tiếp nhận', tone: 'bg-ground-3 text-ink' },
-  CONTACTED: { label: 'Đã liên hệ', tone: 'bg-[color-mix(in_srgb,var(--action)_14%,var(--ground))] text-action' },
+  CONTACTED: { label: 'Đã liên hệ', tone: 'bg-[color-mix(in_srgb,#38bdf8_16%,var(--ground))] text-sky-700 dark:text-sky-300' },
   IN_PROGRESS: { label: 'Đang xử lý', tone: 'bg-[color-mix(in_srgb,#f59e0b_20%,var(--ground))] text-amber-700 dark:text-amber-300' },
   DONE: { label: 'Hoàn thành', tone: 'bg-[color-mix(in_srgb,var(--success)_16%,var(--ground))] text-success' },
   CANCELLED: { label: 'Đã huỷ', tone: 'bg-[color-mix(in_srgb,var(--signal)_12%,var(--ground))] text-signal' },

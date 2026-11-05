@@ -24,7 +24,11 @@ export const HashIcon = (p) => (<Svg {...p}><path d="M5 9h14M5 15h14M10 4 8 20M1
 export const KeyIcon = (p) => (<Svg {...p}><circle cx="8" cy="15" r="4" /><path d="m10.8 12.2 8.7-8.7M17 6l2 2M15 8l2 2" /></Svg>);
 export const MonitorIcon = (p) => (<Svg {...p}><rect x="3" y="4" width="18" height="12" rx="2" /><path d="M8 20h8M12 16v4" /></Svg>);
 export const CopyIcon = (p) => (<Svg {...p}><rect x="9" y="9" width="11" height="11" rx="2" /><path d="M5 15V6a2 2 0 0 1 2-2h9" /></Svg>);
-export const HomeIcon = (p) => (<Svg {...p}><path d="M3 11.5 12 4l9 7.5" /><path d="M5.5 10v10h13V10" /><path d="M10 20v-5h4v5" /></Svg>);
+export const BellIcon = (p) => (<Svg {...p}><path d="M6 9a6 6 0 1 1 12 0c0 6 2.5 7.5 2.5 7.5h-17S6 15 6 9Z" /><path d="M10 20a2 2 0 0 0 4 0" /></Svg>);
+export const SearchIcon = (p) => (<Svg {...p}><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></Svg>);
+export const FileIcon = (p) => (<Svg {...p}><path d="M6 3h8l4 4v14H6V3Z" /><path d="M14 3v4h4" /></Svg>);
+export const TrendIcon = (p) => (<Svg {...p}><path d="m3 17 6-6 4 4 8-8" /><path d="M15 7h6v6" /></Svg>);
+export const HomeIcon =(p) => (<Svg {...p}><path d="M3 11.5 12 4l9 7.5" /><path d="M5.5 10v10h13V10" /><path d="M10 20v-5h4v5" /></Svg>);
 export const GridIcon = (p) => (<Svg {...p}><rect x="4" y="4" width="6.5" height="6.5" rx="1.5" /><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.5" /><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.5" /><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.5" /></Svg>);
 export const ChatIcon = (p) => (<Svg {...p}><path d="M5 5h14a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9l-4 3v-3H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" /><path d="M8 10h8M8 13h5" /></Svg>);
 export const PlayIcon = (p) => (<Svg {...p}><path d="M8 5.5v13l11-6.5-11-6.5Z" fill="currentColor" stroke="none" /></Svg>);

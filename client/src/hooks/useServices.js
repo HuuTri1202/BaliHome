@@ -32,6 +32,9 @@ export function useServices() {
   return { ...state, reload: fetchIt };
 }
 
+/** Xoá cache sau khi admin sửa dịch vụ → lần tải sau lấy dữ liệu mới */
+export const invalidateServices = () => { cache = null; };
+
 /** Lấy tên dịch vụ theo slug từ cache (dùng khi đã có danh sách) */
 export const serviceName = (slug, services = cache ?? []) =>
   services.find((s) => s.slug === slug)?.name ?? (slug === 'other' ? 'Tư vấn khác' : slug);

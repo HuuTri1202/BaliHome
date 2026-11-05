@@ -2,8 +2,10 @@ import { Router } from 'express';
 import { prisma } from '../lib/prisma.js';
 import { AppError } from '../utils/AppError.js';
 import { requireAuth } from '../middleware/auth.js';
+import { requireAdminFromDb } from '../middleware/admin.js';
+import systemRoutes from './admin.system.routes.js';
 import { validate } from '../middleware/validate.js';
-import { adminUpdateSchema, STATUSES } from '../validators/contact.schema.js';
+import { adminUpdateSchema, isUuid, STATUSES } from '../validators/contact.schema.js';
 import { withServiceNames } from '../services/requests.service.js';
 
 /* =============================================================================
@@ -11,17 +13,10 @@ import { withServiceNames } from '../services/requests.service.js';
  * không dựa vào việc ẩn nút ở giao diện).
  * ========================================================================== */
 const router = Router();
-
-// Quyền lấy từ DB (không tin role trong JWT có thể cũ tới 15 phút) → hạ quyền là mất quyền ngay
-async function requireAdminFromDb(req, _res, next) {
-  const user = await prisma.user.findUnique({ where: { id: req.auth.userId }, select: { role: true } });
-  if (user?.role !== 'ADMIN') throw new AppError(403, 'FORBIDDEN', 'Bạn không có quyền truy cập.');
-  next();
-}
 router.use(requireAuth, requireAdminFromDb);
+router.use(systemRoutes); // /overview, /series, /users, /services
 
 const PAGE_SIZE = 20;
-const isUuid = (v) => /^[0-9a-f-]{36}$/i.test(String(v));
 
 const ADMIN_LIST_SELECT = {
   id: true, fullName: true, phone: true, email: true, company: true, need: true,

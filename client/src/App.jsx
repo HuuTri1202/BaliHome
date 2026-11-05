@@ -10,6 +10,9 @@ import PortalHomePage from './pages/portal/PortalHomePage.jsx';
 import RequestDetailPage from './pages/portal/RequestDetailPage.jsx';
 import ProfilePage from './pages/portal/ProfilePage.jsx';
 import SecurityPage from './pages/portal/SecurityPage.jsx';
+import AdminOverviewPage from './pages/admin/AdminOverviewPage.jsx';
+import AdminUsersPage from './pages/admin/AdminUsersPage.jsx';
+import AdminServicesPage from './pages/admin/AdminServicesPage.jsx';
 import AdminRequestsPage from './pages/admin/AdminRequestsPage.jsx';
 import AdminRequestDetailPage from './pages/admin/AdminRequestDetailPage.jsx';
 import NotFoundPage from './pages/NotFoundPage.jsx';
@@ -38,8 +41,11 @@ export default function App() {
 
       {/* Quản trị — bắt buộc vai trò ADMIN */}
       <Route element={<AdminRoute />}>
-        <Route path="/quan-tri" element={<AdminRequestsPage />} />
+        <Route path="/quan-tri" element={<AdminOverviewPage />} />
+        <Route path="/quan-tri/yeu-cau" element={<AdminRequestsPage />} />
         <Route path="/quan-tri/yeu-cau/:id" element={<AdminRequestDetailPage />} />
+        <Route path="/quan-tri/khach-hang" element={<AdminUsersPage />} />
+        <Route path="/quan-tri/dich-vu" element={<AdminServicesPage />} />
       </Route>
 
       <Route path="*" element={<NotFoundPage />} />
