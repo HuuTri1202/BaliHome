@@ -109,7 +109,7 @@ export default function ContactSection({
     <section id={id} aria-labelledby={`${id}-title`} className="py-24 lg:py-28">
       <Reveal className={`${CONTAINER} grid gap-12 lg:grid-cols-12 lg:gap-16`}>
         <div className="lg:col-span-5">
-          <h2 id={`${id}-title`} {...item(0, 'font-display text-title font-normal')}>
+          <h2 id={`${id}-title`} {...item(0, 'font-display text-title')}>
             {title}
           </h2>
           <p {...item(1, 'mt-6 max-w-[34ch] text-lead text-ink')}>{intro}</p>
@@ -152,8 +152,8 @@ export default function ContactSection({
             <form onSubmit={onSubmit} noValidate className="grid gap-6">
               <Alert>{formError}</Alert>
               <div className="grid gap-6 sm:grid-cols-2">
-                <Field label="Họ và tên" icon={UserIcon} autoComplete="name" placeholder="Nguyễn Văn A" {...register('fullName')} />
-                <Field label="Số điện thoại" icon={PhoneIcon} type="tel" inputMode="tel" autoComplete="tel" placeholder="09xx xxx xxx" {...register('phone')} />
+                <Field label="Họ và tên" required icon={UserIcon} autoComplete="name" placeholder="Nguyễn Văn A" {...register('fullName')} />
+                <Field label="Số điện thoại" required icon={PhoneIcon} type="tel" inputMode="tel" autoComplete="tel" placeholder="09xx xxx xxx" {...register('phone')} />
               </div>
               <Field label="Email" icon={MailIcon} type="email" inputMode="email" autoComplete="email" placeholder="ban@congty.vn" optional {...register('email')} />
               <ServicePicker

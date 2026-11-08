@@ -8,7 +8,7 @@ export default function NotFoundPage() {
       <Navbar />
       <main className={`${CONTAINER} grid min-h-[calc(100dvh-5rem)] items-center gap-12 py-16 lg:grid-cols-12`}>
         <div className="lg:col-span-6">
-          <h1 className="font-display text-display font-normal">Không tìm thấy trang</h1>
+          <h1 className="font-display text-display">Không tìm thấy trang</h1>
           <p className="mt-6 max-w-[38ch] text-lead">Đường dẫn có thể đã thay đổi hoặc không tồn tại. Hãy quay về trang chủ.</p>
           <Button as={Link} to="/" size="lg" className="mt-10">Về trang chủ</Button>
         </div>

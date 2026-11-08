@@ -61,7 +61,7 @@ export default function PortalLayout({ title, subtitle, actions, children }) {
         <main className="min-w-0">
           <header className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <h1 className="font-display text-[2.5rem] font-normal leading-[1.05] sm:text-[3rem]">{title}</h1>
+              <h1 className="font-display text-[2.5rem] leading-[1.05] sm:text-[3rem]">{title}</h1>
               {subtitle && <p className="mt-2 text-ink-2">{subtitle}</p>}
             </div>
             {actions}

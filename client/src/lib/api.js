@@ -58,7 +58,7 @@ export async function request(path, options) {
 }
 
 export const servicesApi = {
-  list: () => request('/services'),
+  list: ({ signal } = {}) => request('/services', { signal }),
   get: (slug) => request(`/services/${encodeURIComponent(slug)}`),
 };
 

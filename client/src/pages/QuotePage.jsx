@@ -67,6 +67,12 @@ function Choice({ name, value, checked, onChange, children }) {
 const FieldError = ({ id, children }) =>
   children ? <p id={id} role="alert" className="mt-3 flex items-center gap-1.5 text-sm font-medium text-signal"><AlertIcon className="h-4 w-4" /> {children}</p> : null;
 
+/** "profile-card" → "Profile card" (chỉ dùng khi chưa có tên thật của dịch vụ) */
+const slugToLabel = (slug) => {
+  const words = slug.replace(/-/g, ' ');
+  return words.charAt(0).toUpperCase() + words.slice(1);
+};
+
 export default function QuotePage() {
   const { user } = useAuth();
   const { services, status: svStatus } = useServices();
@@ -150,7 +156,10 @@ export default function QuotePage() {
     }
   };
 
-  const options = [...services, OTHER_NEED];
+  // Đang dùng danh sách dự phòng (chỉ 4 dịch vụ) mà khách đến từ link dịch vụ khác → vẫn hiện đúng lựa chọn của họ
+  const isNeedMissing = svStatus === 'fallback' && values.need && values.need !== OTHER_NEED.slug && !services.some((s) => s.slug === values.need);
+  const missingNeedOption = isNeedMissing ? [{ slug: values.need, name: slugToLabel(values.need) }] : [];
+  const options = [...services, ...missingNeedOption, OTHER_NEED];
   const isLast = step === STEPS.length - 1;
 
   return (
@@ -160,7 +169,7 @@ export default function QuotePage() {
         <div className="grid gap-10 lg:grid-cols-12">
           {/* Cột trái: tiêu đề + các bước */}
           <aside className="lg:col-span-4">
-            <h1 className="font-display text-title font-normal">Yêu cầu báo giá</h1>
+            <h1 className="font-display text-title">Yêu cầu báo giá</h1>
             <p className="mt-4 max-w-[38ch] text-ink-2">Năm bước ngắn, khoảng 2 phút. Bali Home liên hệ lại kèm báo giá chi tiết theo từng hạng mục.</p>
             {!sent && (
               <ol className="mt-8 hidden gap-1 lg:grid" aria-label="Các bước">
@@ -181,7 +190,7 @@ export default function QuotePage() {
             {sent ? (
               <div className="rounded-[2rem] bg-ground-2 p-8 sm:p-12">
                 <span className="grid h-16 w-16 place-items-center rounded-full bg-success text-white"><CheckIcon className="h-8 w-8" /></span>
-                <h2 ref={headingRef} tabIndex={-1} className="mt-8 font-display text-title font-normal outline-none">Đã gửi yêu cầu</h2>
+                <h2 ref={headingRef} tabIndex={-1} className="mt-8 font-display text-title outline-none">Đã gửi yêu cầu</h2>
                 <p className="mt-4 max-w-[50ch] text-lead">
                   Mã yêu cầu <strong>{shortId(sent.id)}</strong>. Bali Home sẽ gọi lại số <strong>{values.phone}</strong> để trao đổi và gửi báo giá.
                 </p>
@@ -223,7 +232,7 @@ export default function QuotePage() {
                           ))}
                         </div>
                       )}
-                      {values.need && values.need !== OTHER_NEED && (
+                      {values.need && values.need !== OTHER_NEED.slug && (
                         <p className="mt-5 text-ink-2">{services.find((s) => s.slug === values.need)?.tagline}</p>
                       )}
                       <FieldError id="err-need">{errors.need}</FieldError>
@@ -287,7 +296,7 @@ export default function QuotePage() {
                         <p className="font-semibold">Kiểm tra lại yêu cầu</p>
                         <dl className="mt-3 grid gap-2 text-[15px] sm:grid-cols-2">
                           {[
-                            ['Dịch vụ', serviceName(values.need, services)],
+                            ['Dịch vụ', serviceName(values.need, options)],
                             ['Doanh nghiệp', values.company || '—'],
                             ['Lĩnh vực', values.industry || '—'],
                             ['Ngân sách', budgetLabel(values.budget)],

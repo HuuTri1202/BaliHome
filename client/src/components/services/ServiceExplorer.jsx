@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Button } from '../ui/Button.jsx';
 import { ArrowRightIcon, CheckIcon } from '../ui/icons.jsx';
-import { ServicesSkeleton, ServicesError } from './ServiceStates.jsx';
+import { ServiceExplorerSkeleton } from './ServiceStates.jsx';
 import { useServices } from '../../hooks/useServices.js';
 import { groupServices, formatPrice } from '../../data/needs.js';
 
@@ -114,12 +114,11 @@ function DetailPanel({ service, groupName, panelId, tabId }) {
 }
 
 export default function ServiceExplorer({ idPrefix = 'sv' }) {
-  const { services, status, error, reload } = useServices();
+  const { services, status } = useServices();
   const [params, setParams] = useSearchParams();
   const tabRefs = useRef({});
 
-  if (status === 'loading') return <ServicesSkeleton rows={3} />;
-  if (status === 'error') return <ServicesError error={error} onRetry={reload} />;
+  if (status === 'loading') return <ServiceExplorerSkeleton />;
 
   const groups = groupServices(services);
   const ordered = groups.flatMap((g) => g.services);

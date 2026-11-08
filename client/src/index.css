@@ -16,7 +16,9 @@
   --ground-3: #e3e9f4;
   --ink: #0b1533;
   --ink-2: #46516c;      /* chú thích phụ — vẫn ≥ 7:1 trên nền */
-  --line: #c9d2e3;       /* chỉ dùng cho ô nhập (form được phép có viền) */
+  --line: #c9d2e3;       /* viền nhẹ cho thành phần phụ */
+  --field: #ffffff;      /* nền ô nhập: tách tầng với nền form (ground-2) */
+  --field-line: #7f8ba6; /* viền ô nhập: ≥ 3:1 so với nền form */
   --motif: #0e2a7a;      /* navy: mảng lục giác lớn, dải giá trị */
   --on-motif: #ffffff;
   --on-motif-2: #c9d6f5;
@@ -33,6 +35,8 @@
   --ink: #eef2ff;
   --ink-2: #a6b1cf;
   --line: #2a3866;
+  --field: #131d3f;
+  --field-line: #5f6f9e;
   --motif: #15338c;
   --on-motif: #ffffff;
   --on-motif-2: #c9d6f5;
@@ -50,6 +54,8 @@
   --color-ink: var(--ink);
   --color-ink-2: var(--ink-2);
   --color-line: var(--line);
+  --color-field: var(--field);
+  --color-field-line: var(--field-line);
   --color-motif: var(--motif);
   --color-on-motif: var(--on-motif);
   --color-on-motif-2: var(--on-motif-2);
@@ -62,8 +68,8 @@
 
 @theme {
   --font-sans: "Be Vietnam Pro", ui-sans-serif, system-ui, sans-serif;
-  /* Tiêu đề: serif hiện đại (hỗ trợ đủ dấu tiếng Việt) — cặp với sans cho chữ thường */
-  --font-display: "Playfair Display", "Times New Roman", serif;
+  /* Tiêu đề: sans-serif mạnh, đủ dấu tiếng Việt. Trang quản trị giữ serif riêng (xem .admin-shell) */
+  --font-display: "Plus Jakarta Sans", "Be Vietnam Pro", ui-sans-serif, system-ui, sans-serif;
 
   /* Bảng màu thương hiệu gốc (vẫn giữ cho các chỗ cần mã màu cố định) */
   --color-brand-50: #eef4ff;
@@ -80,12 +86,13 @@
   --color-accent-600: #c81e2b;
 
   /* Thang chữ: 5 cỡ, không hơn (taste-skill: lớn rất lớn, nhỏ vừa đủ, không có cỡ lưng chừng) */
-  --text-display: clamp(3rem, 6.4vw, 6.75rem);
-  --text-display--line-height: 0.98;
-  --text-display--letter-spacing: -0.02em;
-  --text-title: clamp(2.25rem, 4.4vw, 4.25rem);
-  --text-title--line-height: 1.05;
-  --text-title--letter-spacing: -0.015em;
+  /* Dòng cao hơn 1.1 để dấu tiếng Việt của dòng dưới không chạm chữ dòng trên */
+  --text-display: clamp(2.5rem, 4.9vw, 4.75rem);
+  --text-display--line-height: 1.12;
+  --text-display--letter-spacing: -0.025em;
+  --text-title: clamp(2rem, 3.6vw, 3.25rem);
+  --text-title--line-height: 1.16;
+  --text-title--letter-spacing: -0.02em;
   --text-lead: clamp(1.1875rem, 1.6vw, 1.5rem);
   --text-lead--line-height: 1.45;
 
@@ -100,6 +107,12 @@
     from { opacity: 0; transform: translateY(16px); }
     to { opacity: 1; transform: none; }
   }
+}
+
+/* Tiêu đề đậm mặc định. Nằm ở layer base nên class font-* trên từng thẻ vẫn thắng */
+@layer base {
+  .font-display { font-weight: 700; }
+  .admin-shell .font-display { font-weight: 400; }
 }
 
 html { -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; scroll-padding-top: 88px; }
@@ -142,6 +155,9 @@ body {
 
 /* Khung quản trị: luôn tối, nhấn vàng (dark luxury). Ghi đè token trong phạm vi .admin-shell */
 .admin-shell.dark {
+  --font-display: "Playfair Display", "Times New Roman", serif;
+  --field: #131a32;
+  --field-line: #5f6a8c;
   --ground: #070b18;
   --ground-2: #0e1428;
   --ground-3: #19213b;

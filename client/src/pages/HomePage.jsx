@@ -1,5 +1,6 @@
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { CONTAINER } from '../components/Navbar.jsx';
+import Navbar, { CONTAINER } from '../components/Navbar.jsx';
 import Footer from '../components/Footer.jsx';
 import HeroScene from '../components/home/HeroScene.jsx';
 import Reveal, { item } from '../components/Reveal.jsx';
@@ -23,6 +24,8 @@ import { useAuth } from '../context/AuthContext.jsx';
  * ⚠ Các bước làm việc và câu chữ cam kết là NỘI DUNG NHÁP — cần Bali Home xác nhận.
  * ========================================================================== */
 
+
+const PAGE_TITLE = 'Bali Home | Thiết kế, In ấn, Website và Marketing cho doanh nghiệp';
 
 const STEPS = [
   ['Lắng nghe', 'Bạn gửi yêu cầu hoặc gọi điện. Bali Home hỏi rõ mục tiêu, khách hàng và ngân sách của bạn.'],
@@ -71,17 +74,20 @@ function RequestsFragment() {
 export default function HomePage() {
   const { user } = useAuth();
 
+  useEffect(() => { document.title = PAGE_TITLE; }, []);
+
   return (
     <div className="min-h-dvh overflow-x-clip bg-ground">
+      <Navbar />
       <main>
-        {/* ================= 1. HERO (khung cảnh + menu kính + logo 3D + 3 thẻ nổi) ================= */}
+        {/* ================= 1. HERO (khung cảnh + logo 3D + 3 thẻ nổi) ================= */}
         <HeroScene />
 
         {/* ================= 2. DỊCH VỤ (dữ liệu thật từ /api/services) ================= */}
         <section id="dich-vu" aria-labelledby="dich-vu-title" className="py-24 lg:py-28">
           <Reveal className={CONTAINER}>
             <div className="grid gap-6 lg:grid-cols-12 lg:items-end">
-              <h2 id="dich-vu-title" {...item(0, 'font-display text-title font-normal lg:col-span-7')}>
+              <h2 id="dich-vu-title" {...item(0, 'font-display text-title lg:col-span-7')}>
                 Tám dịch vụ, một đầu mối
               </h2>
               <p {...item(1, 'max-w-[40ch] text-lead text-ink lg:col-span-5')}>
@@ -99,7 +105,7 @@ export default function HomePage() {
           <Reveal className={`${CONTAINER} grid gap-12 lg:grid-cols-12`}>
             <div className="lg:col-span-5">
               <div className="lg:sticky lg:top-32">
-                <h2 id="cach-lam-viec-title" {...item(0, 'font-display text-title font-normal')}>
+                <h2 id="cach-lam-viec-title" {...item(0, 'font-display text-title')}>
                   Làm việc với Bali Home
                 </h2>
                 <p {...item(1, 'mt-6 max-w-[34ch] text-lead text-ink')}>
@@ -126,7 +132,7 @@ export default function HomePage() {
         <section aria-labelledby="gia-tri-title" className="px-0 sm:px-4 lg:px-6">
           <Reveal className="rounded-[2rem] bg-motif text-on-motif lg:rounded-[2.5rem]">
             <div className={`${CONTAINER} py-24 lg:py-36`}>
-              <h2 id="gia-tri-title" {...item(0, 'font-display text-title font-normal')}>
+              <h2 id="gia-tri-title" {...item(0, 'font-display text-title')}>
                 Uy tín, chất lượng, tận tâm
               </h2>
               <div className="mt-16 grid gap-12 md:grid-cols-3 md:gap-10">
@@ -146,7 +152,7 @@ export default function HomePage() {
         <section id="thanh-vien" aria-labelledby="thanh-vien-title" className="py-24 lg:py-28">
           <Reveal className={`${CONTAINER} grid items-center gap-14 lg:grid-cols-12`}>
             <div className="lg:col-span-6">
-              <h2 id="thanh-vien-title" {...item(0, 'font-display text-title font-normal')}>
+              <h2 id="thanh-vien-title" {...item(0, 'font-display text-title')}>
                 Theo dõi mọi yêu cầu
               </h2>
               <p {...item(1, 'mt-6 max-w-[38ch] text-lead text-ink')}>

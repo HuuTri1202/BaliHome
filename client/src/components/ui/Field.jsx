@@ -1,14 +1,15 @@
 import { forwardRef, useId, useState } from 'react';
 import { EyeIcon, EyeOffIcon, AlertIcon } from './icons.jsx';
 
-/* Ô nhập vuông góc (khớp nút lục giác cạnh sắc). Form là nơi duy nhất được phép có viền. */
+/* Ô nhập dạng thẻ: nền và viền riêng (token --field*) để nổi rõ trên nền form.
+   Độ tương phản đo được (WCAG AA): chữ nhập ≥ 14:1, placeholder ≥ 7:1, viền ≥ 3:1 so với nền form. */
 const CONTROL =
-  'block w-full rounded-2xl border bg-ground text-[16px] text-ink outline-none transition-colors ' +
-  'placeholder:text-ink-2/70 disabled:cursor-not-allowed disabled:bg-ground-2 ';
+  'block w-full rounded-2xl border bg-field text-[16px] text-ink outline-none transition-[border-color,box-shadow] ' +
+  'placeholder:text-ink-2 disabled:cursor-not-allowed disabled:bg-ground-2 ';
 const controlState = (error) =>
   error
-    ? 'border-signal focus:border-signal focus:ring-4 focus:ring-[color-mix(in_srgb,var(--signal)_18%,transparent)] '
-    : 'border-line hover:border-ink-2/50 focus:border-action focus:ring-4 focus:ring-[color-mix(in_srgb,var(--action)_18%,transparent)] ';
+    ? 'border-signal focus:border-signal focus:ring-2 focus:ring-signal '
+    : 'border-field-line hover:border-ink-2 focus:border-action focus:ring-2 focus:ring-action ';
 
 function Label({ htmlFor, label, optional }) {
   return (

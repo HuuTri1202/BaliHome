@@ -4,7 +4,7 @@ import Navbar, { CONTAINER } from '../components/Navbar.jsx';
 import Footer from '../components/Footer.jsx';
 import Reveal, { item } from '../components/Reveal.jsx';
 import ContactSection from '../components/home/ContactSection.jsx';
-import { ServicesSkeleton, ServicesError } from '../components/services/ServiceStates.jsx';
+import { ServicesSkeleton, ServiceTemporarilyUnavailable } from '../components/services/ServiceStates.jsx';
 import { Button } from '../components/ui/Button.jsx';
 import { ArrowRightIcon, ArrowLeftIcon } from '../components/ui/icons.jsx';
 import { useServices } from '../hooks/useServices.js';
@@ -31,7 +31,7 @@ const HexList = ({ items }) => (
 function NotFound() {
   return (
     <section className={`${CONTAINER} py-24`}>
-      <h1 className="font-display text-title font-normal">Không tìm thấy dịch vụ</h1>
+      <h1 className="font-display text-title">Không tìm thấy dịch vụ</h1>
       <p className="mt-6 max-w-[40ch] text-lead">Dịch vụ này không tồn tại hoặc đã ngừng cung cấp.</p>
       <Button as={Link} to="/dich-vu" size="lg" className="mt-10">Xem tất cả dịch vụ</Button>
     </section>
@@ -40,7 +40,7 @@ function NotFound() {
 
 export default function ServiceDetailPage() {
   const { slug } = useParams();
-  const { services, status, error, reload } = useServices();
+  const { services, status } = useServices();
   const service = services.find((s) => s.slug === slug);
   const group = GROUPS.find((g) => g.id === service?.group);
   const others = services.filter((s) => s.slug !== slug);
@@ -69,7 +69,7 @@ export default function ServiceDetailPage() {
       <Navbar />
       <main>
         {status === 'loading' && <div className={`${CONTAINER} py-24`}><ServicesSkeleton rows={3} /></div>}
-        {status === 'error' && <div className={`${CONTAINER} py-24`}><ServicesError error={error} onRetry={reload} /></div>}
+        {status === 'fallback' && !service && <div className={`${CONTAINER} py-24`}><ServiceTemporarilyUnavailable /></div>}
         {status === 'ready' && !service && <NotFound />}
 
         {service && (
@@ -84,7 +84,7 @@ export default function ServiceDetailPage() {
                   <span aria-hidden="true">/</span>
                   <span>{group?.name}</span>
                 </nav>
-                <h1 id="sv-title" key={slug} className="mt-8 animate-rise font-display text-display font-normal">{service.name}</h1>
+                <h1 id="sv-title" key={slug} className="mt-8 animate-rise font-display text-display">{service.name}</h1>
                 <p key={slug + 't'} className="mt-8 max-w-[34ch] animate-rise text-lead font-semibold [animation-delay:90ms]">{service.tagline}</p>
                 <p key={slug + 's'} className="mt-5 max-w-[56ch] animate-rise text-[18px] leading-relaxed text-ink [animation-delay:160ms]">{service.summary}</p>
               </div>
@@ -108,11 +108,11 @@ export default function ServiceDetailPage() {
             <section aria-labelledby="sv-get" className="bg-ground-2 py-20 lg:py-28">
               <Reveal key={slug} className={`${CONTAINER} grid gap-14 lg:grid-cols-12`}>
                 <div className="lg:col-span-7">
-                  <h2 id="sv-get" {...item(0, 'font-display text-title font-normal')}>Bạn nhận được</h2>
+                  <h2 id="sv-get" {...item(0, 'font-display text-title')}>Bạn nhận được</h2>
                   <div {...item(1, 'mt-10')}><HexList items={service.deliverables} /></div>
                 </div>
                 <div className="lg:col-span-5">
-                  <h2 {...item(2, 'font-display text-title font-normal')}>Phù hợp khi</h2>
+                  <h2 {...item(2, 'font-display text-title')}>Phù hợp khi</h2>
                   <div {...item(3, 'mt-10')}><HexList items={service.idealFor} /></div>
                 </div>
               </Reveal>
@@ -124,7 +124,7 @@ export default function ServiceDetailPage() {
                 <Reveal key={slug + 'p'} className={`${CONTAINER} grid gap-14 lg:grid-cols-12`}>
                   {process.length > 0 && (
                     <div className="lg:col-span-7">
-                      <h2 id="sv-process" {...item(0, 'font-display text-title font-normal')}>Quy trình</h2>
+                      <h2 id="sv-process" {...item(0, 'font-display text-title')}>Quy trình</h2>
                       <ol className="mt-10 grid gap-3">
                         {process.map((p, i) => (
                           <li key={p.title} {...item(1 + i, 'flex gap-5 rounded-3xl bg-ground-2 p-6 sm:p-7')}>
@@ -140,7 +140,7 @@ export default function ServiceDetailPage() {
                   )}
                   {faqs.length > 0 && (
                     <div className="lg:col-span-5">
-                      <h2 {...item(1, 'font-display text-title font-normal')}>Câu hỏi thường gặp</h2>
+                      <h2 {...item(1, 'font-display text-title')}>Câu hỏi thường gặp</h2>
                       <div {...item(2, 'mt-10 grid gap-2')}>
                         {faqs.map((f) => (
                           <details key={f.q} className="group rounded-3xl bg-ground-2 px-6 py-5">
@@ -169,7 +169,7 @@ export default function ServiceDetailPage() {
             {/* ========== Dịch vụ khác ========== */}
             <section aria-labelledby="sv-others" className="pb-24 lg:pb-28">
               <div className={CONTAINER}>
-                <h2 id="sv-others" className="font-display text-title font-normal">Dịch vụ khác</h2>
+                <h2 id="sv-others" className="font-display text-title">Dịch vụ khác</h2>
                 <ul className="mt-10 grid gap-1 sm:grid-cols-2 lg:grid-cols-4">
                   {others.map((s) => (
                     <li key={s.slug}>

@@ -16,7 +16,7 @@ export default function ServicesPage() {
       <Navbar />
       <main>
         <section className={`${CONTAINER} grid gap-6 pt-12 pb-12 lg:grid-cols-12 lg:items-end lg:pt-20`}>
-          <h1 className="animate-rise font-display text-display font-normal lg:col-span-7">Dịch vụ Bali Home</h1>
+          <h1 className="animate-rise font-display text-display lg:col-span-7">Dịch vụ Bali Home</h1>
           <p className="max-w-[44ch] animate-rise text-lead [animation-delay:90ms] lg:col-span-5">
             Tám dịch vụ cho thương hiệu của bạn. Bấm vào từng dịch vụ để xem bạn nhận được gì, quy trình làm và câu hỏi thường gặp.
           </p>
