@@ -1,0 +1,20 @@
+// Cloudflare Workers: giao diện ở edge + chuyển tiếp /api sang Render. Deploy: npm run cf:deploy
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "balihome",
+  "main": "cloudflare/worker.js",
+  "compatibility_date": "2025-09-01",
+  "assets": {
+    "directory": "./client/dist",
+    "binding": "ASSETS",
+    // /dang-nhap, /quan-tri, ... không phải file → trả index.html cho React Router
+    "not_found_handling": "single-page-application",
+    // Chỉ /api đi qua code Worker; file tĩnh được phục vụ thẳng, không tốn lượt chạy Worker
+    "run_worker_first": ["/api/*"]
+  },
+  "vars": {
+    "API_ORIGIN": "https://balihome.onrender.com"
+  },
+  "observability": { "enabled": true }
+  // PROXY_SECRET là secret: đặt bằng `npx wrangler secret put PROXY_SECRET`, KHÔNG ghi vào file này
+}

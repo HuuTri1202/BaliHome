@@ -19,6 +19,8 @@ const schema = z.object({
   CLOUDINARY_API_SECRET: z.string().optional(),
   // Hoặc dán 1 dòng gộp từ trang Cloudinary: cloudinary://<api_key>:<api_secret>@<cloud_name>
   CLOUDINARY_URL: z.string().optional(),
+  // Khoá chung với Cloudflare Worker (cloudflare/worker.js) để tin IP thật của khách. Không đặt → bỏ qua.
+  PROXY_SECRET: z.string().min(32, 'PROXY_SECRET phải dài tối thiểu 32 ký tự').optional(),
   // Số tầng proxy đứng trước app (Render = 1). Dev: chỉ tin proxy local (Vite).
   TRUST_PROXY: z
     .string()

@@ -13,10 +13,12 @@ import servicesRoutes from './routes/services.routes.js';
 import uploadsRoutes from './routes/uploads.routes.js';
 import adminRoutes from './routes/admin.routes.js';
 import { notFound, errorHandler } from './middleware/error.js';
+import { trustEdgeClientIp } from './middleware/clientIp.js';
 
 export const app = express();
 
 app.set('trust proxy', env.TRUST_PROXY);      // đứng sau proxy (Vite / Render) → lấy đúng IP người dùng
+app.use(trustEdgeClientIp(env.PROXY_SECRET));  // request đi qua Cloudflare Worker → IP thật của khách
 app.disable('x-powered-by');
 app.use(helmet());                             // các header bảo mật mặc định (CSP, HSTS, ...)
 app.use(cors({ origin: env.CLIENT_ORIGIN, credentials: true }));
