@@ -12,6 +12,7 @@ import { useServices, serviceName } from '../../hooks/useServices.js';
 import { rules } from '../../lib/validators.js';
 import { contactApi } from '../../lib/api.js';
 import { OTHER_NEED } from '../../data/needs.js';
+import { SECTION_Y } from './sectionSpacing.js';
 
 const schema = {
   fullName: rules.fullName,
@@ -67,7 +68,7 @@ function ServicePicker({ value, error, onChange, services, status }) {
 export default function ContactSection({
   id = 'lien-he',
   title = 'Gửi yêu cầu tư vấn',
-  intro = 'Cho Bali Home biết bạn cần gì. Chúng tôi sẽ gọi lại để hỏi rõ và gửi báo giá.',
+  intro = 'Bali Home sẽ gọi lại và gửi báo giá.',
   defaultService = '',
 }) {
   const { user } = useAuth();
@@ -106,7 +107,7 @@ export default function ContactSection({
   const needField = register('need');
 
   return (
-    <section id={id} aria-labelledby={`${id}-title`} className="py-24 lg:py-28">
+    <section id={id} aria-labelledby={`${id}-title`} className={SECTION_Y}>
       <Reveal className={`${CONTAINER} grid gap-12 lg:grid-cols-12 lg:gap-16`}>
         <div className="lg:col-span-5">
           <h2 id={`${id}-title`} {...item(0, 'font-display text-title')}>
@@ -115,9 +116,9 @@ export default function ContactSection({
           <p {...item(1, 'mt-6 max-w-[34ch] text-lead text-ink')}>{intro}</p>
           <ul {...item(2, 'mt-10 grid gap-4 text-ink')}>
             {[
-              'Tư vấn miễn phí, không bắt buộc sử dụng dịch vụ.',
-              'Báo giá theo từng hạng mục trước khi bắt đầu.',
-              user ? 'Yêu cầu sẽ được lưu vào tài khoản của bạn.' : 'Đăng nhập để theo dõi yêu cầu trong tài khoản.',
+              'Tư vấn miễn phí',
+              'Báo giá theo hạng mục',
+              user ? 'Lưu vào tài khoản của bạn' : 'Đăng nhập để theo dõi',
             ].map((t) => (
               <li key={t} className="flex gap-3">
                 <span className="hex hex-ratio mt-1.5 w-3 shrink-0 bg-action" aria-hidden="true" />

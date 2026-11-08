@@ -38,6 +38,10 @@ export const ArrowUpRightIcon = (p) => (<Svg {...p}><path d="M7 17 17 7M8 7h9v9"
 export const SunIcon =(p) => (<Svg {...p}><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></Svg>);
 export const MoonIcon = (p) => (<Svg {...p}><path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11Z" /></Svg>);
 export const PaletteIcon = (p) => (<Svg {...p}><path d="M12 3a9 9 0 0 0 0 18c1.1 0 1.7-.9 1.4-1.8-.4-1.2.4-2.2 1.6-2.2H17a4 4 0 0 0 4-4c0-5.5-4-10-9-10Z" /><circle cx="7.5" cy="11" r="1" /><circle cx="10" cy="7" r="1" /><circle cx="15" cy="7.5" r="1" /></Svg>);
+export const PrinterIcon = (p) => (<Svg {...p}><path d="M7 8V3h10v5" /><rect x="3" y="8" width="18" height="9" rx="2" /><path d="M7 14h10v7H7v-7Z" /></Svg>);
+export const PenIcon = (p) => (<Svg {...p}><path d="m4 20 1-5L16 4l4 4L9 19l-5 1Z" /><path d="m14 6 4 4" /></Svg>);
+export const GlobeIcon = (p) => (<Svg {...p}><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c2.5 2.5 3.8 5.5 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.5-3.8-9S9.5 5.5 12 3Z" /></Svg>);
+export const MegaphoneIcon = (p) => (<Svg {...p}><path d="M4 10v4l3 .5L19 19V5L7 9.5 4 10Z" /><path d="m8 15 1.5 5h3L11 16" /></Svg>);
 export const MenuIcon = (p) => (<Svg {...p}><path d="M4 7h16M4 12h16M4 17h16" /></Svg>);
 export const CloseIcon = (p) => (<Svg {...p}><path d="M6 6l12 12M18 6 6 18" /></Svg>);
 export const ClockIcon = (p) => (<Svg {...p}><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></Svg>);

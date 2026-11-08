@@ -1,22 +1,13 @@
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import LogoCanvas from '../LazyLogoCanvas.jsx';
-import { LogoHex } from '../BrandMark.jsx';
+import QuoteButton from '../QuoteButton.jsx';
 import { Button } from '../ui/Button.jsx';
-import { GridIcon, LayersIcon, HexagonIcon, ArrowRightIcon, ArrowLeftIcon, ArrowUpRightIcon } from '../ui/icons.jsx';
 import { THEMES } from '../../data/themes.js';
-import { useServices } from '../../hooks/useServices.js';
-import { groupServices } from '../../data/needs.js';
+import { CORE_SERVICES } from '../../data/coreServices.js';
 
 /* =============================================================================
- * Hero kiểu "light luxury" (theo mẫu tham khảo người dùng chọn):
- *  khung bo lớn + cảnh nền (đồi núi vẽ SVG, đổi màu theo sáng/tối) +
- *  tiêu đề sans-serif + logo 3D ở vị trí "công trình" + 3 thẻ kính nổi.
+ * Hero tối giản: khung bo lớn + cảnh nền SVG + 1 tiêu đề + badge dịch vụ + 2 CTA + logo 3D.
  * Logo 3D giữ nguyên như cũ (Three.js, kéo để xoay).
  * ========================================================================== */
-
-const pad = (n) => String(n).padStart(2, '0');
-const prefersReduced = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
 /** Cảnh nền: trời → mặt trời → 4 lớp đồi. Màu lấy từ biến CSS (--sky-*, --hill-*) → tự đổi theo chế độ */
 function Scenery() {
@@ -39,177 +30,41 @@ function Scenery() {
   );
 }
 
-/** Thẻ "Dịch vụ nổi bật": trình chiếu 8 dịch vụ thật, tự chuyển 6s, dừng khi rê chuột/focus */
-function FeaturedService() {
-  const { services, status } = useServices();
-  const [index, setIndex] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const count = services.length;
-
-  useEffect(() => {
-    if (!count || paused || prefersReduced()) return undefined;
-    const id = setInterval(() => setIndex((i) => (i + 1) % count), 6000);
-    return () => clearInterval(id);
-  }, [count, paused]);
-
-  if (status === 'loading') {
-    return <div className="glass float-shadow h-[188px] animate-pulse rounded-[1.75rem]" aria-hidden="true" />;
-  }
-  // Admin ẩn hết dịch vụ → vẫn hiện thẻ có ích (API lỗi đã có dữ liệu dự phòng từ useServices)
-  if (!count) {
-    return (
-      <Link to="/dich-vu" className="glass float-shadow flex min-h-[188px] flex-col justify-between rounded-[1.75rem] p-6 transition-transform hover:-translate-y-0.5">
-        <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-ink-2">Dịch vụ</span>
-        <span>
-          <span className="block font-display text-[1.6rem] leading-tight">In ấn, design, web và hơn thế</span>
-          <span className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold">Xem tất cả dịch vụ <ArrowRightIcon className="h-4 w-4" /></span>
-        </span>
-      </Link>
-    );
-  }
-
-  const s = services[index % count];
-  const go = (d) => setIndex((i) => (i + d + count) % count);
-
+function ServiceBadges() {
   return (
-    <article
-      aria-roledescription="trình chiếu"
-      aria-label="Dịch vụ nổi bật"
-      className="glass float-shadow flex gap-4 rounded-[1.75rem] p-3"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      onFocus={() => setPaused(true)}
-      onBlur={() => setPaused(false)}
-    >
-      <div className="relative w-32 shrink-0 overflow-hidden rounded-[1.25rem] bg-motif text-on-motif sm:w-40">
-        <span className="absolute left-3 top-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-on-motif-2">Nổi bật</span>
-        <span className="hex hex-ratio absolute -bottom-8 -right-6 w-24 bg-action" aria-hidden="true" />
-        <span className="hex hex-ratio absolute -bottom-3 right-12 w-7 bg-accent-500" aria-hidden="true" />
-        <div key={s.slug} className="relative grid h-full min-h-[164px] animate-rise place-items-center">
-          <span className="font-display text-6xl leading-none">{s.name.charAt(0)}</span>
-        </div>
-      </div>
-
-      <div className="flex min-w-0 flex-1 flex-col py-2 pr-1">
-        <div className="flex items-start justify-between gap-3">
-          <h3 key={s.slug} className="animate-rise font-display text-[1.6rem] leading-tight">{s.name}</h3>
-          <span className="pt-1.5 text-sm tabular-nums text-ink-2">{pad(index + 1)} / {pad(count)}</span>
-        </div>
-        <p className="mt-1 line-clamp-2 text-sm text-ink-2">{s.tagline}</p>
-        <Link to={`/dich-vu/${s.slug}`} className="mt-2 inline-flex w-fit items-center gap-1.5 text-sm font-semibold hover:text-action">
-          Xem dịch vụ <ArrowRightIcon className="h-4 w-4" />
-        </Link>
-        <div className="mt-auto flex items-center justify-between gap-3 pt-3">
-          <div className="flex items-center gap-1" aria-hidden="true">
-            {services.map((x, k) => (
-              <span key={x.slug} className={`h-1 rounded-full transition-all duration-500 ${k === index ? 'w-6 bg-ink' : 'w-2.5 bg-ink/20'}`} />
-            ))}
-          </div>
-          <div className="flex gap-2">
-            <button type="button" onClick={() => go(-1)} aria-label="Dịch vụ trước" className="grid h-10 w-10 place-items-center rounded-full bg-ground-3 text-ink transition-colors hover:bg-line">
-              <ArrowLeftIcon className="h-4 w-4" />
-            </button>
-            <button type="button" onClick={() => go(1)} aria-label="Dịch vụ tiếp theo" className="grid h-10 w-10 place-items-center rounded-full bg-ink text-ground transition-opacity hover:opacity-85">
-              <ArrowRightIcon className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-      </div>
-    </article>
-  );
-}
-
-/** Thẻ số liệu — chỉ dùng số THẬT (không bịa "250+ dự án") */
-function FactsCard() {
-  const { services, status } = useServices();
-  // Chỉ đếm khi có dữ liệu thật: danh sách dự phòng chỉ gồm 4 dịch vụ cốt lõi, không phải tổng số
-  const isReady = status === 'ready' && services.length > 0;
-  const facts = [
-    [GridIcon, isReady ? services.length : 8, 'Dịch vụ'],
-    [LayersIcon, isReady ? groupServices(services).length : 3, 'Nhóm dịch vụ'],
-    [HexagonIcon, 1, 'Đầu mối duy nhất'],
-  ];
-  return (
-    <div className="glass float-shadow grid grid-cols-3 rounded-[1.75rem] px-2 py-6">
-      {facts.map(([Icon, n, label], i) => (
-        <div key={label} className={`px-4 ${i ? 'border-l border-ink/10' : ''}`}>
-          <Icon className="h-6 w-6 text-ink-2" />
-          <p className="mt-4 font-display text-[2.25rem] leading-none tabular-nums">{n}</p>
-          <p className="mt-2 text-sm text-ink-2">{label}</p>
-        </div>
+    <ul className="flex flex-wrap gap-2" aria-label="Dịch vụ cốt lõi">
+      {CORE_SERVICES.map(({ slug, badge, Icon, tone }) => (
+        <li key={slug} className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold ${tone}`}>
+          <Icon className="h-4 w-4" />
+          {badge}
+        </li>
       ))}
-    </div>
-  );
-}
-
-/** Thẻ tối kêu gọi hành động */
-function CtaCard() {
-  return (
-    <a href="/bao-gia" className="group float-shadow flex min-h-[188px] flex-col justify-between rounded-[1.75rem] bg-ink p-5 text-ground transition-transform hover:-translate-y-0.5">
-      <div className="flex items-start justify-between">
-        <span className="grid h-14 w-14 place-items-center rounded-full bg-ground" aria-hidden="true">
-          <LogoHex className="h-9 w-9" />
-        </span>
-        <span className="grid h-11 w-11 place-items-center rounded-full bg-ground text-ink transition-transform group-hover:rotate-45" aria-hidden="true">
-          <ArrowUpRightIcon className="h-5 w-5" />
-        </span>
-      </div>
-      <div>
-        <p className="font-display text-[1.6rem] leading-tight">Biến ý tưởng thành thương hiệu</p>
-        <p className="mt-1.5 text-sm opacity-70">Kể Bali Home nghe về dự án của bạn.</p>
-        <span className="mt-4 block h-0.5 overflow-hidden rounded-full bg-ground/20" aria-hidden="true">
-          <span className="block h-full w-1/3 rounded-full bg-ground transition-all duration-500 group-hover:w-full" />
-        </span>
-      </div>
-    </a>
+    </ul>
   );
 }
 
 export default function HeroScene() {
   return (
     <section aria-labelledby="hero-title" className="p-2 sm:p-3 lg:p-4">
-      <div className="relative isolate overflow-hidden rounded-[1.75rem] lg:min-h-[max(800px,calc(100svh-7rem))] lg:rounded-[2.25rem]">
+      <div className="relative isolate overflow-hidden rounded-[1.75rem] lg:flex lg:min-h-[max(720px,calc(100svh-7rem))] lg:items-center lg:rounded-[2.25rem]">
         <Scenery />
 
-        {/* Danh sách giá trị nhỏ góc phải (như "Modern · Sustainable…") */}
-        <ul className="eyebrow absolute right-8 top-10 z-10 hidden space-y-2 border-l border-ink/30 pl-4 text-[11px] text-ink lg:block xl:right-10">
-          <li>Sáng tạo</li>
-          <li>Rõ ràng</li>
-          <li>Đúng hẹn</li>
-          <li>Tận tâm</li>
-        </ul>
-
-        {/* Nội dung chữ */}
-        <div className="relative z-10 px-5 pt-10 sm:px-8 lg:max-w-[58%] lg:pl-12 lg:pt-16 xl:pt-20">
-          <p className="animate-rise text-[12px] font-semibold uppercase leading-relaxed tracking-[0.14em] text-ink">
-            TẤT CẢ TRONG MỘT • UI/UX • WEB • BRANDING • MARKETING
-          </p>
-          <h1 id="hero-title" className="mt-5 animate-rise text-balance font-display text-[clamp(2.5rem,4.2vw,3.75rem)] leading-[1.14] tracking-[-0.025em] [animation-delay:60ms]">
-            Nâng tầm thương hiệu, <br className="hidden lg:block" />bứt phá doanh số
+        <div className="relative z-10 px-5 pt-16 sm:px-8 lg:max-w-[60%] lg:py-20 lg:pl-16">
+          <h1 id="hero-title" className="animate-rise text-balance font-display text-[clamp(2.5rem,4.8vw,4.5rem)] font-extrabold leading-[1.14] tracking-[-0.03em]">
+            Một đầu mối duy nhất cho mọi nhu cầu tăng trưởng
           </h1>
-          <p className="mt-6 max-w-[48ch] animate-rise text-[17px] leading-relaxed text-ink [animation-delay:120ms]">
-            Giải pháp toàn diện từ thiết kế, phát triển Website đến Marketing. Một đầu mối duy nhất cho mọi nhu cầu tăng trưởng của doanh nghiệp.
-          </p>
-          <div className="mt-8 flex animate-rise flex-wrap items-center gap-3 [animation-delay:180ms]">
-            <Button as={Link} to="/bao-gia" size="lg" bubble>
-              Nhận báo giá ngay
-            </Button>
-            <Button as="a" href="#lien-he" variant="glass" size="lg">
-              Tư vấn miễn phí
-            </Button>
+          <div className="mt-8 animate-rise [animation-delay:80ms]">
+            <ServiceBadges />
+          </div>
+          <div className="mt-10 flex animate-rise flex-wrap items-center gap-3 [animation-delay:160ms]">
+            <QuoteButton />
+            <Button as="a" href="#lien-he" variant="glass" size="lg">Tư vấn miễn phí</Button>
           </div>
         </div>
 
         {/* Logo 3D — đứng ở vị trí "công trình" của cảnh (giữ nguyên như cũ, kéo để xoay) */}
-        <div className="relative h-[320px] sm:h-[400px] lg:absolute lg:right-[3%] lg:top-[12%] lg:h-[60%] lg:w-[46%]">
+        <div className="relative h-[320px] sm:h-[400px] lg:absolute lg:right-[2%] lg:top-1/2 lg:h-[66%] lg:w-[40%] lg:-translate-y-1/2">
           <LogoCanvas theme={THEMES[0]} className="absolute inset-0" />
-        </div>
-
-        {/* 3 thẻ kính nổi */}
-        <div className="relative z-10 grid gap-3 p-3 sm:p-4 lg:absolute lg:inset-x-5 lg:bottom-5 lg:grid-cols-12 lg:gap-4 lg:p-0">
-          <div className="lg:col-span-5"><FeaturedService /></div>
-          <div className="lg:col-span-4"><FactsCard /></div>
-          <div className="lg:col-span-3"><CtaCard /></div>
         </div>
       </div>
     </section>
