@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import AuthLayout from '../components/AuthLayout.jsx';
 import { Field, PasswordField } from '../components/ui/Field.jsx';
@@ -21,10 +21,41 @@ const schema = {
   },
 };
 
+/** Placeholder ở chế độ tối: slate-400 trên nền ô nhập, đạt WCAG AA */
+const INPUT_CLASS = 'dark:placeholder:text-slate-400';
+
+const TERMS_LINK_CLASS = 'font-semibold text-action underline-offset-4 hover:underline';
+
+function TermsCheckbox({ checked, error, onChange }) {
+  return (
+    <div>
+      <label className="flex cursor-pointer select-none items-start gap-3 text-[15px] leading-relaxed text-ink">
+        <input
+          type="checkbox"
+          checked={checked}
+          onChange={(e) => onChange(e.target.checked)}
+          aria-invalid={!!error}
+          className="mt-0.5 h-5 w-5 shrink-0 cursor-pointer accent-[var(--action)]"
+        />
+        <span>
+          Tôi đồng ý với <a href="#" className={TERMS_LINK_CLASS}>Điều khoản sử dụng</a> và{' '}
+          <a href="#" className={TERMS_LINK_CLASS}>Chính sách bảo mật</a> của Bali Home.
+        </span>
+      </label>
+      {error && (
+        <p role="alert" className="mt-2 flex items-center gap-1.5 text-sm font-medium text-signal">
+          <AlertIcon className="h-4 w-4" /> {error}
+        </p>
+      )}
+    </div>
+  );
+}
+
 export default function RegisterPage() {
   const { register: signUp } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const passwordRulesId = useId();
   const [agreed, setAgreed] = useState(false);
   const [agreeError, setAgreeError] = useState('');
 
@@ -32,6 +63,11 @@ export default function RegisterPage() {
     { fullName: '', email: '', phone: '', password: '', confirmPassword: '' },
     schema
   );
+
+  const onAgreeChange = (isChecked) => {
+    setAgreed(isChecked);
+    setAgreeError('');
+  };
 
   const onSubmit = handleSubmit(async (v) => {
     if (!agreed) {
@@ -60,55 +96,38 @@ export default function RegisterPage() {
         </>
       }
     >
-      <form onSubmit={onSubmit} noValidate className="grid gap-5">
+      <form onSubmit={onSubmit} noValidate className="grid grid-cols-1 gap-5">
         <Alert>{formError}</Alert>
 
-        <Field label="Họ và tên" icon={UserIcon} placeholder="Nguyễn Văn A" autoComplete="name" autoFocus {...register('fullName')} />
-
-        <div className="grid gap-5 sm:grid-cols-2">
-          <Field label="Email" type="email" icon={MailIcon} placeholder="ban@congty.vn" autoComplete="email" inputMode="email" {...register('email')} />
-          <Field label="Số điện thoại" type="tel" icon={PhoneIcon} placeholder="09xx xxx xxx" autoComplete="tel" inputMode="tel" optional {...register('phone')} />
-        </div>
+        <Field label="Họ và tên" required icon={UserIcon} placeholder="Nguyễn Văn A" autoComplete="name" autoFocus inputClassName={INPUT_CLASS} {...register('fullName')} />
+        <Field label="Email" required type="email" icon={MailIcon} placeholder="ban@congty.vn" autoComplete="email" inputMode="email" inputClassName={INPUT_CLASS} {...register('email')} />
+        <Field label="Số điện thoại" type="tel" icon={PhoneIcon} placeholder="09xx xxx xxx" autoComplete="tel" inputMode="tel" optional inputClassName={INPUT_CLASS} {...register('phone')} />
 
         <div>
           <PasswordField
             label="Mật khẩu"
+            required
             icon={LockIcon}
-            placeholder="Tối thiểu 8 ký tự, gồm chữ và số"
+            placeholder="Nhập mật khẩu"
             autoComplete="new-password"
+            inputClassName={INPUT_CLASS}
+            describedBy={passwordRulesId}
             {...register('password')}
           />
-          <PasswordStrength value={values.password} />
+          <PasswordStrength id={passwordRulesId} value={values.password} />
         </div>
 
         <PasswordField
           label="Nhập lại mật khẩu"
+          required
           icon={LockIcon}
           placeholder="Nhập lại mật khẩu"
           autoComplete="new-password"
+          inputClassName={INPUT_CLASS}
           {...register('confirmPassword')}
         />
 
-        <div>
-          <label className="flex cursor-pointer select-none items-start gap-3 text-[15px] leading-relaxed text-ink">
-            <input
-              type="checkbox"
-              checked={agreed}
-              onChange={(e) => { setAgreed(e.target.checked); setAgreeError(''); }}
-              aria-invalid={!!agreeError}
-              className="mt-0.5 h-5 w-5 shrink-0 cursor-pointer accent-[var(--action)]"
-            />
-            <span>
-              Tôi đồng ý với <a href="#" className="font-semibold text-action underline-offset-4 hover:underline">Điều khoản sử dụng</a> và{' '}
-              <a href="#" className="font-semibold text-action underline-offset-4 hover:underline">Chính sách bảo mật</a> của Bali Home.
-            </span>
-          </label>
-          {agreeError && (
-            <p role="alert" className="mt-2 flex items-center gap-1.5 text-sm font-medium text-signal">
-              <AlertIcon className="h-4 w-4" /> {agreeError}
-            </p>
-          )}
-        </div>
+        <TermsCheckbox checked={agreed} error={agreeError} onChange={onAgreeChange} />
 
         <Button type="submit" size="lg" loading={submitting} className="mt-1 w-full">
           Tạo tài khoản <ArrowRightIcon className="h-4.5 w-4.5" />

@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "node --test src/lib/retry.test.js src/data/siteContact.test.js"
+    "test": "node --test src/lib/retry.test.js src/data/siteContact.test.js src/lib/validators.test.js"
   },
   "dependencies": {
     "gsap": "^3.12.5",

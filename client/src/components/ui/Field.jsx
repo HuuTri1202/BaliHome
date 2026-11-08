@@ -37,11 +37,12 @@ function Message({ id, error, hint }) {
  * Accessibility: label gắn với input, aria-invalid + aria-describedby trỏ tới lỗi/gợi ý.
  */
 export const Field = forwardRef(function Field(
-  { label, error, hint, icon: Icon, right, optional, className = '', inputClassName = '', ...inputProps },
+  { label, error, hint, icon: Icon, right, optional, className = '', inputClassName = '', describedBy: extraDescribedBy, ...inputProps },
   ref
 ) {
   const id = useId();
-  const describedBy = error ? `${id}-error` : hint ? `${id}-hint` : undefined;
+  // extraDescribedBy: phần mô tả nằm ngoài Field (vd. danh sách điều kiện mật khẩu)
+  const describedBy = [error ? `${id}-error` : hint ? `${id}-hint` : null, extraDescribedBy].filter(Boolean).join(' ') || undefined;
   return (
     <div className={className}>
       <Label htmlFor={id} label={label} optional={optional} />

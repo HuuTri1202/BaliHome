@@ -3,6 +3,16 @@
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const PHONE_RE = /^(0|\+84)[1-9]\d{8}$/;
+const MIN_PASSWORD_LENGTH = 8;
+const HAS_LETTER_RE = /[A-Za-zÀ-ỹ]/;
+const HAS_DIGIT_RE = /\d/;
+
+/** Các điều kiện bắt buộc của mật khẩu, để hiện trạng thái theo thời gian thực */
+export const passwordChecks = (password) => [
+  { label: `Đủ ${MIN_PASSWORD_LENGTH} ký tự`, isMet: password.length >= MIN_PASSWORD_LENGTH },
+  { label: 'Có chữ cái', isMet: HAS_LETTER_RE.test(password) },
+  { label: 'Có chữ số', isMet: HAS_DIGIT_RE.test(password) },
+];
 
 export const rules = {
   fullName: (v) => {
@@ -22,10 +32,10 @@ export const rules = {
   },
   newPassword: (v) => {
     if (!v) return 'Vui lòng nhập mật khẩu';
-    if (v.length < 8) return 'Mật khẩu tối thiểu 8 ký tự';
+    if (v.length < MIN_PASSWORD_LENGTH) return `Mật khẩu tối thiểu ${MIN_PASSWORD_LENGTH} ký tự`;
     if (v.length > 72) return 'Mật khẩu tối đa 72 ký tự';
-    if (!/[A-Za-zÀ-ỹ]/.test(v)) return 'Mật khẩu cần có ít nhất 1 chữ cái';
-    if (!/\d/.test(v)) return 'Mật khẩu cần có ít nhất 1 chữ số';
+    if (!HAS_LETTER_RE.test(v)) return 'Mật khẩu cần có ít nhất 1 chữ cái';
+    if (!HAS_DIGIT_RE.test(v)) return 'Mật khẩu cần có ít nhất 1 chữ số';
   },
   password: (v) => (!v ? 'Vui lòng nhập mật khẩu' : undefined),
 };
