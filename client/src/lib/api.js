@@ -66,6 +66,13 @@ export const contactApi = {
   send: (payload) => request('/contact', { method: 'POST', body: payload }),
   mine: () => request('/contact/mine'),
   mineOne: (id) => request(`/contact/mine/${encodeURIComponent(id)}`),
+  updateMine: (id, payload) => request(`/contact/mine/${encodeURIComponent(id)}`, { method: 'PATCH', body: payload }),
+};
+
+export const notificationsApi = {
+  list: () => request('/notifications'),
+  markRead: (id) => request(`/notifications/${encodeURIComponent(id)}/read`, { method: 'POST' }),
+  markAllRead: () => request('/notifications/read-all', { method: 'POST' }),
 };
 
 export const uploadsApi = {

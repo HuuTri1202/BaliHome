@@ -10,7 +10,7 @@ import { Button, Spinner } from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
 import { ArrowLeftIcon } from '../../components/ui/icons.jsx';
 import { adminApi } from '../../lib/api.js';
-import { STATUS, budgetLabel, fmtDate, fmtDateTime, shortId } from '../../data/requests.js';
+import { STATUS, budgetLabel, fmtDate, fmtDateTime } from '../../data/requests.js';
 
 /** /quan-tri/yeu-cau/:id — xem đầy đủ + đổi trạng thái + gửi ghi chú (khách nhìn thấy ghi chú) */
 export default function AdminRequestDetailPage() {
@@ -79,7 +79,7 @@ export default function AdminRequestDetailPage() {
   ];
 
   return (
-    <AdminLayout title={r.fullName} subtitle={`${shortId(r.id)} · ${r.needLabel}`} actions={back}>
+    <AdminLayout title={r.fullName} subtitle={`${r.code} · ${r.needLabel}`} actions={back}>
       <Panel>
         <div className="mb-5 flex items-center justify-between gap-3">
           <p className="font-semibold">Tiến độ hiện tại</p>

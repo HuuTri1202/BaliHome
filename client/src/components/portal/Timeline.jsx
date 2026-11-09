@@ -9,6 +9,7 @@ export default function Timeline({ events = [], showAuthor = false }) {
         const title =
           e.kind === 'created' ? 'Bali Home đã tiếp nhận yêu cầu'
           : e.kind === 'status' ? `Chuyển sang “${statusLabel(e.toStatus)}”`
+          : e.kind === 'edited' ? (showAuthor ? 'Khách đã chỉnh sửa yêu cầu' : 'Bạn đã chỉnh sửa yêu cầu')
           : 'Ghi chú từ Bali Home';
         return (
           <li key={e.id} className="relative">

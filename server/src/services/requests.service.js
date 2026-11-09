@@ -13,7 +13,7 @@ export async function serviceNameMap(slugs) {
 
 /** Trường khách được xem (không lộ ip, userId…) */
 export const CUSTOMER_REQUEST_SELECT = {
-  id: true, need: true, company: true, industry: true, budget: true, deadline: true,
+  id: true, code: true, phone: true, need: true, company: true, industry: true, budget: true, deadline: true,
   message: true, status: true, createdAt: true, updatedAt: true,
   attachments: { select: { id: true, url: true, fileName: true, bytes: true, format: true }, orderBy: { createdAt: 'asc' } },
   events: {

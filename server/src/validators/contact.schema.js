@@ -59,6 +59,9 @@ export const contactSchema = z.object({
   attachments: z.array(attachment).max(MAX_FILES, `Tối đa ${MAX_FILES} tệp`).optional().default([]),
 });
 
+/** Khách sửa yêu cầu đang chờ xử lý: chỉ các trường dễ điền nhầm */
+export const contactEditSchema = contactSchema.pick({ phone: true, need: true, message: true });
+
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export const isUuid = (v) => UUID_RE.test(String(v));
 

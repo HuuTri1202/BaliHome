@@ -7,7 +7,7 @@ import { Button, Spinner } from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
 import { ArrowRightIcon, ArrowLeftIcon } from '../../components/ui/icons.jsx';
 import { adminApi } from '../../lib/api.js';
-import { STATUS, budgetLabel, fmtDateTime, shortId } from '../../data/requests.js';
+import { STATUS, budgetLabel, fmtDateTime } from '../../data/requests.js';
 
 /** /quan-tri/yeu-cau — danh sách yêu cầu: lọc theo trạng thái, phân trang (lưu trên URL). Ô tìm kiếm nằm ở thanh trên của AdminLayout. */
 export default function AdminRequestsPage() {
@@ -74,7 +74,7 @@ export default function AdminRequestsPage() {
               <li key={r.id}>
                 <Link to={`/quan-tri/yeu-cau/${r.id}`} className="group grid gap-3 rounded-2xl bg-ground p-5 transition-colors hover:bg-ground-3 md:grid-cols-[1fr_auto] md:items-center">
                   <div className="min-w-0">
-                    <p className="text-sm text-ink-2">{shortId(r.id)} · {fmtDateTime(r.createdAt)}{r._count?.attachments ? ` · ${r._count.attachments} tệp` : ''}</p>
+                    <p className="text-sm text-ink-2">{r.code} · {fmtDateTime(r.createdAt)}{r._count?.attachments ? ` · ${r._count.attachments} tệp` : ''}</p>
                     <p className="mt-1 font-bold group-hover:text-action">
                       {r.fullName}{r.company ? ` · ${r.company}` : ''} <span className="font-normal text-ink-2">— {r.needLabel}</span>
                     </p>

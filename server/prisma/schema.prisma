@@ -31,6 +31,7 @@ model User {
   sessions        Session[]
   contactRequests ContactRequest[]
   authoredEvents  RequestEvent[]   @relation("EventAuthor")
+  notifications   Notification[]
 
   @@map("users")
 }
@@ -68,6 +69,7 @@ enum ContactStatus {
 // Yêu cầu tư vấn / báo giá (form nhanh ở trang chủ hoặc form nhiều bước /bao-gia)
 model ContactRequest {
   id        String        @id @default(uuid()) @db.Uuid
+  code      String        @unique // mã khách đọc khi gọi hotline, vd. BLH-2026-8921
   fullName  String        @map("full_name")
   phone     String
   email     String?
@@ -86,6 +88,7 @@ model ContactRequest {
   user        User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
   events      RequestEvent[]
   attachments Attachment[]
+  notifications Notification[]
 
   @@index([status, createdAt])
   @@index([userId, createdAt])
@@ -96,7 +99,7 @@ model ContactRequest {
 model RequestEvent {
   id         String         @id @default(uuid()) @db.Uuid
   requestId  String         @map("request_id") @db.Uuid
-  kind       String         // created | status | note
+  kind       String         // created | status | note | edited
   fromStatus ContactStatus? @map("from_status")
   toStatus   ContactStatus? @map("to_status")
   note       String?        // khách NHÌN THẤY ghi chú này
@@ -108,6 +111,24 @@ model RequestEvent {
 
   @@index([requestId, createdAt])
   @@map("request_events")
+}
+
+// Thông báo Bali Home gửi cho khách khi có cập nhật về yêu cầu của họ
+model Notification {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  requestId String?   @map("request_id") @db.Uuid
+  title     String
+  body      String?
+  readAt    DateTime? @map("read_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  user    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  request ContactRequest? @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([userId, readAt])
+  @@map("notifications")
 }
 
 // Tệp đính kèm của yêu cầu — file nằm trên Cloudinary, DB chỉ lưu đường dẫn

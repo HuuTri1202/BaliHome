@@ -1,20 +1,20 @@
 import { Link } from 'react-router-dom';
 import { EmptyState } from './PortalLayout.jsx';
 import { StatusBadge, StatusStepper } from './StatusBadge.jsx';
-import { Spinner } from '../ui/Button.jsx';
+import { Button, Spinner } from '../ui/Button.jsx';
 import Alert from '../ui/Alert.jsx';
 import { ArrowRightIcon } from '../ui/icons.jsx';
-import { fmtDateTime, shortId } from '../../data/requests.js';
+import { fmtDateTime, isRequestEditable } from '../../data/requests.js';
 
 function RequestRow({ request }) {
   const lastNote = [...(request.events ?? [])].reverse().find((event) => event.note)?.note;
   return (
-    <li>
-      <Link to={`/tai-khoan/yeu-cau/${request.id}`} className="group grid gap-4 rounded-2xl bg-ground p-5 transition-colors hover:bg-ground-3 sm:p-6">
+    <li className="overflow-hidden rounded-2xl bg-ground">
+      <Link to={`/tai-khoan/yeu-cau/${request.id}`} className="group grid gap-4 p-5 transition-colors hover:bg-ground-3 sm:p-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="min-w-0">
             <p className="text-lead font-bold group-hover:text-action">{request.needLabel}{request.company ? ` · ${request.company}` : ''}</p>
-            <p className="mt-1 text-sm text-ink-2">Gửi lúc {fmtDateTime(request.createdAt)} · {shortId(request.id)}</p>
+            <p className="mt-1 text-sm text-ink-2"><span className="font-semibold text-ink">{request.code}</span> · Gửi lúc {fmtDateTime(request.createdAt)}</p>
           </div>
           <StatusBadge status={request.status} />
         </div>
@@ -24,6 +24,11 @@ function RequestRow({ request }) {
           <span className="inline-flex shrink-0 items-center gap-1 font-semibold">Chi tiết <ArrowRightIcon className="h-4 w-4" /></span>
         </div>
       </Link>
+      {isRequestEditable(request) && (
+        <div className="px-5 pb-5 sm:px-6 sm:pb-6">
+          <Button as={Link} to={`/tai-khoan/yeu-cau/${request.id}/chinh-sua`} variant="soft" size="sm">Chỉnh sửa yêu cầu</Button>
+        </div>
+      )}
     </li>
   );
 }

@@ -1,18 +1,19 @@
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import PortalLayout, { Panel } from '../../components/portal/PortalLayout.jsx';
 import { StatusBadge, StatusStepper } from '../../components/portal/StatusBadge.jsx';
 import Timeline from '../../components/portal/Timeline.jsx';
 import Attachments from '../../components/portal/Attachments.jsx';
-import { Spinner } from '../../components/ui/Button.jsx';
+import { Button, Spinner } from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
 import { ArrowLeftIcon } from '../../components/ui/icons.jsx';
 import { contactApi } from '../../lib/api.js';
-import { budgetLabel, fmtDate, fmtDateTime, shortId } from '../../data/requests.js';
+import { budgetLabel, fmtDate, fmtDateTime, isRequestEditable } from '../../data/requests.js';
 
 /** /tai-khoan/yeu-cau/:id — tiến độ + timeline + thông tin + tệp của 1 yêu cầu */
 export default function RequestDetailPage() {
   const { id } = useParams();
+  const { state } = useLocation();
   const [data, setData] = useState({ status: 'loading' });
 
   useEffect(() => {
@@ -45,8 +46,9 @@ export default function RequestDetailPage() {
   }
 
   const info = [
-    ['Mã yêu cầu', shortId(r.id)],
+    ['Mã yêu cầu', r.code],
     ['Dịch vụ', r.needLabel],
+    ['Số điện thoại', r.phone],
     ['Doanh nghiệp', r.company || '—'],
     ['Lĩnh vực', r.industry || '—'],
     ['Ngân sách dự kiến', budgetLabel(r.budget)],
@@ -55,7 +57,17 @@ export default function RequestDetailPage() {
   ];
 
   return (
-    <PortalLayout title={r.needLabel} subtitle={`${shortId(r.id)} · cập nhật ${fmtDateTime(r.updatedAt)}`} actions={back}>
+    <PortalLayout
+      title={r.needLabel}
+      subtitle={`${r.code} · cập nhật ${fmtDateTime(r.updatedAt)}`}
+      actions={
+        <div className="flex flex-wrap items-center gap-4">
+          {isRequestEditable(r) && <Button as={Link} to={`/tai-khoan/yeu-cau/${r.id}/chinh-sua`} variant="soft" size="sm">Chỉnh sửa yêu cầu</Button>}
+          {back}
+        </div>
+      }
+    >
+      {state?.edited && <Alert type="success" className="mb-6">Đã lưu thay đổi của bạn.</Alert>}
       <Panel>
         <div className="mb-5 flex items-center justify-between gap-3">
           <p className="font-semibold">Tiến độ</p>

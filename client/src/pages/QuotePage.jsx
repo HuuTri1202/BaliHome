@@ -13,7 +13,8 @@ import { useUploads } from '../hooks/useUploads.js';
 import { rules } from '../lib/validators.js';
 import { contactApi, ApiError } from '../lib/api.js';
 import { OTHER_NEED } from '../data/needs.js';
-import { BUDGETS, INDUSTRIES, budgetLabel, fmtDate, shortId } from '../data/requests.js';
+import { BUDGETS, INDUSTRIES, budgetLabel, fmtDate } from '../data/requests.js';
+import RequestCode from '../components/portal/RequestCode.jsx';
 
 /* =============================================================================
  * /bao-gia — Form yêu cầu báo giá 5 bước (Dynamic multi-step form)
@@ -192,8 +193,9 @@ export default function QuotePage() {
                 <span className="grid h-16 w-16 place-items-center rounded-full bg-success text-white"><CheckIcon className="h-8 w-8" /></span>
                 <h2 ref={headingRef} tabIndex={-1} className="mt-8 font-display text-title outline-none">Đã gửi yêu cầu</h2>
                 <p className="mt-4 max-w-[50ch] text-lead">
-                  Mã yêu cầu <strong>{shortId(sent.id)}</strong>. Bali Home sẽ gọi lại số <strong>{values.phone}</strong> để trao đổi và gửi báo giá.
+                  Bali Home sẽ gọi lại số <strong>{values.phone}</strong> để trao đổi và gửi báo giá.
                 </p>
+                <div className="max-w-md"><RequestCode code={sent.code} /></div>
                 <div className="mt-10 flex flex-wrap gap-3">
                   {user ? (
                     <Button as={Link} to={`/tai-khoan/yeu-cau/${sent.id}`} bubble>Theo dõi tiến độ</Button>

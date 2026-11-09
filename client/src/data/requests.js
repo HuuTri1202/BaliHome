@@ -31,4 +31,6 @@ export const fmtDate = (d) => {
 };
 export const fmtDateTime = (d) => (d ? `${pad(new Date(d).getHours())}:${pad(new Date(d).getMinutes())}, ${fmtDate(d)}` : '—');
 export const fmtBytes = (b) => (b >= 1048576 ? `${(b / 1048576).toFixed(1)} MB` : `${Math.max(1, Math.round(b / 1024))} KB`);
-export const shortId = (id = '') => `YC-${id.replace(/-/g, '').slice(0, 6).toUpperCase()}`;
+
+/** Khách chỉ tự sửa được yêu cầu chưa ai xử lý. ⚠ Khớp EDITABLE_STATUS ở server/src/routes/contact.routes.js */
+export const isRequestEditable = (request) => request.status === 'NEW';

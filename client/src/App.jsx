@@ -9,6 +9,7 @@ import RegisterPage from './pages/RegisterPage.jsx';
 import PortalHomePage from './pages/portal/PortalHomePage.jsx';
 import MyRequestsPage from './pages/portal/MyRequestsPage.jsx';
 import RequestDetailPage from './pages/portal/RequestDetailPage.jsx';
+import EditRequestPage from './pages/portal/EditRequestPage.jsx';
 import ProfilePage from './pages/portal/ProfilePage.jsx';
 import SecurityPage from './pages/portal/SecurityPage.jsx';
 import AdminOverviewPage from './pages/admin/AdminOverviewPage.jsx';
@@ -37,6 +38,7 @@ export default function App() {
         <Route path="/tai-khoan" element={<PortalHomePage />} />
         <Route path="/tai-khoan/yeu-cau" element={<MyRequestsPage />} />
         <Route path="/tai-khoan/yeu-cau/:id" element={<RequestDetailPage />} />
+        <Route path="/tai-khoan/yeu-cau/:id/chinh-sua" element={<EditRequestPage />} />
         <Route path="/tai-khoan/ho-so" element={<ProfilePage />} />
         <Route path="/tai-khoan/bao-mat" element={<SecurityPage />} />
       </Route>

@@ -2,6 +2,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import BrandMark from './BrandMark.jsx';
 import ThemeToggle from './ThemeToggle.jsx';
 import MobileMenu from './nav/MobileMenu.jsx';
+import NotificationBell from './nav/NotificationBell.jsx';
 import NavItem from './nav/NavItem.jsx';
 import QuoteButton from './QuoteButton.jsx';
 
@@ -43,6 +44,7 @@ export default function Navbar() {
 
         <div className="flex items-center gap-2">
           <ThemeToggle />
+          {user && <NotificationBell />}
           {/* Ẩn bằng thẻ bọc: Button có sẵn class inline-flex, đặt `hidden` trực tiếp sẽ bị ghi đè */}
           <div className="hidden sm:block">
             <QuoteButton size="md" />

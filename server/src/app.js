@@ -12,6 +12,7 @@ import contactRoutes from './routes/contact.routes.js';
 import servicesRoutes from './routes/services.routes.js';
 import uploadsRoutes from './routes/uploads.routes.js';
 import adminRoutes from './routes/admin.routes.js';
+import notificationsRoutes from './routes/notifications.routes.js';
 import { notFound, errorHandler } from './middleware/error.js';
 import { trustEdgeClientIp } from './middleware/clientIp.js';
 
@@ -40,6 +41,7 @@ app.use('/api/contact', contactRoutes);
 app.use('/api/services', servicesRoutes);
 app.use('/api/uploads', uploadsRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/notifications', notificationsRoutes);
 app.use('/api', notFound);
 
 /* ---------- Production: phục vụ luôn frontend đã build (client/dist) ----------

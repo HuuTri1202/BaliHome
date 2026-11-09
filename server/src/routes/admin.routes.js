@@ -7,6 +7,7 @@ import systemRoutes from './admin.system.routes.js';
 import { validate } from '../middleware/validate.js';
 import { adminUpdateSchema, isUuid, STATUSES } from '../validators/contact.schema.js';
 import { withServiceNames } from '../services/requests.service.js';
+import { requestUpdateNotification } from '../services/notifications.service.js';
 
 /* =============================================================================
  * API quản trị — MỌI route đều qua requireAuth + requireRole('ADMIN') (kiểm tra ở server,
@@ -19,7 +20,7 @@ router.use(systemRoutes); // /overview, /series, /users, /services
 const PAGE_SIZE = 20;
 
 const ADMIN_LIST_SELECT = {
-  id: true, fullName: true, phone: true, email: true, company: true, need: true,
+  id: true, code: true, fullName: true, phone: true, email: true, company: true, need: true,
   budget: true, deadline: true, status: true, createdAt: true, updatedAt: true,
   _count: { select: { attachments: true } },
 };
@@ -42,6 +43,7 @@ router.get('/requests', async (req, res) => {
     ...(status && { status }),
     ...(q && {
       OR: [
+        { code: { contains: q, mode: 'insensitive' } },
         { fullName: { contains: q, mode: 'insensitive' } },
         { phone: { contains: q.replace(/\s/g, '') } },
         { email: { contains: q, mode: 'insensitive' } },
@@ -76,7 +78,7 @@ router.get('/requests/:id', async (req, res) => {
 // PATCH /api/admin/requests/:id { status?, note? } — đổi trạng thái / gửi ghi chú cho khách → ghi timeline
 router.patch('/requests/:id', validate(adminUpdateSchema), async (req, res) => {
   if (!isUuid(req.params.id)) throw new AppError(404, 'NOT_FOUND', 'Không tìm thấy yêu cầu.');
-  const current = await prisma.contactRequest.findUnique({ where: { id: req.params.id }, select: { id: true, status: true } });
+  const current = await prisma.contactRequest.findUnique({ where: { id: req.params.id }, select: { id: true, status: true, code: true, userId: true } });
   if (!current) throw new AppError(404, 'NOT_FOUND', 'Không tìm thấy yêu cầu.');
 
   const { status, note } = req.body;
@@ -95,6 +97,7 @@ router.patch('/requests/:id', validate(adminUpdateSchema), async (req, res) => {
         authorId: req.auth.userId,
       },
     }),
+    ...requestUpdateNotification({ request: current, newStatus: statusChanged ? status : null, note }),
   ]);
   res.json({ ok: true });
 });

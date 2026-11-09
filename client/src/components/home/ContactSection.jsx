@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Reveal, { item } from '../Reveal.jsx';
+import RequestCode from '../portal/RequestCode.jsx';
 import { CONTAINER } from '../Navbar.jsx';
 import { Field, TextArea } from '../ui/Field.jsx';
 import { Button } from '../ui/Button.jsx';
@@ -95,14 +96,14 @@ export default function ContactSection({
   }, [user, setValues]);
 
   const onSubmit = handleSubmit(async (v) => {
-    await contactApi.send({
+    const { request } = await contactApi.send({
       fullName: v.fullName.trim(),
       phone: v.phone.trim(),
       email: v.email.trim() || undefined,
       need: v.need,
       message: v.message.trim() || undefined,
     });
-    setSent({ need: v.need, phone: v.phone.trim() });
+    setSent({ need: v.need, phone: v.phone.trim(), code: request.code });
   });
 
   const needField = register('need');
@@ -139,6 +140,7 @@ export default function ContactSection({
               <p className="mt-3 max-w-[46ch] text-ink">
                 Dịch vụ: <strong>{serviceName(sent.need, services)}</strong>. Chúng tôi sẽ gọi lại số <strong>{sent.phone}</strong> để tư vấn.
               </p>
+              <div className="w-full max-w-md"><RequestCode code={sent.code} /></div>
               <div className="mt-8 flex flex-wrap items-center gap-4">
                 {user ? (
                   <Button as={Link} to="/tai-khoan/yeu-cau">Xem yêu cầu của tôi</Button>

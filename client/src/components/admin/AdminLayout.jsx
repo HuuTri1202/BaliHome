@@ -98,7 +98,7 @@ export default function AdminLayout({ title, subtitle, actions, hero, children }
               type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Tìm khách, số điện thoại, doanh nghiệp…"
+              placeholder="Tìm mã yêu cầu, khách, số điện thoại…"
               className="min-w-0 flex-1 bg-transparent text-[15px] outline-none placeholder:text-ink-2"
             />
             <button type="submit" aria-label="Tìm" className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-action text-on-action transition-colors hover:bg-action-hover">
