@@ -1,7 +1,5 @@
-import { useState } from 'react';
 import LogoCanvas from '../LazyLogoCanvas.jsx';
 import QuoteButton from '../QuoteButton.jsx';
-import LogoThemePicker from './LogoThemePicker.jsx';
 import { Button } from '../ui/Button.jsx';
 import { THEMES } from '../../data/themes.js';
 import { CORE_SERVICES } from '../../data/coreServices.js';
@@ -46,9 +44,6 @@ function ServiceBadges() {
 }
 
 export default function HeroScene() {
-  const [logoThemeId, setLogoThemeId] = useState(THEMES[0].id);
-  const logoTheme = THEMES.find((theme) => theme.id === logoThemeId);
-
   return (
     <section aria-labelledby="hero-title" className="p-2 sm:p-3 lg:p-4">
       <div className="relative isolate overflow-hidden rounded-[1.75rem] lg:flex lg:min-h-[max(720px,calc(100svh-7rem))] lg:items-center lg:rounded-[2.25rem]">
@@ -68,12 +63,8 @@ export default function HeroScene() {
         </div>
 
         {/* Logo 3D — đứng ở vị trí "công trình" của cảnh (giữ nguyên như cũ, kéo để xoay) */}
-        <div className="relative h-[384px] sm:h-[464px] lg:absolute lg:right-[2%] lg:top-1/2 lg:h-[66%] lg:w-[40%] lg:-translate-y-1/2">
-          {/* Dưới lg chừa 4rem ở đáy cho thanh chọn màu, không đè lên logo */}
-          <LogoCanvas theme={logoTheme} className="absolute inset-x-0 bottom-16 top-0 lg:bottom-0" />
-          <div className="absolute bottom-3 left-1/2 z-10 -translate-x-1/2 lg:bottom-0">
-            <LogoThemePicker themes={THEMES} selectedId={logoThemeId} onSelect={setLogoThemeId} />
-          </div>
+        <div className="relative h-[320px] sm:h-[400px] lg:absolute lg:right-[2%] lg:top-1/2 lg:h-[66%] lg:w-[40%] lg:-translate-y-1/2">
+          <LogoCanvas theme={THEMES[0]} className="absolute inset-0" />
         </div>
       </div>
     </section>
