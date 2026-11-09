@@ -26,7 +26,8 @@ export default function BrandMark({ light = false }) {
   return (
     <HomeLink className="group inline-flex shrink-0 items-center gap-3">
       <LogoHex className="h-10 w-10 transition-transform duration-500 group-hover:rotate-[60deg]" />
-      <span className={`hidden text-[13px] font-semibold uppercase tracking-[0.32em] sm:inline ${light ? 'text-white' : 'text-ink'}`}>
+      {/* text-ink là token theo giao diện: chữ tối trên nền sáng, chữ sáng trên nền tối */}
+      <span className={`hidden text-[13px] font-semibold uppercase tracking-[0.32em] transition-colors duration-300 sm:inline ${light ? 'text-white' : 'text-ink'}`}>
         Bali Home
       </span>
     </HomeLink>

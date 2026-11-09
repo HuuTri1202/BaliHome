@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import NavItem from './NavItem.jsx';
-import { Button } from '../ui/Button.jsx';
+import QuoteButton from '../QuoteButton.jsx';
 import { CloseIcon, MenuIcon } from '../ui/icons.jsx';
 
 const PANEL_ID = 'mobile-menu';
@@ -76,7 +76,7 @@ export default function MobileMenu({ links }) {
             </li>
           ))}
         </ul>
-        <Button as={Link} to="/bao-gia" size="lg" className="mt-4 w-full">Nhận báo giá ngay</Button>
+        <QuoteButton bubble={false} className="mt-4 w-full" />
       </nav>
     </div>
   );

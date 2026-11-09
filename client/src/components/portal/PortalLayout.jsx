@@ -2,13 +2,14 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import Navbar, { CONTAINER, initials } from '../Navbar.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
-import { HomeIcon, UserIcon, KeyIcon, ShieldIcon, LogoutIcon, ArrowRightIcon } from '../ui/icons.jsx';
+import { ChatIcon, HomeIcon, UserIcon, KeyIcon, ShieldIcon, LogoutIcon, ArrowRightIcon } from '../ui/icons.jsx';
 import { Button } from '../ui/Button.jsx';
 
 /* Khung của Cổng khách hàng (/tai-khoan/*): menu bên trái (desktop) / thanh vuốt ngang (phone)
    + nội dung bên phải. Quản trị dùng khung riêng: components/admin/AdminLayout.jsx. */
 const CUSTOMER_LINKS = [
   ['/tai-khoan', 'Tổng quan', HomeIcon, true],
+  ['/tai-khoan/yeu-cau', 'Yêu cầu của tôi', ChatIcon],
   ['/tai-khoan/ho-so', 'Hồ sơ', UserIcon],
   ['/tai-khoan/bao-mat', 'Bảo mật & giao diện', KeyIcon],
 ];
@@ -32,8 +33,8 @@ export default function PortalLayout({ title, subtitle, actions, children }) {
   return (
     <div className="min-h-dvh bg-ground">
       <Navbar />
-      <div className={`${CONTAINER} grid gap-6 pb-20 pt-4 lg:grid-cols-[260px_1fr] lg:gap-8`}>
-        <aside className="lg:sticky lg:top-28 lg:self-start">
+      <div className={`${CONTAINER} grid grid-cols-1 gap-6 pb-20 pt-4 lg:grid-cols-[260px_1fr] lg:gap-8`}>
+        <aside className="min-w-0 lg:sticky lg:top-28 lg:self-start">
           <div className="hidden items-center gap-3 rounded-3xl bg-ground-2 p-4 lg:flex">
             <span className="hex hex-ratio grid w-12 shrink-0 place-items-center bg-action text-sm font-bold text-on-action">{initials(user?.fullName)}</span>
             <span className="min-w-0">

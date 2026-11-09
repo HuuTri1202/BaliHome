@@ -11,6 +11,7 @@ import { useForm } from '../../hooks/useForm.js';
 import { useServices, serviceName } from '../../hooks/useServices.js';
 import { rules } from '../../lib/validators.js';
 import { contactApi } from '../../lib/api.js';
+import { CONTACT_FORM_ID } from '../../lib/contactForm.js';
 import { OTHER_NEED } from '../../data/needs.js';
 import { SECTION_Y } from './sectionSpacing.js';
 
@@ -128,7 +129,7 @@ export default function ContactSection({
           </ul>
         </div>
 
-        <div {...item(3, 'rounded-3xl bg-ground-2 p-6 sm:p-10 lg:col-span-7 lg:p-12')}>
+        <div id={CONTACT_FORM_ID} {...item(3, 'rounded-3xl bg-ground-2 p-6 sm:p-10 lg:col-span-7 lg:p-12')}>
           {sent ? (
             <div className="flex min-h-[420px] flex-col items-start justify-center" role="status">
               <span className="hex hex-ratio grid w-16 place-items-center bg-success text-white">
@@ -140,7 +141,7 @@ export default function ContactSection({
               </p>
               <div className="mt-8 flex flex-wrap items-center gap-4">
                 {user ? (
-                  <Button as={Link} to="/tai-khoan">Xem trong tài khoản</Button>
+                  <Button as={Link} to="/tai-khoan/yeu-cau">Xem yêu cầu của tôi</Button>
                 ) : (
                   <Button as={Link} to="/dang-ky">Tạo tài khoản để theo dõi</Button>
                 )}

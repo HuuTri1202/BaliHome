@@ -27,7 +27,7 @@ export default function RequestDetailPage() {
 
   const r = data.request;
   const back = (
-    <Link to="/tai-khoan" className="inline-flex items-center gap-1.5 font-semibold text-ink-2 hover:text-ink">
+    <Link to="/tai-khoan/yeu-cau" className="inline-flex items-center gap-1.5 font-semibold text-ink-2 hover:text-ink">
       <ArrowLeftIcon className="h-4 w-4" /> Tất cả yêu cầu
     </Link>
   );

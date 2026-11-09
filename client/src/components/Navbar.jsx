@@ -1,10 +1,9 @@
-import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import BrandMark from './BrandMark.jsx';
 import ThemeToggle from './ThemeToggle.jsx';
 import MobileMenu from './nav/MobileMenu.jsx';
 import NavItem from './nav/NavItem.jsx';
-import { Button } from './ui/Button.jsx';
+import QuoteButton from './QuoteButton.jsx';
 
 export const initials = (name = '') =>
   name.trim().split(/\s+/).filter(Boolean).slice(-2).map((w) => w[0]).join('').toUpperCase() || 'BH';
@@ -46,7 +45,7 @@ export default function Navbar() {
           <ThemeToggle />
           {/* Ẩn bằng thẻ bọc: Button có sẵn class inline-flex, đặt `hidden` trực tiếp sẽ bị ghi đè */}
           <div className="hidden sm:block">
-            <Button as={Link} to="/bao-gia" size="md" bubble>Nhận báo giá ngay</Button>
+            <QuoteButton size="md" />
           </div>
           <MobileMenu links={links} />
         </div>
