@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { ArrowUpIcon, PhoneIcon } from './ui/icons.jsx';
+import { ArrowUpIcon, FacebookIcon, PhoneIcon } from './ui/icons.jsx';
 import { CONTACT, SOCIAL_LINKS, toTelHref } from '../data/siteContact.js';
 
 const SCROLL_TOP_THRESHOLD_PX = 600;
 const ZALO_BLUE = '#0068ff';
+const FACEBOOK_BLUE = '#1877f2';
 const ROUND_BUTTON = 'relative grid place-items-center rounded-full shadow-lg transition-transform duration-200 hover:scale-105 active:scale-95';
 const CONTACT_BUTTON_SIZE = 'h-12 w-12 sm:h-14 sm:w-14';
 
@@ -31,18 +32,19 @@ function HotlineButton({ hotline }) {
   );
 }
 
-function ZaloButton({ href }) {
+/** Nút mở kênh ngoài (Zalo, Facebook) ở tab mới */
+function ExternalContactButton({ href, tooltip, color, children }) {
   return (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="Chat Zalo tư vấn (mở tab mới)"
-      style={{ backgroundColor: ZALO_BLUE }}
+      aria-label={`${tooltip} (mở tab mới)`}
+      style={{ backgroundColor: color }}
       className={`group text-white ${ROUND_BUTTON} ${CONTACT_BUTTON_SIZE}`}
     >
-      <span className="text-[13px] font-extrabold tracking-tight sm:text-[15px]" aria-hidden="true">Zalo</span>
-      <Tooltip>Chat Zalo tư vấn</Tooltip>
+      {children}
+      <Tooltip>{tooltip}</Tooltip>
     </a>
   );
 }
@@ -77,8 +79,8 @@ function useHasScrolledPast(thresholdPx) {
 }
 
 /**
- * Cụm nút liên hệ nổi ở góc phải dưới: lên đầu trang, Zalo, hotline (từ trên xuống).
- * Số điện thoại và link Zalo lấy từ data/siteContact.js; mục chưa điền thì tự ẩn.
+ * Cụm nút liên hệ nổi ở góc phải dưới: lên đầu trang, Facebook, Zalo, hotline (từ trên xuống).
+ * Số điện thoại và các link lấy từ data/siteContact.js; mục chưa điền thì tự ẩn.
  * Không hiện trong trang quản trị.
  */
 export default function FloatingContact() {
@@ -87,12 +89,23 @@ export default function FloatingContact() {
   if (pathname.startsWith('/quan-tri')) return null;
 
   const { hotline } = CONTACT;
-  const zaloUrl = SOCIAL_LINKS.find(({ label }) => label === 'Zalo')?.href;
+  const socialUrl = (name) => SOCIAL_LINKS.find(({ label }) => label === name)?.href;
+  const facebookUrl = socialUrl('Facebook');
+  const zaloUrl = socialUrl('Zalo');
 
   return (
     <aside aria-label="Liên hệ nhanh" className="fixed bottom-6 right-6 z-40 flex flex-col items-center gap-3">
       <ScrollTopButton isVisible={isPastThreshold} />
-      {zaloUrl && <ZaloButton href={zaloUrl} />}
+      {facebookUrl && (
+        <ExternalContactButton href={facebookUrl} tooltip="Fanpage Bali Home" color={FACEBOOK_BLUE}>
+          <FacebookIcon className="h-6 w-6 sm:h-7 sm:w-7" />
+        </ExternalContactButton>
+      )}
+      {zaloUrl && (
+        <ExternalContactButton href={zaloUrl} tooltip="Chat Zalo tư vấn" color={ZALO_BLUE}>
+          <span className="text-[13px] font-extrabold tracking-tight sm:text-[15px]" aria-hidden="true">Zalo</span>
+        </ExternalContactButton>
+      )}
       {hotline && <HotlineButton hotline={hotline} />}
     </aside>
   );

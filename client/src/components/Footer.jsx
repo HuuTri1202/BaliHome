@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { CONTAINER } from './Navbar.jsx';
 import { HomeLink, LogoHex } from './BrandMark.jsx';
 import { Button } from './ui/Button.jsx';
-import { PhoneIcon } from './ui/icons.jsx';
+import { FacebookIcon, PhoneIcon } from './ui/icons.jsx';
 import { CONTACT, PORTFOLIO_PATH, SOCIAL_LINKS, toTelHref } from '../data/siteContact.js';
 import { CORE_SERVICES } from '../data/coreServices.js';
 
@@ -38,7 +38,12 @@ function ContactLinks() {
   return (
     <ul className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[15px] font-semibold text-ink" aria-label="Liên hệ">
       {SOCIAL_LINKS.map(({ label, href }) => (
-        <li key={label}><a href={href} target="_blank" rel="noopener noreferrer" className={LINK_CLASS}>{label}</a></li>
+        <li key={label}>
+          <a href={href} target="_blank" rel="noopener noreferrer" className={`inline-flex items-center gap-1.5 ${LINK_CLASS}`}>
+            {label === 'Facebook' && <FacebookIcon className="h-5 w-5" />}
+            {label}
+          </a>
+        </li>
       ))}
       {hotline && (
         <li>
