@@ -53,13 +53,11 @@ export default function ServiceDetailPage() {
     document.title = service ? `${service.name} — Dịch vụ Bali Home` : 'Dịch vụ — Bali Home';
   }, [service]);
 
-  // Mở trang: có #bao-gia (từ nút "Nhận báo giá") → cuộn tới form; không có → về đầu trang
+  // Có #bao-gia (từ nút "Nhận báo giá") → cuộn tới form sau khi nội dung đã hiện. Về đầu trang do ScrollToTop lo.
   useEffect(() => {
-    if (!service) return undefined;
+    if (!service || !hash) return undefined;
     const id = setTimeout(() => {
-      const target = hash ? document.getElementById(hash.slice(1)) : null;
-      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      else window.scrollTo({ top: 0 });
+      document.getElementById(hash.slice(1))?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 0);
     return () => clearTimeout(id);
   }, [slug, hash, Boolean(service)]); // eslint-disable-line react-hooks/exhaustive-deps

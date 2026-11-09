@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { LogoHex } from '../BrandMark.jsx';
+import { HomeLink, LogoHex } from '../BrandMark.jsx';
 import { initials } from '../Navbar.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { adminApi } from '../../lib/api.js';
@@ -57,13 +57,13 @@ export default function AdminLayout({ title, subtitle, actions, hero, children }
     <div className="admin-shell dark min-h-dvh bg-ground text-ink lg:grid lg:grid-cols-[236px_1fr]">
       {/* ---------- Sidebar ---------- */}
       <aside className="flex flex-col gap-4 bg-ground-2/60 px-4 py-4 lg:sticky lg:top-0 lg:h-dvh lg:gap-8 lg:px-4 lg:py-8">
-        <Link to="/quan-tri" className="flex items-center gap-3 px-2 lg:flex-col lg:gap-3 lg:text-center" aria-label="Tổng quan quản trị">
+        <HomeLink className="flex items-center gap-3 px-2 lg:flex-col lg:gap-3 lg:text-center">
           <LogoHex className="h-10 w-10 lg:h-12 lg:w-12" />
           <span>
             <span className="block text-[13px] font-semibold uppercase tracking-[0.3em]">Bali Home</span>
             <span className="mt-1 block text-[10px] uppercase tracking-[0.24em] text-ink-2">Quản trị hệ thống</span>
           </span>
-        </Link>
+        </HomeLink>
 
         <nav aria-label="Menu quản trị" className="-mx-4 flex gap-1 overflow-x-auto px-4 [scrollbar-width:none] lg:mx-0 lg:flex-col lg:overflow-visible lg:px-0">
           {NAV.map(([to, label, Icon, end]) => (

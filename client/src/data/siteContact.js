@@ -4,26 +4,22 @@
  * ========================================================================== */
 const SITE_CONTACT = {
   hotline: '', // ví dụ: '0900 000 000'
-  email: '', // ví dụ: 'hello@tenmien.vn'
   social: [
-    { label: 'Facebook', href: '' }, // URL đầy đủ, bắt đầu bằng https://
-    { label: 'Zalo', href: '' },
-    { label: 'LinkedIn', href: '' },
+    { label: 'Zalo', href: '' }, // URL đầy đủ, ví dụ: 'https://zalo.me/0900000000'
+    { label: 'Facebook', href: '' }, // ví dụ: 'https://www.facebook.com/tenfanpage'
   ],
   portfolioPath: '', // đường dẫn trong web, ví dụ '/du-an'. Chỉ điền khi đã có trang dự án thật.
 };
 
 const PHONE_PATTERN = /^\+?[\d\s().-]{8,20}$/;
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const INTERNAL_PATH_PATTERN = /^\/[^/]/;
 
 const keepIfValid = (value, pattern) => (pattern.test(value.trim()) ? value.trim() : '');
 
 /** Chỉ giữ các giá trị hợp lệ, để lỗi gõ trong cấu hình không thành link hỏng trên website */
-export function sanitizeSiteContact({ hotline, email, social, portfolioPath }) {
+export function sanitizeSiteContact({ hotline, social, portfolioPath }) {
   return {
     hotline: keepIfValid(hotline, PHONE_PATTERN),
-    email: keepIfValid(email, EMAIL_PATTERN),
     socialLinks: social.filter(({ href }) => /^https:\/\/\S+$/.test(href.trim())),
     portfolioPath: keepIfValid(portfolioPath, INTERNAL_PATH_PATTERN),
   };
@@ -31,7 +27,7 @@ export function sanitizeSiteContact({ hotline, email, social, portfolioPath }) {
 
 const sanitized = sanitizeSiteContact(SITE_CONTACT);
 
-export const CONTACT = { hotline: sanitized.hotline, email: sanitized.email };
+export const CONTACT = { hotline: sanitized.hotline };
 export const SOCIAL_LINKS = sanitized.socialLinks;
 export const PORTFOLIO_PATH = sanitized.portfolioPath;
 

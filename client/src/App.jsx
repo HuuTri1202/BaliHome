@@ -1,6 +1,5 @@
 import { Route, Routes } from 'react-router-dom';
-import { ProtectedRoute, GuestRoute, AdminRoute } from './components/RouteGuards.jsx';
-import HomePage from './pages/HomePage.jsx';
+import { ProtectedRoute, GuestRoute, AdminRoute } from './components/RouteGuards.jsx';import HomePage from './pages/HomePage.jsx';
 import ServicesPage from './pages/ServicesPage.jsx';
 import ServiceDetailPage from './pages/ServiceDetailPage.jsx';
 import QuotePage from './pages/QuotePage.jsx';
