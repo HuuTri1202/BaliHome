@@ -6,7 +6,7 @@ const SITE_CONTACT = {
   hotline: '', // ví dụ: '0900 000 000'
   social: [
     { label: 'Zalo', href: '' }, // URL đầy đủ, ví dụ: 'https://zalo.me/0900000000'
-    { label: 'Facebook', href: '' }, // ví dụ: 'https://www.facebook.com/tenfanpage'
+    { label: 'Facebook', href: 'https://www.facebook.com/balihome2026' },
   ],
   portfolioPath: '', // đường dẫn trong web, ví dụ '/du-an'. Chỉ điền khi đã có trang dự án thật.
 };
