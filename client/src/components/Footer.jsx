@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { CONTAINER } from './Navbar.jsx';
 import { HomeLink, LogoHex } from './BrandMark.jsx';
+import LogoColorPicker from './LogoColorPicker.jsx';
 import { Button } from './ui/Button.jsx';
 import { FacebookIcon, PhoneIcon } from './ui/icons.jsx';
 import { CONTACT, PORTFOLIO_PATH, SOCIAL_LINKS, toTelHref } from '../data/siteContact.js';
@@ -27,6 +28,9 @@ function BrandColumn() {
         <span className="font-display text-[1.875rem] font-extrabold leading-none tracking-[-0.03em] sm:text-[2.25rem]">BALI HOME</span>
       </HomeLink>
       <p className="mt-6 max-w-[34ch] text-ink-2">Giải pháp sáng tạo và công nghệ toàn diện cho doanh nghiệp.</p>
+      <div className="-ml-2 mt-6">
+        <LogoColorPicker />
+      </div>
     </div>
   );
 }
@@ -81,9 +85,12 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className={`${CONTAINER} flex flex-wrap items-center justify-between gap-x-8 gap-y-3 border-t border-ink/10 py-7 text-sm text-ink-2`}>
-        <p>© {new Date().getFullYear()} Bali Home. All rights reserved.</p>
-        <ContactLinks />
+      <div className={`${CONTAINER} border-t border-ink/10 py-7 text-sm text-ink-2`}>
+        {/* Chừa lề phải để cụm nút liên hệ nổi không che số điện thoại khi cuộn tới cuối trang */}
+        <div className="flex flex-wrap items-center justify-between gap-x-8 gap-y-3 pr-16 sm:pr-24">
+          <p>© {new Date().getFullYear()} Bali Home. All rights reserved.</p>
+          <ContactLinks />
+        </div>
       </div>
     </footer>
   );
