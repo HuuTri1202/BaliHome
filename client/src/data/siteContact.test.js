@@ -37,7 +37,9 @@ test('accepts only internal paths for the portfolio page', () => {
   });
 });
 
-test('toTelHref strips formatting but keeps the plus sign', () => {
-  assert.equal(toTelHref('0900 000 000'), 'tel:0900000000');
+test('toTelHref strips formatting and uses the Vietnam country code', () => {
+  assert.equal(toTelHref('0900 000 000'), 'tel:+84900000000');
   assert.equal(toTelHref('+84 (90) 000-0000'), 'tel:+84900000000');
+  assert.equal(toTelHref('0084 900 000 000'), 'tel:+84900000000');
+  assert.equal(toTelHref('+84 (0) 900 000 000'), 'tel:+84900000000');
 });

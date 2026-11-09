@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext.jsx';
 import { ThemeProvider } from './context/ThemeContext.jsx';
 import ScrollToTop from './components/ScrollToTop.jsx';
+import FloatingContact from './components/FloatingContact.jsx';
 import App from './App.jsx';
 import './index.css';
 
@@ -14,6 +15,7 @@ createRoot(document.getElementById('root')).render(
         <ScrollToTop />
         <AuthProvider>
           <App />
+          <FloatingContact />
         </AuthProvider>
       </BrowserRouter>
     </ThemeProvider>

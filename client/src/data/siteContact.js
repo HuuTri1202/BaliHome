@@ -31,5 +31,8 @@ export const CONTACT = { hotline: sanitized.hotline };
 export const SOCIAL_LINKS = sanitized.socialLinks;
 export const PORTFOLIO_PATH = sanitized.portfolioPath;
 
-/** "0900 000 000" → "tel:0900000000" */
-export const toTelHref = (phone) => `tel:${phone.replace(/[^\d+]/g, '')}`;
+/** "0900 000 000" → "tel:+84900000000" (số đầu 0 được đổi sang mã quốc gia Việt Nam) */
+export const toTelHref = (phone) => {
+  const digits = phone.replace(/\(0\)/g, '').replace(/[^\d+]/g, '');
+  return `tel:${digits.replace(/^00/, '+').replace(/^0/, '+84')}`;
+};

@@ -42,6 +42,7 @@ export const PrinterIcon = (p) => (<Svg {...p}><path d="M7 8V3h10v5" /><rect x="
 export const PenIcon = (p) => (<Svg {...p}><path d="m4 20 1-5L16 4l4 4L9 19l-5 1Z" /><path d="m14 6 4 4" /></Svg>);
 export const GlobeIcon = (p) => (<Svg {...p}><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c2.5 2.5 3.8 5.5 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.5-3.8-9S9.5 5.5 12 3Z" /></Svg>);
 export const MegaphoneIcon = (p) => (<Svg {...p}><path d="M4 10v4l3 .5L19 19V5L7 9.5 4 10Z" /><path d="m8 15 1.5 5h3L11 16" /></Svg>);
+export const ArrowUpIcon = (p) => (<Svg {...p}><path d="M12 19V5M6 11l6-6 6 6" /></Svg>);
 export const MenuIcon = (p) => (<Svg {...p}><path d="M4 7h16M4 12h16M4 17h16" /></Svg>);
 export const CloseIcon = (p) => (<Svg {...p}><path d="M6 6l12 12M18 6 6 18" /></Svg>);
 export const ClockIcon = (p) => (<Svg {...p}><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></Svg>);
