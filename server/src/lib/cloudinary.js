@@ -30,9 +30,24 @@ export function signUpload() {
   };
 }
 
-/** Chỉ chấp nhận file nằm đúng tài khoản + đúng thư mục của Bali Home */
+/**
+ * Chỉ chấp nhận file nằm đúng tài khoản + đúng thư mục của Bali Home.
+ * Phân tích URL thay vì so chuỗi: new URL() đã chuẩn hoá "..", nên link kiểu
+ * /<cloud>/../<cloud-khác>/x.jpg không lọt qua; publicId phải nằm đúng trong đường dẫn.
+ */
 export function isOwnUpload({ url, publicId }) {
-  if (!cloudinaryEnabled()) return false;
-  const prefix = `https://res.cloudinary.com/${env.CLOUDINARY_CLOUD_NAME}/`;
-  return typeof url === 'string' && url.startsWith(prefix) && typeof publicId === 'string' && publicId.startsWith(`${UPLOAD_FOLDER}/`);
+  if (!cloudinaryEnabled() || typeof url !== 'string' || typeof publicId !== 'string') return false;
+  if (!publicId.startsWith(`${UPLOAD_FOLDER}/`) || publicId.includes('..')) return false;
+  let parsed;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return false;
+  }
+  return (
+    parsed.protocol === 'https:' &&
+    parsed.hostname === 'res.cloudinary.com' &&
+    parsed.pathname.startsWith(`/${env.CLOUDINARY_CLOUD_NAME}/`) &&
+    parsed.pathname.includes(`/${publicId}`)
+  );
 }

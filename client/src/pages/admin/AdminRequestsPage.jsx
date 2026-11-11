@@ -14,6 +14,7 @@ export default function AdminRequestsPage() {
   const [params, setParams] = useSearchParams();
   const status = params.get('status') ?? '';
   const q = params.get('q') ?? '';
+  const isAwaitingOnly = params.get('awaiting') === '1';
   const page = Math.max(1, Number(params.get('page')) || 1);
   const [stats, setStats] = useState(null);
   const [data, setData] = useState({ status: 'loading' });
@@ -34,11 +35,11 @@ export default function AdminRequestsPage() {
     let alive = true;
     setData((d) => ({ ...d, status: 'loading' }));
     adminApi
-      .list({ status, q, page })
+      .list({ status, q, page, awaiting: isAwaitingOnly })
       .then((res) => alive && setData({ status: 'ready', ...res }))
       .catch((e) => alive && setData({ status: 'error', message: e.message }));
     return () => { alive = false; };
-  }, [status, q, page]);
+  }, [status, q, page, isAwaitingOnly]);
 
   const totalPages = data.total ? Math.ceil(data.total / data.pageSize) : 1;
   const chips = [['', 'Tất cả', stats?.total], ...Object.keys(STATUS).map((s) => [s, STATUS[s].label, stats?.byStatus?.[s]])];
@@ -46,7 +47,7 @@ export default function AdminRequestsPage() {
   return (
     <AdminLayout
       title="Yêu cầu khách hàng"
-      subtitle={q ? `Kết quả tìm “${q}”` : 'Tiếp nhận, cập nhật tiến độ và gửi ghi chú cho khách.'}
+      subtitle={q ? `Kết quả tìm “${q}”` : 'Tiếp nhận, cập nhật tiến độ và trò chuyện với khách.'}
     >
       <div className="flex flex-wrap gap-2" role="group" aria-label="Lọc theo trạng thái">
         {chips.map(([value, label, n]) => (
@@ -60,6 +61,14 @@ export default function AdminRequestsPage() {
             {label} <span className="ml-1 tabular-nums opacity-70">{n ?? '…'}</span>
           </button>
         ))}
+        <button
+          type="button"
+          aria-pressed={isAwaitingOnly}
+          onClick={() => setParam({ awaiting: isAwaitingOnly ? '' : '1', page: '' })}
+          className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${isAwaitingOnly ? 'bg-action text-on-action' : 'bg-ground-2 text-action hover:bg-ground-3'}`}
+        >
+          Khách chờ trả lời <span className="ml-1 tabular-nums opacity-70">{stats?.awaitingReply ?? '…'}</span>
+        </button>
       </div>
 
       <Panel className="mt-6">
@@ -81,6 +90,7 @@ export default function AdminRequestsPage() {
                     <p className="mt-0.5 text-sm text-ink-2">{r.phone}{r.email ? ` · ${r.email}` : ''} · Ngân sách: {budgetLabel(r.budget)}</p>
                   </div>
                   <div className="flex items-center gap-3">
+                    {r.awaitingReply && <span className="rounded-full bg-action px-3 py-1 text-sm font-semibold text-on-action">Khách vừa nhắn</span>}
                     <StatusBadge status={r.status} />
                     <ArrowRightIcon className="hidden h-5 w-5 md:block" />
                   </div>

@@ -3,21 +3,19 @@ import { Link, useParams } from 'react-router-dom';
 import AdminLayout from '../../components/admin/AdminLayout.jsx';
 import { Panel } from '../../components/portal/PortalLayout.jsx';
 import { StatusBadge, StatusStepper } from '../../components/portal/StatusBadge.jsx';
-import Timeline from '../../components/portal/Timeline.jsx';
+import RequestChat from '../../components/chat/RequestChat.jsx';
 import Attachments from '../../components/portal/Attachments.jsx';
-import { TextArea } from '../../components/ui/Field.jsx';
 import { Button, Spinner } from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
 import { ArrowLeftIcon } from '../../components/ui/icons.jsx';
 import { adminApi } from '../../lib/api.js';
 import { STATUS, budgetLabel, fmtDate, fmtDateTime } from '../../data/requests.js';
 
-/** /quan-tri/yeu-cau/:id — xem đầy đủ + đổi trạng thái + gửi ghi chú (khách nhìn thấy ghi chú) */
+/** /quan-tri/yeu-cau/:id — xem đầy đủ + đổi trạng thái + chat với khách */
 export default function AdminRequestDetailPage() {
   const { id } = useParams();
   const [data, setData] = useState({ status: 'loading' });
   const [next, setNext] = useState('');
-  const [note, setNote] = useState('');
   const [saving, setSaving] = useState(false);
   const [feedback, setFeedback] = useState(null);
 
@@ -50,12 +48,11 @@ export default function AdminRequestDetailPage() {
   const changed = next !== r.status;
   const onSubmit = async (e) => {
     e.preventDefault();
-    if (!changed && !note.trim()) return setFeedback({ type: 'error', text: 'Hãy đổi trạng thái hoặc nhập ghi chú.' });
+    if (!changed) return setFeedback({ type: 'error', text: 'Hãy chọn trạng thái mới.' });
     setSaving(true);
     setFeedback(null);
     try {
-      await adminApi.update(r.id, { ...(changed && { status: next }), ...(note.trim() && { note: note.trim() }) });
-      setNote('');
+      await adminApi.update(r.id, { status: next });
       await load();
       setFeedback({ type: 'success', text: 'Đã cập nhật. Khách sẽ thấy thay đổi trong tài khoản của họ.' });
     } catch (err) {
@@ -90,7 +87,7 @@ export default function AdminRequestDetailPage() {
 
       <div className="mt-6 grid items-start gap-6 xl:grid-cols-5">
         <div className="grid gap-6 xl:col-span-3">
-          <Panel title="Cập nhật cho khách">
+          <Panel title="Cập nhật trạng thái">
             <form onSubmit={onSubmit} className="grid gap-5">
               {feedback && <Alert type={feedback.type}>{feedback.text}</Alert>}
               <fieldset>
@@ -104,20 +101,17 @@ export default function AdminRequestDetailPage() {
                   ))}
                 </div>
               </fieldset>
-              <TextArea
-                label="Ghi chú gửi khách"
-                optional
-                rows={3}
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                placeholder="Ví dụ: Đã gửi báo giá qua email, mời anh/chị xem và phản hồi."
-                hint="Khách nhìn thấy ghi chú này trong dòng thời gian của yêu cầu."
-              />
-              <div><Button type="submit" loading={saving}>Lưu cập nhật</Button></div>
+              <div><Button type="submit" loading={saving}>Lưu trạng thái</Button></div>
             </form>
           </Panel>
-          <Panel title="Dòng thời gian">
-            <Timeline events={r.events} showAuthor />
+          <Panel title="Trao đổi với khách">
+            <RequestChat
+              viewer="staff"
+              initialMessages={r.events}
+              fetchMessages={() => adminApi.messages(r.id)}
+              sendMessage={(payload) => adminApi.sendMessage(r.id, payload)}
+              notice={r.user ? null : 'Khách gửi yêu cầu khi chưa đăng nhập nên không đọc được tin nhắn. Hãy gọi điện hoặc gửi email cho khách.'}
+            />
           </Panel>
         </div>
 

@@ -7,7 +7,8 @@ import { ArrowRightIcon } from '../ui/icons.jsx';
 import { fmtDateTime, isRequestEditable } from '../../data/requests.js';
 
 function RequestRow({ request }) {
-  const lastNote = [...(request.events ?? [])].reverse().find((event) => event.note)?.note;
+  const lastMessage = [...(request.events ?? [])].reverse().find((event) => event.kind === 'note' || event.kind === 'message'); // events: cũ → mới
+  const lastNote = lastMessage && `${lastMessage.kind === 'note' ? 'Bali Home' : 'Bạn'}: “${lastMessage.note ?? 'Tệp đính kèm'}”`;
   return (
     <li className="overflow-hidden rounded-2xl bg-ground">
       <Link to={`/tai-khoan/yeu-cau/${request.id}`} className="group grid gap-4 p-5 transition-colors hover:bg-ground-3 sm:p-6">
@@ -20,7 +21,7 @@ function RequestRow({ request }) {
         </div>
         <StatusStepper status={request.status} compact />
         <div className="flex items-center justify-between gap-4 text-sm">
-          <span className="line-clamp-1 text-ink-2">{lastNote ? `Bali Home: “${lastNote}”` : 'Chưa có cập nhật mới'}</span>
+          <span className="line-clamp-1 text-ink-2">{lastNote || 'Chưa có tin nhắn'}</span>
           <span className="inline-flex shrink-0 items-center gap-1 font-semibold">Chi tiết <ArrowRightIcon className="h-4 w-4" /></span>
         </div>
       </Link>

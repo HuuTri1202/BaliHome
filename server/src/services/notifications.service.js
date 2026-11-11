@@ -18,7 +18,7 @@ export function requestUpdateNotification({ request, newStatus, note }) {
   if (!request.userId) return [];
   const title = newStatus
     ? `${request.code}: chuyển sang “${STATUS_LABELS[newStatus]}”`
-    : `${request.code}: có ghi chú mới từ Bali Home`;
+    : `${request.code}: có tin nhắn mới từ Bali Home`;
   return [
     prisma.notification.create({
       data: { userId: request.userId, requestId: request.id, title, body: note ?? null },

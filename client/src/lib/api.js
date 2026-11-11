@@ -67,6 +67,8 @@ export const contactApi = {
   mine: () => request('/contact/mine'),
   mineOne: (id) => request(`/contact/mine/${encodeURIComponent(id)}`),
   updateMine: (id, payload) => request(`/contact/mine/${encodeURIComponent(id)}`, { method: 'PATCH', body: payload }),
+  messages: (id) => request(`/contact/mine/${encodeURIComponent(id)}/messages`),
+  sendMessage: (id, payload) => request(`/contact/mine/${encodeURIComponent(id)}/messages`, { method: 'POST', body: payload }),
 };
 
 export const notificationsApi = {
@@ -82,11 +84,13 @@ export const uploadsApi = {
 
 export const adminApi = {
   stats: () => request('/admin/stats'),
-  list: ({ status = '', q = '', page = 1 } = {}) => {
-    const qs = new URLSearchParams({ ...(status && { status }), ...(q && { q }), page: String(page) });
+  list: ({ status = '', q = '', page = 1, awaiting = false } = {}) => {
+    const qs = new URLSearchParams({ ...(status && { status }), ...(q && { q }), ...(awaiting && { awaiting: '1' }), page: String(page) });
     return request(`/admin/requests?${qs}`);
   },
   get: (id) => request(`/admin/requests/${encodeURIComponent(id)}`),
+  messages: (id) => request(`/admin/requests/${encodeURIComponent(id)}/messages`),
+  sendMessage: (id, payload) => request(`/admin/requests/${encodeURIComponent(id)}/messages`, { method: 'POST', body: payload }),
   update: (id, payload) => request(`/admin/requests/${encodeURIComponent(id)}`, { method: 'PATCH', body: payload }),
   overview: () => request('/admin/overview'),
   series: (days) => request(`/admin/series?days=${days}`),

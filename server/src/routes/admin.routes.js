@@ -1,11 +1,13 @@
 import { Router } from 'express';
+import rateLimit from 'express-rate-limit';
 import { prisma } from '../lib/prisma.js';
 import { AppError } from '../utils/AppError.js';
 import { requireAuth } from '../middleware/auth.js';
 import { requireAdminFromDb } from '../middleware/admin.js';
 import systemRoutes from './admin.system.routes.js';
 import { validate } from '../middleware/validate.js';
-import { adminUpdateSchema, isUuid, STATUSES } from '../validators/contact.schema.js';
+import { adminUpdateSchema, isUuid, messageSchema, STATUSES } from '../validators/contact.schema.js';
+import { LATEST_THREAD_EVENTS, listThread, postMessage, requestIdsAwaitingReply, STAFF_MESSAGE } from '../services/requestThread.service.js';
 import { withServiceNames } from '../services/requests.service.js';
 import { requestUpdateNotification } from '../services/notifications.service.js';
 
@@ -19,6 +21,16 @@ router.use(systemRoutes); // /overview, /series, /users, /services
 
 const PAGE_SIZE = 20;
 
+// Mỗi tin của Bali Home tạo 1 thông báo cho khách → chặn gửi dồn dập (lỗi script, tài khoản admin bị lộ)
+const staffMessageLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  limit: 120,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  handler: (_req, res) =>
+    res.status(429).json({ error: { code: 'TOO_MANY_REQUESTS', message: 'Gửi quá nhiều tin trong thời gian ngắn. Vui lòng đợi ít phút.' } }),
+});
+
 const ADMIN_LIST_SELECT = {
   id: true, code: true, fullName: true, phone: true, email: true, company: true, need: true,
   budget: true, deadline: true, status: true, createdAt: true, updatedAt: true,
@@ -30,17 +42,21 @@ router.get('/stats', async (_req, res) => {
   const rows = await prisma.contactRequest.groupBy({ by: ['status'], _count: { _all: true } });
   const byStatus = Object.fromEntries(STATUSES.map((s) => [s, 0]));
   rows.forEach((r) => { byStatus[r.status] = r._count._all; });
-  res.json({ byStatus, total: Object.values(byStatus).reduce((a, b) => a + b, 0) });
+  const awaitingReply = (await requestIdsAwaitingReply()).length;
+  res.json({ byStatus, total: Object.values(byStatus).reduce((a, b) => a + b, 0), awaitingReply });
 });
 
-// GET /api/admin/requests?status=NEW&q=abc&page=1
+// GET /api/admin/requests?status=NEW&q=abc&page=1&awaiting=1 (awaiting = khách nhắn mà chưa trả lời)
 router.get('/requests', async (req, res) => {
   const status = STATUSES.includes(req.query.status) ? req.query.status : undefined;
   const q = typeof req.query.q === 'string' ? req.query.q.trim().slice(0, 100) : '';
   const page = Math.max(1, Math.min(500, parseInt(req.query.page, 10) || 1));
+  const awaitingIds = await requestIdsAwaitingReply();
+  const onlyAwaiting = req.query.awaiting === '1';
 
   const where = {
     ...(status && { status }),
+    ...(onlyAwaiting && { id: { in: awaitingIds } }),
     ...(q && {
       OR: [
         { code: { contains: q, mode: 'insensitive' } },
@@ -56,7 +72,30 @@ router.get('/requests', async (req, res) => {
     prisma.contactRequest.count({ where }),
     prisma.contactRequest.findMany({ where, orderBy: { createdAt: 'desc' }, skip: (page - 1) * PAGE_SIZE, take: PAGE_SIZE, select: ADMIN_LIST_SELECT }),
   ]);
-  res.json({ requests: await withServiceNames(rows), page, pageSize: PAGE_SIZE, total });
+  const awaiting = new Set(awaitingIds);
+  const requests = (await withServiceNames(rows)).map((row) => ({ ...row, awaitingReply: awaiting.has(row.id) }));
+  res.json({ requests, page, pageSize: PAGE_SIZE, total });
+});
+
+async function findRequestForStaff(req) {
+  const request = isUuid(req.params.id)
+    ? await prisma.contactRequest.findUnique({ where: { id: req.params.id }, select: { id: true, code: true, userId: true } })
+    : null;
+  if (!request) throw new AppError(404, 'NOT_FOUND', 'Không tìm thấy yêu cầu.');
+  return request;
+}
+
+// GET /api/admin/requests/:id/messages — khung chat (trang chi tiết hỏi định kỳ)
+router.get('/requests/:id/messages', async (req, res) => {
+  const request = await findRequestForStaff(req);
+  res.json({ messages: await listThread(request.id) });
+});
+
+// POST /api/admin/requests/:id/messages { body?, attachments? } — Bali Home nhắn cho khách
+router.post('/requests/:id/messages', staffMessageLimiter, validate(messageSchema), async (req, res) => {
+  const request = await findRequestForStaff(req);
+  const message = await postMessage({ request, authorId: req.auth.userId, kind: STAFF_MESSAGE, ...req.body });
+  res.status(201).json({ message });
 });
 
 // GET /api/admin/requests/:id — đầy đủ thông tin + file + timeline (kèm người thao tác)
@@ -66,8 +105,8 @@ router.get('/requests/:id', async (req, res) => {
     where: { id: req.params.id },
     include: {
       user: { select: { id: true, fullName: true, email: true } },
-      attachments: { orderBy: { createdAt: 'asc' } },
-      events: { orderBy: { createdAt: 'asc' }, include: { author: { select: { fullName: true } } } },
+      attachments: { where: { eventId: null }, orderBy: { createdAt: 'asc' } },
+      events: LATEST_THREAD_EVENTS,
     },
   });
   if (!request) throw new AppError(404, 'NOT_FOUND', 'Không tìm thấy yêu cầu.');

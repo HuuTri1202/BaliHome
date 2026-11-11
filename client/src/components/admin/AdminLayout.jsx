@@ -28,19 +28,25 @@ export default function AdminLayout({ title, subtitle, actions, hero, children }
   const navigate = useNavigate();
   const { pathname, search: urlQuery } = useLocation();
   const [search, setSearch] = useState('');
-  const [newCount, setNewCount] = useState(0);
+  const [counts, setCounts] = useState({ newRequests: 0, awaitingReply: 0 });
 
   // Ô tìm kiếm luôn khớp từ khoá đang lọc trên URL của trang Yêu cầu
   useEffect(() => {
     setSearch(pathname === '/quan-tri/yeu-cau' ? new URLSearchParams(urlQuery).get('q') ?? '' : '');
   }, [pathname, urlQuery]);
 
-  // Chuông: số yêu cầu mới; làm mới mỗi khi chuyển trang
+  // Chuông: yêu cầu mới + khách nhắn chưa trả lời; làm mới mỗi khi chuyển trang
   useEffect(() => {
     let alive = true;
-    adminApi.stats().then((s) => alive && setNewCount(s.byStatus?.NEW ?? 0)).catch(() => {});
+    adminApi
+      .stats()
+      .then((s) => alive && setCounts({ newRequests: s.byStatus?.NEW ?? 0, awaitingReply: s.awaitingReply ?? 0 }))
+      .catch(() => {});
     return () => { alive = false; };
   }, [pathname]);
+  const bellCount = counts.newRequests + counts.awaitingReply;
+  const bellLabel = `${counts.newRequests} yêu cầu mới, ${counts.awaitingReply} khách chờ trả lời`;
+  const bellTarget = counts.awaitingReply ? '/quan-tri/yeu-cau?awaiting=1' : '/quan-tri/yeu-cau?status=NEW';
 
   const onSearch = (e) => {
     e.preventDefault();
@@ -106,10 +112,10 @@ export default function AdminLayout({ title, subtitle, actions, hero, children }
             </button>
           </form>
           <div className="ml-auto flex items-center gap-2">
-            <Link to="/quan-tri/yeu-cau?status=NEW" aria-label={`${newCount} yêu cầu mới`} title={`${newCount} yêu cầu mới`} className="glass relative grid h-11 w-11 place-items-center rounded-full">
+            <Link to={bellTarget} aria-label={bellLabel} title={bellLabel} className="glass relative grid h-11 w-11 place-items-center rounded-full">
               <BellIcon className="h-5 w-5" />
-              {newCount > 0 && (
-                <span className="absolute -right-0.5 -top-0.5 grid h-5 min-w-5 place-items-center rounded-full bg-action px-1 text-[11px] font-bold tabular-nums text-on-action">{newCount > 99 ? '99+' : newCount}</span>
+              {bellCount > 0 && (
+                <span className="absolute -right-0.5 -top-0.5 grid h-5 min-w-5 place-items-center rounded-full bg-action px-1 text-[11px] font-bold tabular-nums text-on-action">{bellCount > 99 ? '99+' : bellCount}</span>
               )}
             </Link>
             <Link to="/tai-khoan" title={user?.fullName} aria-label={`Tài khoản của ${user?.fullName}`} className="grid h-11 w-11 place-items-center rounded-full bg-ink text-sm font-bold text-ground">

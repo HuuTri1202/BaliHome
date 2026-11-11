@@ -71,6 +71,7 @@ export function useUploads(initial = []) {
   }, [items]);
 
   const remove = (key) => setItems((list) => list.filter((it) => it.key !== key));
+  const clear = () => { setItems([]); setError(''); };
 
   return {
     enabled,
@@ -78,6 +79,7 @@ export function useUploads(initial = []) {
     error,
     addFiles,
     remove,
+    clear,
     uploading: items.some((i) => i.status === 'uploading'),
     results: items.filter((i) => i.status === 'done').map((i) => i.result),
   };

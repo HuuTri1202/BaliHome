@@ -59,6 +59,14 @@ export const contactSchema = z.object({
   attachments: z.array(attachment).max(MAX_FILES, `Tối đa ${MAX_FILES} tệp`).optional().default([]),
 });
 
+/** Tin nhắn trong khung chat của yêu cầu: có chữ, có tệp, hoặc cả hai */
+export const messageSchema = z
+  .object({
+    body: optionalText(2000, 'Tin nhắn tối đa 2000 ký tự'),
+    attachments: z.array(attachment).max(MAX_FILES, `Tối đa ${MAX_FILES} tệp`).optional().default([]),
+  })
+  .refine((v) => v.body || v.attachments.length, { message: 'Tin nhắn trống', path: ['body'] });
+
 /** Khách sửa yêu cầu đang chờ xử lý: chỉ các trường dễ điền nhầm */
 export const contactEditSchema = contactSchema.pick({ phone: true, need: true, message: true });
 

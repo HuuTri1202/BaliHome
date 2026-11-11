@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import PortalLayout, { Panel } from '../../components/portal/PortalLayout.jsx';
 import { StatusBadge, StatusStepper } from '../../components/portal/StatusBadge.jsx';
-import Timeline from '../../components/portal/Timeline.jsx';
+import RequestChat from '../../components/chat/RequestChat.jsx';
 import Attachments from '../../components/portal/Attachments.jsx';
 import { Button, Spinner } from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
@@ -10,7 +10,7 @@ import { ArrowLeftIcon } from '../../components/ui/icons.jsx';
 import { contactApi } from '../../lib/api.js';
 import { budgetLabel, fmtDate, fmtDateTime, isRequestEditable } from '../../data/requests.js';
 
-/** /tai-khoan/yeu-cau/:id — tiến độ + timeline + thông tin + tệp của 1 yêu cầu */
+/** /tai-khoan/yeu-cau/:id — tiến độ + khung chat với Bali Home + thông tin + tệp của 1 yêu cầu */
 export default function RequestDetailPage() {
   const { id } = useParams();
   const { state } = useLocation();
@@ -77,8 +77,13 @@ export default function RequestDetailPage() {
       </Panel>
 
       <div className="mt-6 grid items-start gap-6 xl:grid-cols-5">
-        <Panel title="Dòng thời gian" className="xl:col-span-3">
-          <Timeline events={r.events} />
+        <Panel title="Trao đổi với Bali Home" className="xl:col-span-3">
+          <RequestChat
+            viewer="customer"
+            initialMessages={r.events}
+            fetchMessages={() => contactApi.messages(r.id)}
+            sendMessage={(payload) => contactApi.sendMessage(r.id, payload)}
+          />
         </Panel>
         <div className="grid gap-6 xl:col-span-2">
           <Panel title="Thông tin yêu cầu">
