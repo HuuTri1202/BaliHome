@@ -22,7 +22,8 @@ model User {
   email        String    @unique // luôn lưu dạng chữ thường
   fullName     String    @map("full_name")
   phone        String?   @unique
-  passwordHash String    @map("password_hash")
+  passwordHash String?   @map("password_hash") // NULL: tài khoản tạo từ Google, chưa đặt mật khẩu
+  googleId     String?   @unique @map("google_id") // "sub" của Google
   role         Role      @default(USER)
   lastLoginAt  DateTime? @map("last_login_at")
   createdAt    DateTime  @default(now()) @map("created_at")

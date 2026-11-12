@@ -21,7 +21,20 @@ export const app = express();
 app.set('trust proxy', env.TRUST_PROXY);      // đứng sau proxy (Vite / Render) → lấy đúng IP người dùng
 app.use(trustEdgeClientIp(env.PROXY_SECRET));  // request đi qua Cloudflare Worker → IP thật của khách
 app.disable('x-powered-by');
-app.use(helmet());                             // các header bảo mật mặc định (CSP, HSTS, ...)
+// Header bảo mật mặc định (CSP, HSTS, ...) + mở đúng phần Google Sign-In cần (script, khung nút, popup)
+const GOOGLE_SIGN_IN = 'https://accounts.google.com';
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        scriptSrc: ["'self'", `${GOOGLE_SIGN_IN}/gsi/client`],
+        frameSrc: ["'self'", `${GOOGLE_SIGN_IN}/gsi/`],
+        connectSrc: ["'self'", `${GOOGLE_SIGN_IN}/gsi/`],
+      },
+    },
+    crossOriginOpenerPolicy: { policy: 'same-origin-allow-popups' }, // popup chọn tài khoản Google gửi kết quả về trang
+  })
+);
 app.use(cors({ origin: env.CLIENT_ORIGIN, credentials: true }));
 app.use(express.json({ limit: '10kb' }));      // chặn payload quá lớn
 app.use(cookieParser());

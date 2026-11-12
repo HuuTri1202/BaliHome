@@ -50,12 +50,18 @@ export const profileSchema = z.object({
   phone: z.preprocess((v) => (v === '' ? null : v), phone.nullable()),
 });
 
+// currentPassword bỏ trống được: tài khoản Google chưa có mật khẩu (service kiểm tra bắt buộc khi đã có)
 export const changePasswordSchema = z
   .object({
-    currentPassword: z.string({ required_error: 'Vui lòng nhập mật khẩu hiện tại' }).min(1, 'Vui lòng nhập mật khẩu hiện tại').max(200),
+    currentPassword: z.string().max(200).optional(),
     newPassword: newPassword,
   })
   .refine((v) => v.currentPassword !== v.newPassword, { message: 'Mật khẩu mới phải khác mật khẩu hiện tại', path: ['newPassword'] });
+
+export const googleSignInSchema = z.object({
+  credential: z.string({ required_error: 'Thiếu thông tin đăng nhập Google' }).min(1).max(4096),
+  remember: z.boolean().optional().default(false),
+});
 
 export const loginSchema = z.object({
   email,

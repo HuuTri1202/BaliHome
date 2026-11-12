@@ -42,7 +42,7 @@ async function rawRequest(path, { method = 'GET', body, signal } = {}) {
 }
 
 let refreshPromise = null;
-const NO_RETRY = ['/auth/login', '/auth/register', '/auth/refresh', '/auth/logout'];
+const NO_RETRY = ['/auth/login', '/auth/register', '/auth/google', '/auth/refresh', '/auth/logout'];
 
 export async function request(path, options) {
   try {
@@ -108,6 +108,8 @@ export const authApi = {
   me: () => request('/auth/me'),
   login: (payload) => request('/auth/login', { method: 'POST', body: payload }),
   register: (payload) => request('/auth/register', { method: 'POST', body: payload }),
+  providers: () => request('/auth/providers'),
+  google: (payload) => request('/auth/google', { method: 'POST', body: payload }),
   logout: () => request('/auth/logout', { method: 'POST' }),
   updateMe: (payload) => request('/auth/me', { method: 'PATCH', body: payload }),
   changePassword: (payload) => request('/auth/change-password', { method: 'POST', body: payload }),

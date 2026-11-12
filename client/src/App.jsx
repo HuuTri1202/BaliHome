@@ -4,8 +4,7 @@ import HomePage from './pages/HomePage.jsx';
 import ServicesPage from './pages/ServicesPage.jsx';
 import ServiceDetailPage from './pages/ServiceDetailPage.jsx';
 import QuotePage from './pages/QuotePage.jsx';
-import LoginPage from './pages/LoginPage.jsx';
-import RegisterPage from './pages/RegisterPage.jsx';
+import AuthPage from './pages/AuthPage.jsx';
 import PortalHomePage from './pages/portal/PortalHomePage.jsx';
 import MyRequestsPage from './pages/portal/MyRequestsPage.jsx';
 import RequestDetailPage from './pages/portal/RequestDetailPage.jsx';
@@ -29,8 +28,8 @@ export default function App() {
 
       {/* Chỉ dành cho khách chưa đăng nhập */}
       <Route element={<GuestRoute />}>
-        <Route path="/dang-nhap" element={<LoginPage />} />
-        <Route path="/dang-ky" element={<RegisterPage />} />
+        <Route path="/dang-nhap" element={<AuthPage mode="login" />} />
+        <Route path="/dang-ky" element={<AuthPage mode="register" />} />
       </Route>
 
       {/* Cổng khách hàng — bắt buộc đăng nhập */}

@@ -7,6 +7,8 @@ import ChatWidget from './chat/ChatWidget.jsx';
 
 const SCROLL_TOP_THRESHOLD_PX = 600;
 const REQUEST_DETAIL_PATH = /^\/tai-khoan\/yeu-cau\/[^/]+$/;
+// Trang đăng nhập/đăng ký đã có ô hỗ trợ Zalo + hotline ngay dưới form; cụm nút nổi sẽ đè lên form trên điện thoại
+const HIDDEN_ON = ['/quan-tri', '/dang-nhap', '/dang-ky'];
 const FLOATING_BUTTON = 'relative grid place-items-center shadow-lg transition-transform duration-200 hover:scale-105 active:scale-95';
 const ICON_SHAPE = 'rounded-[28%]'; // bo theo góc của ảnh icon, che phần nền trắng ở 4 góc ảnh
 const CONTACT_BUTTON_SIZE = 'h-12 w-12 sm:h-14 sm:w-14';
@@ -86,13 +88,13 @@ function useHasScrolledPast(thresholdPx) {
 /**
  * Cụm nút liên hệ nổi ở góc phải dưới: lên đầu trang, chat (khi đã đăng nhập), Facebook, Zalo, hotline (từ trên xuống).
  * Số điện thoại và các link lấy từ data/siteContact.js; mục chưa điền thì tự ẩn.
- * Không hiện trong trang quản trị.
+ * Không hiện trong trang quản trị và trang đăng nhập/đăng ký.
  */
 export default function FloatingContact() {
   const { pathname } = useLocation();
   const { user } = useAuth();
   const isPastThreshold = useHasScrolledPast(SCROLL_TOP_THRESHOLD_PX);
-  if (pathname.startsWith('/quan-tri')) return null;
+  if (HIDDEN_ON.some((prefix) => pathname.startsWith(prefix))) return null;
   // Trang chi tiết yêu cầu đã có khung chat đầy đủ → không cần bong bóng chat
   const showChat = Boolean(user) && !REQUEST_DETAIL_PATH.test(pathname);
 

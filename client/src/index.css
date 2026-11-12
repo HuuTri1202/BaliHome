@@ -107,6 +107,12 @@
     from { opacity: 0; transform: translateY(16px); }
     to { opacity: 1; transform: none; }
   }
+  /* Khối gradient trang trí trôi chậm (trang đăng nhập). Dùng kèm motion-safe: */
+  --animate-drift: drift 18s ease-in-out infinite alternate;
+  @keyframes drift {
+    from { transform: translate3d(0, 0, 0) scale(1); }
+    to { transform: translate3d(6%, 8%, 0) scale(1.08); }
+  }
 }
 
 /* Tiêu đề đậm mặc định. Nằm ở layer base nên class font-* trên từng thẻ vẫn thắng */

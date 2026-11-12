@@ -38,6 +38,13 @@ export function AuthProvider({ children }) {
     return user;
   }, [applyUser]);
 
+  /** credential: ID token từ nút Google; server tự xác minh rồi đăng nhập / tạo tài khoản */
+  const loginWithGoogle = useCallback(async (payload) => {
+    const { user } = await authApi.google(payload);
+    applyUser(user);
+    return user;
+  }, [applyUser]);
+
   const logout = useCallback(async () => {
     try {
       await authApi.logout();
@@ -50,8 +57,8 @@ export function AuthProvider({ children }) {
   const updateUser = useCallback((u) => applyUser(u), [applyUser]);
 
   const value = useMemo(
-    () => ({ user, status, isAdmin: user?.role === 'ADMIN', login, register, logout, updateUser }),
-    [user, status, login, register, logout, updateUser]
+    () => ({ user, status, isAdmin: user?.role === 'ADMIN', login, register, loginWithGoogle, logout, updateUser }),
+    [user, status, login, register, loginWithGoogle, logout, updateUser]
   );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

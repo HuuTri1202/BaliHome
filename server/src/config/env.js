@@ -21,6 +21,11 @@ const schema = z.object({
   CLOUDINARY_URL: z.string().optional(),
   // Khoá chung với Cloudflare Worker (cloudflare/worker.js) để tin IP thật của khách. Không đặt → bỏ qua.
   PROXY_SECRET: z.string().min(32, 'PROXY_SECRET phải dài tối thiểu 32 ký tự').optional(),
+  // OAuth Client ID (loại Web) trên Google Cloud. Không đặt → nút "Tiếp tục với Google" tự ẩn.
+  GOOGLE_CLIENT_ID: z.preprocess(
+    (v) => (typeof v === 'string' ? v.trim() || undefined : v),
+    z.string().regex(/\.apps\.googleusercontent\.com$/, 'GOOGLE_CLIENT_ID phải có dạng ....apps.googleusercontent.com').optional()
+  ),
   // Số tầng proxy đứng trước app (Render = 1). Dev: chỉ tin proxy local (Vite).
   TRUST_PROXY: z
     .string()
