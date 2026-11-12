@@ -5,6 +5,7 @@ import ServicesPage from './pages/ServicesPage.jsx';
 import ServiceDetailPage from './pages/ServiceDetailPage.jsx';
 import QuotePage from './pages/QuotePage.jsx';
 import AuthPage from './pages/AuthPage.jsx';
+import LegalPage from './pages/LegalPage.jsx';
 import PortalHomePage from './pages/portal/PortalHomePage.jsx';
 import MyRequestsPage from './pages/portal/MyRequestsPage.jsx';
 import RequestDetailPage from './pages/portal/RequestDetailPage.jsx';
@@ -25,6 +26,9 @@ export default function App() {
       <Route path="/dich-vu" element={<ServicesPage />} />
       <Route path="/dich-vu/:slug" element={<ServiceDetailPage />} />
       <Route path="/bao-gia" element={<QuotePage />} />
+      <Route path="/chinh-sach-bao-mat" element={<LegalPage page="privacy" />} />
+      <Route path="/dieu-khoan-su-dung" element={<LegalPage page="terms" />} />
+      <Route path="/xoa-du-lieu" element={<LegalPage page="dataDeletion" />} />
 
       {/* Chỉ dành cho khách chưa đăng nhập */}
       <Route element={<GuestRoute />}>

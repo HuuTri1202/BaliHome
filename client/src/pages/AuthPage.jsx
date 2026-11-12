@@ -7,24 +7,16 @@ import AuthTabs from '../components/auth/AuthTabs.jsx';
 import AuthSupport from '../components/auth/AuthSupport.jsx';
 import LoginForm from '../components/auth/LoginForm.jsx';
 import RegisterForm from '../components/auth/RegisterForm.jsx';
-import GoogleSignInButton from '../components/auth/GoogleSignInButton.jsx';
+import SocialSignIn from '../components/auth/SocialSignIn.jsx';
+import CompleteSignupForm from '../components/auth/CompleteSignupForm.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
-import { useGoogleClientId } from '../lib/googleIdentity.js';
+import { useAuthProviders } from '../lib/authProviders.js';
 
 const COPY = {
-  login: { title: 'Chào mừng trở lại', subtitle: 'Đăng nhập để theo dõi yêu cầu và trò chuyện với Bali Home.', googleText: 'signin_with' },
-  register: { title: 'Tạo tài khoản', subtitle: 'Chưa đến 1 phút để theo dõi mọi yêu cầu của bạn ở một nơi.', googleText: 'signup_with' },
+  login: { title: 'Chào mừng trở lại', subtitle: 'Đăng nhập để theo dõi yêu cầu và trò chuyện với Bali Home.' },
+  register: { title: 'Tạo tài khoản', subtitle: 'Chưa đến 1 phút để theo dõi mọi yêu cầu của bạn ở một nơi.' },
+  completeSignup: { title: 'Hoàn tất tài khoản', subtitle: 'Chỉ còn một bước nữa.' },
 };
-
-function OrDivider() {
-  return (
-    <div className="flex items-center gap-4 text-sm text-ink-2" role="separator" aria-label="hoặc">
-      <span className="h-px flex-1 bg-ink/10" />
-      hoặc
-      <span className="h-px flex-1 bg-ink/10" />
-    </div>
-  );
-}
 
 /** Sau khi vào được tài khoản: về trang khách định vào trước đó (nếu có), mặc định là trang tài khoản */
 function useGoToAccount() {
@@ -37,32 +29,69 @@ function useGoToAccount() {
 }
 
 /**
+ * Nội dung thẻ form của 1 tab. Đặt key theo tab → đổi tab thì trạng thái (lỗi, bước nhập email) tự làm mới.
+ * @param {{ mode: 'login'|'register' }} props
+ */
+function AuthCardContent({ mode }) {
+  const { loginWithProvider } = useAuth();
+  const goToAccount = useGoToAccount();
+  const providers = useAuthProviders();
+  const [remember, setRemember] = useState(true);
+  const [socialError, setSocialError] = useState('');
+  const [isSocialBusy, setIsSocialBusy] = useState(false);
+  const [pendingSignup, setPendingSignup] = useState(null); // { pendingToken, name } khi Facebook không trả email
+  const isLogin = mode === 'login';
+  const rememberChoice = isLogin && remember;
+  const onAccountReady = useCallback(() => goToAccount(isLogin ? undefined : { welcome: true }), [goToAccount, isLogin]);
+
+  const onProviderToken = useCallback(
+    async (provider, payload) => {
+      setSocialError('');
+      setIsSocialBusy(true);
+      try {
+        const result = await loginWithProvider(provider, { ...payload, remember: rememberChoice });
+        if (result.needsEmail) setPendingSignup({ pendingToken: result.pendingToken, name: result.name });
+        else onAccountReady();
+      } catch (err) {
+        setSocialError(err.message);
+      } finally {
+        setIsSocialBusy(false);
+      }
+    },
+    [loginWithProvider, rememberChoice, onAccountReady]
+  );
+
+  const copy = COPY[pendingSignup ? 'completeSignup' : mode];
+  return (
+    <div className="animate-rise">
+      <h1 className="mt-7 font-display text-[2rem] leading-[1.1] sm:text-[2.25rem]">{copy.title}</h1>
+      <p className="mt-2 text-[15px] text-ink-2">{copy.subtitle}</p>
+
+      <div className="mt-6 grid gap-5">
+        {pendingSignup ? (
+          <CompleteSignupForm pending={pendingSignup} remember={rememberChoice} onSuccess={onAccountReady} onCancel={() => setPendingSignup(null)} />
+        ) : (
+          <>
+            <Alert>{socialError}</Alert>
+            {isLogin ? (
+              <LoginForm remember={remember} onRememberChange={setRemember} isGoogleEnabled={Boolean(providers?.google)} onSuccess={onAccountReady} />
+            ) : (
+              <RegisterForm onSuccess={onAccountReady} />
+            )}
+            <SocialSignIn providers={providers} mode={mode} isBusy={isSocialBusy} onToken={onProviderToken} />
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/**
  * /dang-nhap và /dang-ky — một trang, hai tab.
  * Desktop: nửa trái thương hiệu (nền tối), nửa phải form. Điện thoại: dải thương hiệu gọn phía trên, form ngay bên dưới.
  * @param {{ mode: 'login'|'register' }} props
  */
 export default function AuthPage({ mode }) {
-  const { loginWithGoogle } = useAuth();
-  const goToAccount = useGoToAccount();
-  const googleClientId = useGoogleClientId();
-  const [remember, setRemember] = useState(true);
-  const [googleError, setGoogleError] = useState('');
-  const copy = COPY[mode];
-  const isLogin = mode === 'login';
-
-  const onGoogleCredential = useCallback(
-    async (credential) => {
-      setGoogleError('');
-      try {
-        await loginWithGoogle({ credential, remember: isLogin && remember });
-        goToAccount(isLogin ? undefined : { welcome: true });
-      } catch (err) {
-        setGoogleError(err.message);
-      }
-    },
-    [loginWithGoogle, goToAccount, isLogin, remember]
-  );
-
   return (
     <div className="flex min-h-dvh flex-col bg-ground-2 lg:flex-row">
       <AuthBrandPanel />
@@ -78,27 +107,7 @@ export default function AuthPage({ mode }) {
         <div className="mx-auto flex w-full max-w-[480px] flex-1 flex-col justify-center lg:py-8">
           <div className="sm:rounded-[28px] sm:bg-ground sm:p-8 sm:shadow-[0_24px_60px_-28px_rgb(11_21_51/0.35)] sm:ring-1 sm:ring-ink/5">
             <AuthTabs mode={mode} />
-
-            {/* key: đổi tab → nội dung hiện lại với hiệu ứng trồi lên */}
-            <div key={mode} className="animate-rise">
-              <h1 className="mt-7 font-display text-[2rem] leading-[1.1] sm:text-[2.25rem]">{copy.title}</h1>
-              <p className="mt-2 text-[15px] text-ink-2">{copy.subtitle}</p>
-
-              <div className="mt-6 grid gap-5">
-                <Alert>{googleError}</Alert>
-                {isLogin ? (
-                  <LoginForm remember={remember} onRememberChange={setRemember} isGoogleEnabled={Boolean(googleClientId)} onSuccess={() => goToAccount()} />
-                ) : (
-                  <RegisterForm onSuccess={() => goToAccount({ welcome: true })} />
-                )}
-                {googleClientId && (
-                  <>
-                    <OrDivider />
-                    <GoogleSignInButton clientId={googleClientId} text={copy.googleText} onCredential={onGoogleCredential} />
-                  </>
-                )}
-              </div>
-            </div>
+            <AuthCardContent key={mode} mode={mode} />
           </div>
 
           <div className="mt-5">

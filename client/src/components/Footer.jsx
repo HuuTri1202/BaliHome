@@ -84,7 +84,12 @@ export default function Footer() {
       <div className={`${CONTAINER} border-t border-ink/10 py-7 text-sm text-ink-2`}>
         {/* Chừa lề phải để cụm nút liên hệ nổi không che số điện thoại khi cuộn tới cuối trang */}
         <div className="flex flex-wrap items-center justify-between gap-x-8 gap-y-3 pr-16 sm:pr-24">
-          <p>© {new Date().getFullYear()} Bali Home. All rights reserved.</p>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+            <p>© {new Date().getFullYear()} Bali Home. All rights reserved.</p>
+            <Link to="/chinh-sach-bao-mat" className={LINK_CLASS}>Quyền riêng tư</Link>
+            <Link to="/dieu-khoan-su-dung" className={LINK_CLASS}>Điều khoản</Link>
+            <Link to="/xoa-du-lieu" className={LINK_CLASS}>Xoá dữ liệu</Link>
+          </div>
           <ContactLinks />
         </div>
       </div>

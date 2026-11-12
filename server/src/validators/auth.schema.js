@@ -63,6 +63,18 @@ export const googleSignInSchema = z.object({
   remember: z.boolean().optional().default(false),
 });
 
+export const facebookSignInSchema = z.object({
+  accessToken: z.string({ required_error: 'Thiếu thông tin đăng nhập Facebook' }).min(1).max(4096),
+  remember: z.boolean().optional().default(false),
+});
+
+// Bước nhập email khi Facebook không trả email
+export const completeSignupSchema = z.object({
+  pendingToken: z.string({ required_error: 'Thiếu phiên đăng ký' }).min(1).max(2048),
+  email,
+  remember: z.boolean().optional().default(false),
+});
+
 export const loginSchema = z.object({
   email,
   password: z.string({ required_error: 'Vui lòng nhập mật khẩu' }).min(1, 'Vui lòng nhập mật khẩu').max(200),

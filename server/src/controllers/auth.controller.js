@@ -1,6 +1,4 @@
 import { AppError } from '../utils/AppError.js';
-import { env } from '../config/env.js';
-import { createGoogleVerifier } from '../lib/googleIdToken.js';
 import { signAccessToken } from '../utils/tokens.js';
 import { setAuthCookies, clearAuthCookies, REFRESH_COOKIE } from '../utils/cookies.js';
 import {
@@ -13,10 +11,7 @@ import {
   toPublicUser,
   updateProfile,
   changePassword,
-  signInWithGoogle,
 } from '../services/auth.service.js';
-
-const verifyGoogleIdToken = env.GOOGLE_CLIENT_ID ? createGoogleVerifier({ clientId: env.GOOGLE_CLIENT_ID }) : null;
 
 const requestMeta = (req) => ({
   userAgent: req.get('user-agent')?.slice(0, 255) ?? null,
@@ -24,7 +19,7 @@ const requestMeta = (req) => ({
 });
 
 /** Cấp access token + refresh session, ghi cookie, trả user */
-async function issueTokens(req, res, user, persistent) {
+export async function issueTokens(req, res, user, persistent) {
   const session = await createSession(user.id, { ...requestMeta(req), persistent });
   setAuthCookies(res, { accessToken: signAccessToken(user), ...session });
 }
@@ -39,20 +34,6 @@ export async function register(req, res) {
 // POST /api/auth/login
 export async function login(req, res) {
   const user = await verifyCredentials(req.body);
-  await issueTokens(req, res, user, req.body.remember);
-  res.json({ user: toPublicUser(user) });
-}
-
-// GET /api/auth/providers — cách đăng nhập đang bật. Client ID của Google là thông tin công khai.
-export function providers(_req, res) {
-  res.json({ google: env.GOOGLE_CLIENT_ID ? { clientId: env.GOOGLE_CLIENT_ID } : null });
-}
-
-// POST /api/auth/google — { credential: ID token từ Google Sign-In, remember }
-export async function googleSignIn(req, res) {
-  if (!verifyGoogleIdToken) throw new AppError(503, 'GOOGLE_DISABLED', 'Đăng nhập bằng Google chưa được bật.');
-  const profile = await verifyGoogleIdToken(req.body.credential);
-  const user = await signInWithGoogle(profile);
   await issueTokens(req, res, user, req.body.remember);
   res.json({ user: toPublicUser(user) });
 }

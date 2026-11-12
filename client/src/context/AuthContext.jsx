@@ -38,9 +38,18 @@ export function AuthProvider({ children }) {
     return user;
   }, [applyUser]);
 
-  /** credential: ID token từ nút Google; server tự xác minh rồi đăng nhập / tạo tài khoản */
-  const loginWithGoogle = useCallback(async (payload) => {
-    const { user } = await authApi.google(payload);
+  /**
+   * Đăng nhập bằng Google / Facebook. Server tự xác minh token với nhà cung cấp.
+   * Trả { user } (đã vào) hoặc { needsEmail, pendingToken, name } (nhà cung cấp không cho email → gọi completeSignup).
+   */
+  const loginWithProvider = useCallback(async (provider, payload) => {
+    const result = await authApi.signInWith(provider, payload);
+    if (result.user) applyUser(result.user);
+    return result;
+  }, [applyUser]);
+
+  const completeSignup = useCallback(async (payload) => {
+    const { user } = await authApi.completeSignup(payload);
     applyUser(user);
     return user;
   }, [applyUser]);
@@ -57,8 +66,8 @@ export function AuthProvider({ children }) {
   const updateUser = useCallback((u) => applyUser(u), [applyUser]);
 
   const value = useMemo(
-    () => ({ user, status, isAdmin: user?.role === 'ADMIN', login, register, loginWithGoogle, logout, updateUser }),
-    [user, status, login, register, loginWithGoogle, logout, updateUser]
+    () => ({ user, status, isAdmin: user?.role === 'ADMIN', login, register, loginWithProvider, completeSignup, logout, updateUser }),
+    [user, status, login, register, loginWithProvider, completeSignup, logout, updateUser]
   );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

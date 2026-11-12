@@ -1,4 +1,5 @@
 import { useId, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Field, PasswordField } from '../ui/Field.jsx';
 import { Button } from '../ui/Button.jsx';
 import Alert from '../ui/Alert.jsx';
@@ -26,8 +27,8 @@ function TermsCheckbox({ checked, error, onChange }) {
       <label className="flex cursor-pointer select-none items-start gap-3 text-[15px] leading-relaxed text-ink">
         <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} aria-invalid={!!error} className="mt-0.5 h-5 w-5 shrink-0 cursor-pointer accent-[var(--action)]" />
         <span>
-          Tôi đồng ý với <a href="#" className={AUTH_LINK_CLASS}>Điều khoản sử dụng</a> và{' '}
-          <a href="#" className={AUTH_LINK_CLASS}>Chính sách bảo mật</a> của Bali Home.
+          Tôi đồng ý với <Link to="/dieu-khoan-su-dung" target="_blank" className={AUTH_LINK_CLASS}>Điều khoản sử dụng</Link> và{' '}
+          <Link to="/chinh-sach-bao-mat" target="_blank" className={AUTH_LINK_CLASS}>Chính sách quyền riêng tư</Link> của Bali Home.
         </span>
       </label>
       {error && (

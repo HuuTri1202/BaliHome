@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import PortalLayout, { Panel } from '../../components/portal/PortalLayout.jsx';
+import LinkedAccounts from '../../components/portal/LinkedAccounts.jsx';
 import { PasswordField } from '../../components/ui/Field.jsx';
 import PasswordStrength from '../../components/ui/PasswordStrength.jsx';
 import { ThemeSelector } from '../../components/ThemeToggle.jsx';
@@ -59,10 +60,13 @@ export default function SecurityPage() {
             <div><Button type="submit" loading={submitting}>{hasPassword ? 'Đổi mật khẩu' : 'Đặt mật khẩu'}</Button></div>
           </form>
         </Panel>
-        <Panel title="Giao diện" className="xl:col-span-2">
-          <ThemeSelector />
-          <p className="mt-3 text-sm text-ink-2">“Theo hệ thống” tự đổi sáng/tối theo cài đặt của máy hoặc điện thoại.</p>
-        </Panel>
+        <div className="grid gap-6 xl:col-span-2">
+          <LinkedAccounts />
+          <Panel title="Giao diện">
+            <ThemeSelector />
+            <p className="mt-3 text-sm text-ink-2">“Theo hệ thống” tự đổi sáng/tối theo cài đặt của máy hoặc điện thoại.</p>
+          </Panel>
+        </div>
       </div>
     </PortalLayout>
   );

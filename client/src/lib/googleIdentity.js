@@ -1,34 +1,8 @@
-import { useEffect, useState } from 'react';
-import { authApi } from './api.js';
-
 /* =============================================================================
  * Google Identity Services (nút "Tiếp tục với Google").
- * - Server cho biết Google đã bật chưa (GET /auth/providers) → chưa bật thì không hiện nút.
- * - Script của Google chỉ tải khi trang thật sự cần nút, và chỉ tải 1 lần.
+ * Google bật hay chưa: xem lib/authProviders.js. Script của Google chỉ tải khi trang cần nút, và chỉ 1 lần.
  * ========================================================================== */
 const GSI_SCRIPT_URL = 'https://accounts.google.com/gsi/client';
-
-let providersPromise = null;
-
-/** Cách đăng nhập đang bật; lỗi mạng → coi như chưa bật Google (form email vẫn dùng được) */
-function loadProviders() {
-  providersPromise ??= authApi.providers().catch(() => {
-    providersPromise = null; // lần sau thử lại
-    return { google: null };
-  });
-  return providersPromise;
-}
-
-/** Client ID của Google nếu đã bật, null nếu chưa (undefined khi đang hỏi server) */
-export function useGoogleClientId() {
-  const [clientId, setClientId] = useState(undefined);
-  useEffect(() => {
-    let isCurrent = true;
-    loadProviders().then(({ google }) => isCurrent && setClientId(google?.clientId ?? null));
-    return () => { isCurrent = false; };
-  }, []);
-  return clientId;
-}
 
 let scriptPromise = null;
 

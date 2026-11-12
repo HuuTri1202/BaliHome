@@ -22,60 +22,10 @@ export const toPublicUser = (u) => ({
   fullName: u.fullName,
   phone: u.phone,
   role: u.role,
-  hasPassword: Boolean(u.passwordHash), // false: tài khoản Google chưa đặt mật khẩu → trang Bảo mật cho đặt mới
-  hasGoogle: Boolean(u.googleId),
+  hasPassword: Boolean(u.passwordHash), // false: tài khoản tạo từ Google/Facebook chưa đặt mật khẩu → trang Bảo mật cho đặt mới
   lastLoginAt: u.lastLoginAt,
   createdAt: u.createdAt,
 });
-
-const PRISMA_UNIQUE_VIOLATION = 'P2002';
-const MIN_NAME_LENGTH = 2;
-
-/** Họ tên cho tài khoản mới từ Google: tên Google, không có thì lấy phần trước @ của email */
-const nameFromGoogle = ({ name, email }) => {
-  const candidate = (name || email.split('@')[0]).slice(0, 100);
-  return candidate.length >= MIN_NAME_LENGTH ? candidate : email.slice(0, 100);
-};
-
-/**
- * Đăng nhập bằng Google (thông tin đã được lib/googleIdToken.js xác minh).
- * 1. Đã liên kết (googleId) → đăng nhập.
- * 2. Chưa liên kết nhưng trùng email → liên kết vào tài khoản đó. Google đã chứng minh người này
- *    sở hữu email, còn lúc đăng ký bằng mật khẩu thì email chưa từng được xác minh: có thể ai đó đã
- *    đăng ký trước bằng email của họ. Vì vậy xoá mật khẩu cũ + thu hồi mọi phiên → kẻ đăng ký trước
- *    (nếu có) mất quyền vào. Chủ email đặt lại mật khẩu trong trang Bảo mật nếu muốn.
- * 3. Chưa có → tạo tài khoản mới, chưa có mật khẩu.
- */
-export async function signInWithGoogle({ sub, email, name }) {
-  const lastLoginAt = new Date();
-  const linked = await prisma.user.findUnique({ where: { googleId: sub } });
-  if (linked) return prisma.user.update({ where: { id: linked.id }, data: { lastLoginAt } });
-
-  const sameEmail = await prisma.user.findUnique({ where: { email } });
-  if (sameEmail) {
-    const mismatch = () => new AppError(409, 'GOOGLE_ACCOUNT_MISMATCH', 'Email này đã liên kết với một tài khoản Google khác.');
-    if (sameEmail.googleId) throw mismatch();
-    // Điều kiện googleId: null → nếu request khác vừa liên kết xong thì không ghi đè
-    const [{ count }] = await prisma.$transaction(async (tx) => {
-      const linked = await tx.user.updateMany({ where: { id: sameEmail.id, googleId: null }, data: { googleId: sub, passwordHash: null, lastLoginAt } });
-      if (linked.count === 1) await tx.session.updateMany({ where: { userId: sameEmail.id, revokedAt: null }, data: { revokedAt: lastLoginAt } });
-      return [linked];
-    });
-    const user = await prisma.user.findUnique({ where: { id: sameEmail.id } });
-    if (count === 0 && user?.googleId !== sub) throw mismatch();
-    return user;
-  }
-
-  try {
-    return await prisma.user.create({ data: { email, googleId: sub, fullName: nameFromGoogle({ name, email }), lastLoginAt } });
-  } catch (err) {
-    // Bấm đúp / 2 tab cùng lúc: request kia vừa tạo xong → dùng lại tài khoản đó
-    if (err.code !== PRISMA_UNIQUE_VIOLATION) throw err;
-    const created = await prisma.user.findUnique({ where: { googleId: sub } });
-    if (!created) throw err;
-    return created;
-  }
-}
 
 export async function registerUser({ fullName, email, phone, password }) {
   const existing = await prisma.user.findFirst({

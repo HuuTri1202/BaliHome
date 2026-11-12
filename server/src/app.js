@@ -21,18 +21,20 @@ export const app = express();
 app.set('trust proxy', env.TRUST_PROXY);      // đứng sau proxy (Vite / Render) → lấy đúng IP người dùng
 app.use(trustEdgeClientIp(env.PROXY_SECRET));  // request đi qua Cloudflare Worker → IP thật của khách
 app.disable('x-powered-by');
-// Header bảo mật mặc định (CSP, HSTS, ...) + mở đúng phần Google Sign-In cần (script, khung nút, popup)
+// Header bảo mật mặc định (CSP, HSTS, ...) + mở đúng phần Google Sign-In và Facebook Login cần (script, khung, popup)
 const GOOGLE_SIGN_IN = 'https://accounts.google.com';
+const FACEBOOK_SDK = 'https://connect.facebook.net';
+const FACEBOOK_WEB = ['https://www.facebook.com', 'https://web.facebook.com', 'https://staticxx.facebook.com'];
 app.use(
   helmet({
     contentSecurityPolicy: {
       directives: {
-        scriptSrc: ["'self'", `${GOOGLE_SIGN_IN}/gsi/client`],
-        frameSrc: ["'self'", `${GOOGLE_SIGN_IN}/gsi/`],
-        connectSrc: ["'self'", `${GOOGLE_SIGN_IN}/gsi/`],
+        scriptSrc: ["'self'", `${GOOGLE_SIGN_IN}/gsi/client`, FACEBOOK_SDK],
+        frameSrc: ["'self'", `${GOOGLE_SIGN_IN}/gsi/`, ...FACEBOOK_WEB],
+        connectSrc: ["'self'", `${GOOGLE_SIGN_IN}/gsi/`, FACEBOOK_SDK, 'https://graph.facebook.com', ...FACEBOOK_WEB],
       },
     },
-    crossOriginOpenerPolicy: { policy: 'same-origin-allow-popups' }, // popup chọn tài khoản Google gửi kết quả về trang
+    crossOriginOpenerPolicy: { policy: 'same-origin-allow-popups' }, // popup đăng nhập Google/Facebook gửi kết quả về trang
   })
 );
 app.use(cors({ origin: env.CLIENT_ORIGIN, credentials: true }));

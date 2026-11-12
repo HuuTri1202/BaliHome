@@ -26,6 +26,16 @@ const schema = z.object({
     (v) => (typeof v === 'string' ? v.trim() || undefined : v),
     z.string().regex(/\.apps\.googleusercontent\.com$/, 'GOOGLE_CLIENT_ID phải có dạng ....apps.googleusercontent.com').optional()
   ),
+  // Facebook Login (Meta for Developers → App settings → Basic). Thiếu 1 trong 2 → nút Facebook tự ẩn.
+  // App Secret là khoá bí mật: chỉ đặt trong Environment của Render, không ghi vào code / gửi qua chat.
+  FACEBOOK_APP_ID: z.preprocess(
+    (v) => (typeof v === 'string' ? v.trim() || undefined : v),
+    z.string().regex(/^\d{10,20}$/, 'FACEBOOK_APP_ID phải là dãy số').optional()
+  ),
+  FACEBOOK_APP_SECRET: z.preprocess(
+    (v) => (typeof v === 'string' ? v.trim() || undefined : v),
+    z.string().regex(/^[a-f0-9]{32}$/, 'FACEBOOK_APP_SECRET phải là chuỗi 32 ký tự (0-9, a-f) lấy ở App settings → Basic').optional()
+  ),
   // Số tầng proxy đứng trước app (Render = 1). Dev: chỉ tin proxy local (Vite).
   TRUST_PROXY: z
     .string()

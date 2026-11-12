@@ -22,8 +22,7 @@ model User {
   email        String    @unique // luôn lưu dạng chữ thường
   fullName     String    @map("full_name")
   phone        String?   @unique
-  passwordHash String?   @map("password_hash") // NULL: tài khoản tạo từ Google, chưa đặt mật khẩu
-  googleId     String?   @unique @map("google_id") // "sub" của Google
+  passwordHash String?   @map("password_hash") // NULL: tài khoản tạo từ Google/Facebook, chưa đặt mật khẩu
   role         Role      @default(USER)
   lastLoginAt  DateTime? @map("last_login_at")
   createdAt    DateTime  @default(now()) @map("created_at")
@@ -33,8 +32,24 @@ model User {
   contactRequests ContactRequest[]
   authoredEvents  RequestEvent[]   @relation("EventAuthor")
   notifications   Notification[]
+  identities      AuthIdentity[]
 
   @@map("users")
+}
+
+// Đăng nhập bằng tài khoản bên ngoài: mỗi nhà cung cấp (google, facebook) tối đa 1 liên kết / tài khoản
+model AuthIdentity {
+  id             String   @id @default(uuid()) @db.Uuid
+  userId         String   @map("user_id") @db.Uuid
+  provider       String // google | facebook
+  providerUserId String   @map("provider_user_id") // "sub" (Google) / id (Facebook)
+  email          String? // email nhà cung cấp xác nhận; NULL = khách tự nhập (chưa xác minh)
+  createdAt      DateTime @default(now()) @map("created_at")
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerUserId])
+  @@unique([userId, provider])
+  @@map("auth_identities")
 }
 
 // Dịch vụ Bali Home cung cấp. Nội dung sửa trực tiếp trong DB (sau này: trang quản trị).

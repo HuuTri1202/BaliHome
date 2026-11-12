@@ -42,7 +42,7 @@ async function rawRequest(path, { method = 'GET', body, signal } = {}) {
 }
 
 let refreshPromise = null;
-const NO_RETRY = ['/auth/login', '/auth/register', '/auth/google', '/auth/refresh', '/auth/logout'];
+const NO_RETRY = ['/auth/login', '/auth/register', '/auth/google', '/auth/facebook', '/auth/complete-signup', '/auth/refresh', '/auth/logout'];
 
 export async function request(path, options) {
   try {
@@ -109,7 +109,10 @@ export const authApi = {
   login: (payload) => request('/auth/login', { method: 'POST', body: payload }),
   register: (payload) => request('/auth/register', { method: 'POST', body: payload }),
   providers: () => request('/auth/providers'),
-  google: (payload) => request('/auth/google', { method: 'POST', body: payload }),
+  /** provider: 'google' ({ credential }) | 'facebook' ({ accessToken }) → { user } hoặc { needsEmail, pendingToken, name } */
+  signInWith: (provider, payload) => request(`/auth/${provider}`, { method: 'POST', body: payload }),
+  completeSignup: (payload) => request('/auth/complete-signup', { method: 'POST', body: payload }),
+  identities: () => request('/auth/identities'),
   logout: () => request('/auth/logout', { method: 'POST' }),
   updateMe: (payload) => request('/auth/me', { method: 'PATCH', body: payload }),
   changePassword: (payload) => request('/auth/change-password', { method: 'POST', body: payload }),
