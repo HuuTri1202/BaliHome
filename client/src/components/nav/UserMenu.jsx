@@ -23,7 +23,7 @@ const itemClass = ({ isActive }) =>
   `flex items-center gap-3 rounded-xl px-3 py-2.5 text-[15px] font-medium transition-colors ${isActive ? 'bg-ground-3 text-action' : 'text-ink hover:bg-ground-3'}`;
 
 /**
- * Người đã đăng nhập: avatar + tên (tên gọi, từ lg) + mũi tên; bấm mở menu tài khoản.
+ * Người đã đăng nhập: avatar + tên gọi + mũi tên (màn quá hẹp <400px chỉ còn avatar); bấm mở menu tài khoản.
  * Đóng khi chọn mục, nhấn Esc hoặc bấm ra ngoài.
  */
 export default function UserMenu() {
@@ -49,11 +49,11 @@ export default function UserMenu() {
         aria-expanded={isOpen}
         aria-controls={panelId}
         aria-label={`Tài khoản: ${user.fullName}`}
-        className="glass flex h-11 items-center gap-2 rounded-full pl-1 pr-1 text-ink transition-colors hover:bg-ground-3 lg:pr-3"
+        className="glass flex h-11 items-center gap-2 rounded-full pl-1 pr-1 text-ink transition-colors hover:bg-ground-3 min-[400px]:pr-3"
       >
         <UserAvatar name={user.fullName} />
-        <span className="hidden max-w-[9rem] truncate text-[15px] font-semibold lg:inline">{firstName(user.fullName)}</span>
-        <ChevronDownIcon className={`hidden h-4 w-4 text-ink-2 transition-transform duration-200 lg:block ${isOpen ? 'rotate-180' : ''}`} />
+        <span className="hidden max-w-[9rem] truncate text-[15px] font-semibold min-[400px]:inline">{firstName(user.fullName)}</span>
+        <ChevronDownIcon className={`hidden h-4 w-4 text-ink-2 transition-transform duration-200 min-[400px]:block ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && (

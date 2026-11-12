@@ -8,7 +8,6 @@ import NotificationBell from './nav/NotificationBell.jsx';
 import NavItem from './nav/NavItem.jsx';
 import AuthButtons from './nav/AuthButtons.jsx';
 import UserMenu from './nav/UserMenu.jsx';
-import QuoteButton from './QuoteButton.jsx';
 
 export const CONTAINER = 'mx-auto w-full max-w-[1440px] px-5 sm:px-8 lg:px-12';
 
@@ -24,15 +23,15 @@ const desktopItemClass = (isActive) =>
 /**
  * Góc phải Header theo trạng thái đăng nhập (AuthContext):
  *  - loading: khung giữ chỗ cùng kích thước → không nháy nút "Đăng nhập" với người đã đăng nhập
- *  - guest  : Đăng nhập + Đăng ký (từ md; nhỏ hơn thì nằm trong menu hamburger)
+ *  - guest  : Đăng nhập + Đăng ký (từ sm; điện thoại thì nằm trong menu hamburger)
  *  - đã vào : chuông thông báo + avatar có menu tài khoản
  * key theo trạng thái → khi đăng nhập/đăng xuất, cụm mới hiện dần ra (chỉ đổi độ mờ, không dùng transform:
  * transform biến khung thành mốc định vị → dropdown của chuông/avatar bị lệch khỏi mép Header trên điện thoại).
  */
 function AccountArea() {
   const { status } = useAuth();
-  if (status === 'loading') return <span className="h-11 w-11 animate-pulse rounded-full bg-ground-3 md:w-40" aria-hidden="true" />;
-  if (status === 'guest') return <AuthButtons key="guest" className="hidden animate-fade-in md:flex" />;
+  if (status === 'loading') return <span className="h-11 w-11 animate-pulse rounded-full bg-ground-3 sm:w-40" aria-hidden="true" />;
+  if (status === 'guest') return <AuthButtons key="guest" className="hidden animate-fade-in sm:flex" />;
   return (
     <div key="user" className="flex animate-fade-in items-center gap-2">
       <NotificationBell />
@@ -44,6 +43,7 @@ function AccountArea() {
 /**
  * Topbar duy nhất của website: dính đầu trang, nền mờ theo màu giao diện (sáng hoặc tối).
  * Desktop (từ lg): menu ngang. Điện thoại, máy tính bảng: hamburger.
+ * Không đặt nút Báo giá trên thanh: CTA báo giá đã có ở Hero, khối liên hệ cuối trang và trong menu điện thoại.
  */
 export default function Navbar() {
   const { tone: logoTone, toggleTone: toggleLogoTone } = useLogoTone();
@@ -69,14 +69,6 @@ export default function Navbar() {
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <AccountArea />
-          {/* Ẩn bằng thẻ bọc: Button có sẵn class inline-flex, đặt `hidden` trực tiếp sẽ bị ghi đè */}
-          <div className="hidden xl:block">
-            <QuoteButton size="md" />
-          </div>
-          {/* Màn vừa (đến hết lg): bản gọn để còn chỗ cho cụm tài khoản; màn quá hẹp (<360px) chỉ có trong menu */}
-          <div className="hidden min-[360px]:block xl:hidden">
-            <QuoteButton size="sm" bubble={false} label="Báo giá" />
-          </div>
           <MobileMenu links={LINKS} />
         </div>
       </div>
