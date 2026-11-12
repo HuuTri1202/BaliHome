@@ -21,13 +21,24 @@ export function HomeLink({ children, ...props }) {
   );
 }
 
-/** Logo + chữ "BALI HOME" giãn rộng. light = chữ trắng (đặt trên mảng tối cố định) */
-export default function BrandMark({ light = false }) {
+// Viền mảnh màu --ink: chữ trắng trên nền sáng (hoặc tối trên nền tối) vẫn đọc được
+const TONE_CLASS = {
+  white: 'text-white drop-shadow-[0_0_1px_var(--ink)]',
+  dark: 'text-slate-900 drop-shadow-[0_0_1px_var(--ink)]',
+};
+
+/**
+ * Logo + chữ "BALI HOME" giãn rộng.
+ * @param {{ light?: boolean, tone?: 'white'|'dark'|null }} props
+ *   light = chữ trắng (đặt trên mảng tối cố định); tone = màu khách chọn trên Header
+ */
+export default function BrandMark({ light = false, tone = null }) {
+  // text-ink là token theo giao diện: chữ tối trên nền sáng, chữ sáng trên nền tối
+  const textClass = TONE_CLASS[tone] ?? (light ? 'text-white' : 'text-ink');
   return (
     <HomeLink className="group inline-flex shrink-0 items-center gap-3">
       <LogoHex className="h-10 w-10 transition-transform duration-500 group-hover:rotate-[60deg]" />
-      {/* text-ink là token theo giao diện: chữ tối trên nền sáng, chữ sáng trên nền tối */}
-      <span className={`hidden text-[13px] font-semibold uppercase tracking-[0.32em] transition-colors duration-300 sm:inline ${light ? 'text-white' : 'text-ink'}`}>
+      <span className={`hidden text-[13px] font-semibold uppercase tracking-[0.32em] transition-colors duration-300 sm:inline ${textClass}`}>
         Bali Home
       </span>
     </HomeLink>

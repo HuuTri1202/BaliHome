@@ -1,5 +1,7 @@
 import { useAuth } from '../context/AuthContext.jsx';
+import { useLogoTone } from '../hooks/useLogoTone.js';
 import BrandMark from './BrandMark.jsx';
+import LogoToneToggle from './nav/LogoToneToggle.jsx';
 import ThemeToggle from './ThemeToggle.jsx';
 import MobileMenu from './nav/MobileMenu.jsx';
 import NotificationBell from './nav/NotificationBell.jsx';
@@ -20,6 +22,7 @@ const desktopItemClass = (isActive) =>
  */
 export default function Navbar() {
   const { user } = useAuth();
+  const { tone: logoTone, toggleTone: toggleLogoTone } = useLogoTone();
   const links = [
     { label: 'Trang chủ', href: '/', end: true },
     { label: 'Dịch vụ', href: '/dich-vu' },
@@ -30,7 +33,10 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 border-b border-ink/5 bg-ground/80 backdrop-blur-md">
       <div className={`${CONTAINER} flex h-16 items-center justify-between gap-4 lg:h-20`}>
-        <BrandMark />
+        <div className="flex items-center gap-1">
+          <BrandMark tone={logoTone} />
+          <LogoToneToggle tone={logoTone} onToggle={toggleLogoTone} />
+        </div>
 
         <nav aria-label="Điều hướng chính" className="hidden lg:block">
           <ul className="flex items-center gap-1">

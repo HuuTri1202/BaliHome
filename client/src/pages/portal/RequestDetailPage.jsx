@@ -77,7 +77,7 @@ export default function RequestDetailPage() {
       </Panel>
 
       <div className="mt-6 grid items-start gap-6 xl:grid-cols-5">
-        <Panel title="Trao đổi với Bali Home" className="xl:col-span-3">
+        <Panel title={`Trao đổi với Bali Home · ${r.code}`} className="xl:col-span-3">
           <RequestChat
             viewer="customer"
             initialMessages={r.events}
