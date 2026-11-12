@@ -176,7 +176,7 @@ export default function ContactSection({
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <p className="text-sm text-ink-2">Thông tin chỉ dùng để Bali Home liên hệ lại với bạn.</p>
                 <Button type="submit" size="lg" loading={submitting}>
-                  Gửi yêu cầu <ArrowRightIcon className="h-5 w-5" />
+                  Nhận báo giá ngay <ArrowRightIcon className="h-5 w-5" />
                 </Button>
               </div>
             </form>

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { CONTAINER } from '../Navbar.jsx';
-import QuoteButton from '../QuoteButton.jsx';
+import { Button } from '../ui/Button.jsx';
 import Reveal, { item } from '../Reveal.jsx';
 import { ArrowRightIcon } from '../ui/icons.jsx';
 import { CORE_SERVICES } from '../../data/coreServices.js';
@@ -15,7 +15,9 @@ function ServiceCard({ service: { slug, title, line, Icon, tone }, index }) {
         </span>
         <h3 className="mt-14 font-display text-[1.75rem] leading-tight">{title}</h3>
         <p className="mt-2 text-ink-2">{line}</p>
-        <ArrowRightIcon className="mt-8 h-5 w-5 transition-transform group-hover:translate-x-1" />
+        <span className="mt-8 inline-flex items-center gap-2 text-[15px] font-semibold transition-colors group-hover:text-action">
+          Xem chi tiết <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+        </span>
       </Link>
     </li>
   );
@@ -30,11 +32,9 @@ export default function CoreServices() {
         <ul className="mt-20 grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
           {CORE_SERVICES.map((service, index) => <ServiceCard key={service.slug} service={service} index={index} />)}
         </ul>
-        <div {...item(5, 'mt-16 flex flex-wrap items-center gap-x-8 gap-y-5')}>
-          <QuoteButton />
-          <Link to="/dich-vu" className="inline-flex items-center gap-2 font-semibold hover:text-action">
-            Xem tất cả dịch vụ <ArrowRightIcon className="h-4 w-4" />
-          </Link>
+        {/* CTA điều hướng (không phải báo giá): khách cần hiểu dịch vụ trước khi được mời báo giá */}
+        <div {...item(5, 'mt-16')}>
+          <Button as={Link} to="/dich-vu" variant="soft" size="lg" bubble>Khám phá dịch vụ</Button>
         </div>
       </Reveal>
     </section>

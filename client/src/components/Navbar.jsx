@@ -55,6 +55,10 @@ export default function Navbar() {
           <div className="hidden sm:block">
             <QuoteButton size="md" />
           </div>
+          {/* Điện thoại: bản gọn để CTA chính luôn trong tầm tay; màn quá hẹp (<360px) chỉ có trong menu */}
+          <div className="hidden min-[360px]:block sm:hidden">
+            <QuoteButton size="sm" bubble={false} label="Báo giá" />
+          </div>
           <MobileMenu links={links} />
         </div>
       </div>

@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar, { CONTAINER } from '../components/Navbar.jsx';
 import Footer from '../components/Footer.jsx';
-import QuoteButton from '../components/QuoteButton.jsx';
 import Reveal, { item } from '../components/Reveal.jsx';
 import ContactSection from '../components/home/ContactSection.jsx';
 import CoreServices from '../components/home/CoreServices.jsx';
@@ -29,23 +28,17 @@ function ProcessSection() {
         <div {...item(1, 'mt-20')}>
           <ProcessStepper />
         </div>
-        <div {...item(2, 'mt-16')}>
-          <QuoteButton />
-        </div>
       </Reveal>
     </section>
   );
 }
 
-function ValuesCtaBand() {
+function ValuesBand() {
   return (
     <section aria-labelledby="gia-tri-title" className="px-2 sm:px-4 lg:px-6">
       <Reveal className="rounded-[2rem] bg-motif text-on-motif lg:rounded-[2.5rem]">
-        <div className={`${CONTAINER} flex flex-wrap items-center justify-between gap-10 py-24 lg:py-32`}>
+        <div className={`${CONTAINER} py-24 lg:py-32`}>
           <h2 id="gia-tri-title" {...item(0, 'font-display text-title')}>Uy tín, chất lượng, tận tâm</h2>
-          <div {...item(1)}>
-            <QuoteButton variant="onMotif" />
-          </div>
         </div>
       </Reveal>
     </section>
@@ -114,7 +107,7 @@ export default function HomePage() {
         <HeroScene />
         <CoreServices />
         <ProcessSection />
-        <ValuesCtaBand />
+        <ValuesBand />
         <MembersSection isLoggedIn={Boolean(user)} />
         <ContactSection />
       </main>
