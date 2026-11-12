@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { HomeLink, LogoHex } from '../BrandMark.jsx';
-import { initials } from '../Navbar.jsx';
+import { initials } from '../../lib/initials.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { adminApi } from '../../lib/api.js';
 import { HomeIcon, ChatIcon, UserIcon, GridIcon, ArrowUpRightIcon, LogoutIcon, BellIcon, SearchIcon } from '../ui/icons.jsx';

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import AdminLayout from '../../components/admin/AdminLayout.jsx';
-import { initials } from '../../components/Navbar.jsx';
+import { initials } from '../../lib/initials.js';
 import { Button, Spinner } from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
 import { ArrowLeftIcon, ArrowRightIcon } from '../../components/ui/icons.jsx';

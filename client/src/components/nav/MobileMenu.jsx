@@ -1,13 +1,54 @@
 import { useEffect, useRef, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import NavItem from './NavItem.jsx';
+import AuthButtons from './AuthButtons.jsx';
+import { UserAvatar } from './UserMenu.jsx';
 import QuoteButton from '../QuoteButton.jsx';
-import { CloseIcon, MenuIcon } from '../ui/icons.jsx';
+import { Spinner } from '../ui/Button.jsx';
+import { CloseIcon, LogoutIcon, MenuIcon } from '../ui/icons.jsx';
+import { useAuth } from '../../context/AuthContext.jsx';
+import { useDismiss } from '../../hooks/useDismiss.js';
+import { useSignOut } from '../../hooks/useSignOut.js';
+import { accountLinksFor } from '../../data/accountLinks.js';
 
 const PANEL_ID = 'mobile-menu';
 
 const itemClass = (isActive) =>
   `block rounded-2xl px-4 py-3.5 text-[17px] font-semibold transition-colors ${isActive ? 'bg-ground-3 text-action' : 'text-ink hover:bg-ground-2'}`;
+
+const accountItemClass = ({ isActive }) =>
+  `flex items-center gap-3 rounded-2xl px-4 py-3 text-[15px] font-medium transition-colors ${isActive ? 'bg-ground-3 text-action' : 'text-ink hover:bg-ground-2'}`;
+
+/** Phần tài khoản trong menu: khách → Đăng nhập/Đăng ký; đã vào → thông tin + các trang tài khoản + Đăng xuất */
+function MobileAccountSection() {
+  const { user, status, isAdmin } = useAuth();
+  const { signOut, isSigningOut } = useSignOut();
+  if (status === 'loading') return null;
+  if (!user) return <AuthButtons size="md" fullWidth className="mt-4 border-t border-ink/10 pt-4" />;
+  return (
+    <div className="mt-4 border-t border-ink/10 pt-4">
+      <div className="flex items-center gap-3 px-4 pb-2">
+        <UserAvatar name={user.fullName} className="w-10 text-sm" />
+        <span className="min-w-0">
+          <span className="block truncate font-semibold">{user.fullName}</span>
+          <span className="block truncate text-sm text-ink-2">{user.email}</span>
+        </span>
+      </div>
+      <ul className="grid gap-0.5">
+        {accountLinksFor(isAdmin).map(({ to, label, icon: Icon, end }) => (
+          <li key={to}>
+            <NavLink to={to} end={end} className={accountItemClass}><Icon className="h-5 w-5 text-ink-2" /> {label}</NavLink>
+          </li>
+        ))}
+        <li>
+          <button type="button" onClick={signOut} disabled={isSigningOut} className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-[15px] font-semibold text-signal hover:bg-ground-2 disabled:opacity-60">
+            {isSigningOut ? <Spinner className="h-5 w-5" /> : <LogoutIcon className="h-5 w-5" />} Đăng xuất
+          </button>
+        </li>
+      </ul>
+    </div>
+  );
+}
 
 /**
  * Nút hamburger + bảng menu trượt xuống (màn hình dưới lg). Hiệu ứng CSS thuần, chỉ dùng transform + opacity.
@@ -20,26 +61,10 @@ export default function MobileMenu({ links }) {
   const rootRef = useRef(null);
   const buttonRef = useRef(null);
   const { pathname, hash } = useLocation();
+  const { status } = useAuth();
+  useDismiss(isOpen, setIsOpen, rootRef, buttonRef);
 
-  useEffect(() => { setIsOpen(false); }, [pathname, hash]);
-
-  useEffect(() => {
-    if (!isOpen) return undefined;
-    const onKeyDown = (event) => {
-      if (event.key !== 'Escape') return;
-      setIsOpen(false);
-      buttonRef.current?.focus();
-    };
-    const onPointerDown = (event) => {
-      if (!rootRef.current?.contains(event.target)) setIsOpen(false);
-    };
-    document.addEventListener('keydown', onKeyDown);
-    document.addEventListener('pointerdown', onPointerDown);
-    return () => {
-      document.removeEventListener('keydown', onKeyDown);
-      document.removeEventListener('pointerdown', onPointerDown);
-    };
-  }, [isOpen]);
+  useEffect(() => { setIsOpen(false); }, [pathname, hash, status]);
 
   // Bấm vào mục đang ở cùng URL (vd. link cuộn tới section) thì useLocation không đổi → đóng tại đây
   const closeOnLinkClick = (event) => {
@@ -65,7 +90,7 @@ export default function MobileMenu({ links }) {
         id={PANEL_ID}
         aria-label="Điều hướng chính"
         onClick={closeOnLinkClick}
-        className={`absolute inset-x-0 top-full origin-top border-b border-ink/10 bg-ground px-5 pb-6 pt-3 shadow-xl transition-[opacity,transform,visibility] duration-200 ease-out sm:px-8 ${
+        className={`absolute inset-x-0 top-full max-h-[calc(100dvh-4rem)] origin-top overflow-y-auto border-b border-ink/10 bg-ground px-5 pb-6 pt-3 shadow-xl transition-[opacity,transform,visibility] duration-200 ease-out sm:px-8 ${
           isOpen ? 'visible translate-y-0 opacity-100' : 'invisible -translate-y-2 opacity-0'
         }`}
       >
@@ -76,6 +101,7 @@ export default function MobileMenu({ links }) {
             </li>
           ))}
         </ul>
+        <MobileAccountSection />
         <QuoteButton bubble={false} className="mt-4 w-full" />
       </nav>
     </div>

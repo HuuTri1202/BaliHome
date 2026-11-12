@@ -43,7 +43,8 @@ export const PenIcon = (p) => (<Svg {...p}><path d="m4 20 1-5L16 4l4 4L9 19l-5 1
 export const GlobeIcon = (p) => (<Svg {...p}><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3c2.5 2.5 3.8 5.5 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.5-3.8-9S9.5 5.5 12 3Z" /></Svg>);
 export const MegaphoneIcon = (p) => (<Svg {...p}><path d="M4 10v4l3 .5L19 19V5L7 9.5 4 10Z" /><path d="m8 15 1.5 5h3L11 16" /></Svg>);
 export const FacebookIcon = (p) => (<Svg {...p}><path d="M14 8.5h2.5V5H14c-2.5 0-4 1.7-4 4.2V11H7.5v3.5H10V21h3.5v-6.5H16l.5-3.5h-3V9.3c0-.5.3-.8.8-.8Z" fill="currentColor" stroke="none" /></Svg>);
-export const ArrowUpIcon = (p) => (<Svg {...p}><path d="M12 19V5M6 11l6-6 6 6" /></Svg>);
+export const ChevronDownIcon = (p) => (<Svg {...p}><path d="m6 9 6 6 6-6" /></Svg>);
+export const ArrowUpIcon =(p) => (<Svg {...p}><path d="M12 19V5M6 11l6-6 6 6" /></Svg>);
 export const PaperclipIcon = (p) => (<Svg {...p}><path d="m21 11-8.5 8.5a5 5 0 0 1-7-7L14 4a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L15 7" /></Svg>);
 export const ContrastIcon = (p) => (<Svg {...p}><circle cx="12" cy="12" r="9" /><path d="M12 3a9 9 0 0 1 0 18V3Z" fill="currentColor" stroke="none" /></Svg>);
 export const MenuIcon = (p) => (<Svg {...p}><path d="M4 7h16M4 12h16M4 17h16" /></Svg>);

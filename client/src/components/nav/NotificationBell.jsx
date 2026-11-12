@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { BellIcon } from '../ui/icons.jsx';
 import { useNotifications } from '../../hooks/useNotifications.js';
+import { useDismiss } from '../../hooks/useDismiss.js';
 import { fmtDateTime } from '../../data/requests.js';
 
 const MAX_BADGE_COUNT = 99;
@@ -34,24 +35,7 @@ export default function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
   const rootRef = useRef(null);
   const buttonRef = useRef(null);
-
-  useEffect(() => {
-    if (!isOpen) return undefined;
-    const onKeyDown = (event) => {
-      if (event.key !== 'Escape') return;
-      setIsOpen(false);
-      buttonRef.current?.focus();
-    };
-    const onPointerDown = (event) => {
-      if (!rootRef.current?.contains(event.target)) setIsOpen(false);
-    };
-    document.addEventListener('keydown', onKeyDown);
-    document.addEventListener('pointerdown', onPointerDown);
-    return () => {
-      document.removeEventListener('keydown', onKeyDown);
-      document.removeEventListener('pointerdown', onPointerDown);
-    };
-  }, [isOpen]);
+  useDismiss(isOpen, setIsOpen, rootRef, buttonRef);
 
   const openNotification = (id) => {
     markRead(id);

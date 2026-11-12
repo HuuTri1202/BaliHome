@@ -152,7 +152,8 @@ export default function ServiceExplorer({ idPrefix = 'sv' }) {
   };
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[300px_1fr] lg:gap-6 xl:grid-cols-[340px_1fr]">
+    // minmax(0,1fr): cột điện thoại không bị nội dung (tên dịch vụ dài) ép rộng hơn màn hình
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-4 lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-6 xl:grid-cols-[340px_minmax(0,1fr)]">
       <div
         role="tablist"
         aria-label="Chọn dịch vụ"

@@ -107,6 +107,12 @@
     from { opacity: 0; transform: translateY(16px); }
     to { opacity: 1; transform: none; }
   }
+  /* Chỉ đổi độ mờ: dùng cho khung chứa dropdown (transform sẽ biến khung thành mốc định vị của dropdown) */
+  --animate-fade-in: fade-in 0.3s ease-out both;
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
   /* Khối gradient trang trí trôi chậm (trang đăng nhập). Dùng kèm motion-safe: */
   --animate-drift: drift 18s ease-in-out infinite alternate;
   @keyframes drift {

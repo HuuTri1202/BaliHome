@@ -1,34 +1,22 @@
-import { NavLink, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-import Navbar, { CONTAINER, initials } from '../Navbar.jsx';
+import { NavLink } from 'react-router-dom';
+import Navbar, { CONTAINER } from '../Navbar.jsx';
+import { initials } from '../../lib/initials.js';
 import { useAuth } from '../../context/AuthContext.jsx';
-import { ChatIcon, HomeIcon, UserIcon, KeyIcon, ShieldIcon, LogoutIcon, ArrowRightIcon } from '../ui/icons.jsx';
+import { useSignOut } from '../../hooks/useSignOut.js';
+import { accountLinksFor } from '../../data/accountLinks.js';
+import { LogoutIcon, ArrowRightIcon } from '../ui/icons.jsx';
 import { Button } from '../ui/Button.jsx';
 
 /* Khung của Cổng khách hàng (/tai-khoan/*): menu bên trái (desktop) / thanh vuốt ngang (phone)
    + nội dung bên phải. Quản trị dùng khung riêng: components/admin/AdminLayout.jsx. */
-const CUSTOMER_LINKS = [
-  ['/tai-khoan', 'Tổng quan', HomeIcon, true],
-  ['/tai-khoan/yeu-cau', 'Yêu cầu của tôi', ChatIcon],
-  ['/tai-khoan/ho-so', 'Hồ sơ', UserIcon],
-  ['/tai-khoan/bao-mat', 'Bảo mật & giao diện', KeyIcon],
-];
-
 export default function PortalLayout({ title, subtitle, actions, children }) {
-  const { user, isAdmin, logout } = useAuth();
-  const navigate = useNavigate();
-  const [leaving, setLeaving] = useState(false);
+  const { user, isAdmin } = useAuth();
+  const { signOut: onLogout, isSigningOut: leaving } = useSignOut();
 
   const linkCls = ({ isActive }) =>
     `flex shrink-0 items-center gap-3 whitespace-nowrap rounded-full px-4 py-2.5 text-[15px] font-semibold transition-colors lg:rounded-2xl ${
       isActive ? 'bg-ink text-ground' : 'bg-ground-2 text-ink hover:bg-ground-3 lg:bg-transparent lg:hover:bg-ground'
     }`;
-
-  const onLogout = async () => {
-    setLeaving(true);
-    await logout();
-    navigate('/', { replace: true });
-  };
 
   return (
     <div className="min-h-dvh bg-ground">
@@ -43,14 +31,11 @@ export default function PortalLayout({ title, subtitle, actions, children }) {
             </span>
           </div>
           <nav aria-label="Menu tài khoản" className="-mx-5 flex gap-2 overflow-x-auto px-5 [scrollbar-width:none] sm:mx-0 sm:px-0 lg:mt-3 lg:flex-col lg:rounded-3xl lg:bg-ground-2 lg:p-2">
-            {CUSTOMER_LINKS.map(([to, label, Icon, end]) => (
+            {accountLinksFor(isAdmin).map(({ to, label, icon: Icon, end }) => (
               <NavLink key={to} to={to} end={end} className={linkCls}>
                 <Icon className="h-5 w-5" /> {label}
               </NavLink>
             ))}
-            {isAdmin && (
-              <NavLink to="/quan-tri" className={linkCls}><ShieldIcon className="h-5 w-5" /> Quản trị</NavLink>
-            )}
           </nav>
           <div className="mt-3 hidden lg:block">
             <Button variant="danger" onClick={onLogout} loading={leaving} className="w-full">
