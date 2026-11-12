@@ -21,7 +21,7 @@ export function requestUpdateNotification({ request, newStatus, note }) {
     : `${request.code}: có tin nhắn mới từ Bali Home`;
   return [
     prisma.notification.create({
-      data: { userId: request.userId, requestId: request.id, title, body: note ?? null },
+      data: { userId: request.userId, requestId: request.id, kind: note ? 'message' : 'status', title, body: note ?? null },
     }),
   ];
 }

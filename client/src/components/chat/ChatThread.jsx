@@ -79,7 +79,7 @@ function PendingFooter({ item, onRetry, onDiscard }) {
  * các mốc trạng thái hiện ở giữa. Tự cuộn xuống khi có tin mới nếu người dùng đang ở cuối.
  * @param {{ messages: object[], pending: object[], viewer: 'customer'|'staff', onRetry: Function, onDiscard: Function }} props
  */
-export default function ChatThread({ messages, pending, viewer, onRetry, onDiscard }) {
+export default function ChatThread({ messages, pending, viewer, onRetry, onDiscard, className = 'max-h-[60vh] min-h-64' }) {
   const scrollRef = useRef(null);
   const isNearBottom = useRef(true);
   const myKind = viewer === 'staff' ? STAFF_MESSAGE : CUSTOMER_MESSAGE;
@@ -104,7 +104,7 @@ export default function ChatThread({ messages, pending, viewer, onRetry, onDisca
   };
 
   return (
-    <div ref={scrollRef} onScroll={trackScroll} role="log" aria-live="polite" aria-label="Tin nhắn" className="max-h-[60vh] min-h-64 overflow-y-auto pr-1">
+    <div ref={scrollRef} onScroll={trackScroll} role="log" aria-live="polite" aria-label="Tin nhắn" className={`overflow-y-auto pr-1 ${className}`}>
       <ol className="grid gap-3">
         {messages.flatMap((event) => {
           const divider = dayDivider(event.createdAt);

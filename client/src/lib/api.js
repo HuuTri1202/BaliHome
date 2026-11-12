@@ -75,6 +75,7 @@ export const notificationsApi = {
   list: () => request('/notifications'),
   markRead: (id) => request(`/notifications/${encodeURIComponent(id)}/read`, { method: 'POST' }),
   markAllRead: () => request('/notifications/read-all', { method: 'POST' }),
+  markRequestRead: (requestId) => request(`/notifications/requests/${encodeURIComponent(requestId)}/read`, { method: 'POST' }),
 };
 
 export const uploadsApi = {

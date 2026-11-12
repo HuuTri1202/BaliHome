@@ -2,8 +2,11 @@ import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { ArrowUpIcon } from './ui/icons.jsx';
 import { CONTACT, SOCIAL_LINKS, toTelHref } from '../data/siteContact.js';
+import { useAuth } from '../context/AuthContext.jsx';
+import ChatWidget from './chat/ChatWidget.jsx';
 
 const SCROLL_TOP_THRESHOLD_PX = 600;
+const REQUEST_DETAIL_PATH = /^\/tai-khoan\/yeu-cau\/[^/]+$/;
 const FLOATING_BUTTON = 'relative grid place-items-center shadow-lg transition-transform duration-200 hover:scale-105 active:scale-95';
 const ICON_SHAPE = 'rounded-[28%]'; // bo theo góc của ảnh icon, che phần nền trắng ở 4 góc ảnh
 const CONTACT_BUTTON_SIZE = 'h-12 w-12 sm:h-14 sm:w-14';
@@ -81,14 +84,17 @@ function useHasScrolledPast(thresholdPx) {
 }
 
 /**
- * Cụm nút liên hệ nổi ở góc phải dưới: lên đầu trang, Facebook, Zalo, hotline (từ trên xuống).
+ * Cụm nút liên hệ nổi ở góc phải dưới: lên đầu trang, chat (khi đã đăng nhập), Facebook, Zalo, hotline (từ trên xuống).
  * Số điện thoại và các link lấy từ data/siteContact.js; mục chưa điền thì tự ẩn.
  * Không hiện trong trang quản trị.
  */
 export default function FloatingContact() {
   const { pathname } = useLocation();
+  const { user } = useAuth();
   const isPastThreshold = useHasScrolledPast(SCROLL_TOP_THRESHOLD_PX);
   if (pathname.startsWith('/quan-tri')) return null;
+  // Trang chi tiết yêu cầu đã có khung chat đầy đủ → không cần bong bóng chat
+  const showChat = Boolean(user) && !REQUEST_DETAIL_PATH.test(pathname);
 
   const { hotline } = CONTACT;
   const socialUrl = (name) => SOCIAL_LINKS.find(({ label }) => label === name)?.href;
@@ -98,6 +104,7 @@ export default function FloatingContact() {
   return (
     <aside aria-label="Liên hệ nhanh" className="fixed bottom-6 right-6 z-40 flex flex-col items-center gap-3">
       <ScrollTopButton isVisible={isPastThreshold} />
+      {showChat && <ChatWidget />}
       {facebookUrl && <ExternalContactButton href={facebookUrl} tooltip="Fanpage Bali Home" iconSrc="/icons/facebook.png" />}
       {zaloUrl && <ExternalContactButton href={zaloUrl} tooltip="Chat Zalo tư vấn" iconSrc="/icons/zalo.png" />}
       {hotline && <HotlineButton hotline={hotline} />}

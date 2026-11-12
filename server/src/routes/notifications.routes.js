@@ -18,7 +18,7 @@ router.get('/', async (req, res) => {
       where: { userId },
       orderBy: { createdAt: 'desc' },
       take: LIST_LIMIT,
-      select: { id: true, requestId: true, title: true, body: true, readAt: true, createdAt: true },
+      select: { id: true, requestId: true, kind: true, title: true, body: true, readAt: true, createdAt: true },
     }),
     prisma.notification.count({ where: { userId, readAt: null } }),
   ]);
@@ -28,6 +28,16 @@ router.get('/', async (req, res) => {
 // POST /api/notifications/read-all
 router.post('/read-all', async (req, res) => {
   await prisma.notification.updateMany({ where: { userId: req.auth.userId, readAt: null }, data: { readAt: new Date() } });
+  res.json({ ok: true });
+});
+
+// POST /api/notifications/requests/:requestId/read — khách mở cuộc trò chuyện của 1 yêu cầu
+router.post('/requests/:requestId/read', async (req, res) => {
+  if (!isUuid(req.params.requestId)) throw new AppError(404, 'NOT_FOUND', 'Không tìm thấy yêu cầu.');
+  await prisma.notification.updateMany({
+    where: { userId: req.auth.userId, requestId: req.params.requestId, readAt: null },
+    data: { readAt: new Date() },
+  });
   res.json({ ok: true });
 });
 
