@@ -58,7 +58,7 @@ export default function HeroScene() {
           </div>
           <div className="mt-10 flex animate-rise flex-wrap items-center gap-3 [animation-delay:160ms]">
             <QuoteButton />
-            <Button as="a" href="#lien-he" variant="glass" size="lg">Tư vấn miễn phí</Button>
+            <Button as="a" href="#cach-lam-viec" variant="outline" size="lg">Xem cách làm việc</Button>
           </div>
         </div>
 

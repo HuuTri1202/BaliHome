@@ -109,7 +109,12 @@ export default function HomePage() {
         <ProcessSection />
         <ValuesBand />
         <MembersSection isLoggedIn={Boolean(user)} />
-        <ContactSection />
+        <ContactSection
+          isClosing
+          title="Sẵn sàng nâng tầm thương hiệu?"
+          intro="Để lại thông tin, Bali Home gọi lại tư vấn và gửi báo giá trọn gói."
+          submitLabel="Nhận tư vấn & Báo giá trọn gói"
+        />
       </main>
       <Footer />
     </div>

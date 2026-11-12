@@ -6,13 +6,14 @@ import { ArrowRightIcon } from './icons.jsx';
  * Màu lấy từ token → tự đúng ở chế độ sáng/tối.
  *  primary : nền mực đậm (đảo màu ở chế độ tối)   brand : xanh thương hiệu
  *  soft    : bậc tông nền                          glass : kính mờ (đặt trên ảnh/cảnh nền)
+ *  outline : viền mảnh, nền trong suốt (nút phụ đặt cạnh nút chính)
  *  onMotif : trắng trên mảng navy                  danger / ghost
  */
 const VARIANTS = {
   primary: 'bg-ink text-ground hover:bg-ink/85',
   brand: 'bg-action text-on-action hover:bg-action-hover',
   soft: 'bg-ground-3 text-ink hover:bg-line',
-  outline: 'bg-ground-3 text-ink hover:bg-line', // tên cũ = soft
+  outline: 'border border-ink/40 bg-transparent text-ink hover:border-ink hover:bg-ink/5', // viền mảnh, nền trong suốt: nút phụ
   glass: 'glass text-ink hover:bg-ground',
   dark: 'bg-ink text-ground hover:bg-ink/85',
   onMotif: 'bg-on-motif text-motif hover:bg-on-motif-2',

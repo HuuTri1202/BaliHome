@@ -16,7 +16,7 @@ function ServiceCard({ service: { slug, title, line, Icon, tone }, index }) {
         <h3 className="mt-14 font-display text-[1.75rem] leading-tight">{title}</h3>
         <p className="mt-2 text-ink-2">{line}</p>
         <span className="mt-8 inline-flex items-center gap-2 text-[15px] font-semibold transition-colors group-hover:text-action">
-          Xem chi tiết <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+          Khám phá dịch vụ <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
         </span>
       </Link>
     </li>
@@ -34,7 +34,7 @@ export default function CoreServices() {
         </ul>
         {/* CTA điều hướng (không phải báo giá): khách cần hiểu dịch vụ trước khi được mời báo giá */}
         <div {...item(5, 'mt-16')}>
-          <Button as={Link} to="/dich-vu" variant="soft" size="lg" bubble>Khám phá dịch vụ</Button>
+          <Button as={Link} to="/dich-vu" variant="soft" size="lg" bubble>Xem tất cả dịch vụ</Button>
         </div>
       </Reveal>
     </section>
