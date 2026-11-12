@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import rateLimit from 'express-rate-limit';
+import { byUser, createLimiter } from '../lib/rateLimit.js';
 import { prisma } from '../lib/prisma.js';
 import { AppError } from '../utils/AppError.js';
 import { validate } from '../middleware/validate.js';
@@ -10,34 +10,29 @@ import { isOwnUpload } from '../lib/cloudinary.js';
 import { createWithUniqueCode } from '../lib/requestCode.js';
 import { CUSTOMER_REQUEST_SELECT, withServiceNames } from '../services/requests.service.js';
 
-// Chống spam: tối đa 5 yêu cầu / giờ / IP
-const contactLimiter = rateLimit({
+// Chống spam: tối đa 5 yêu cầu / giờ / IP (khách vãng lai cũng gửi được nên phải tính theo IP)
+const contactLimiter = createLimiter({
+  name: 'contact',
   windowMs: 60 * 60 * 1000,
   limit: 5,
-  standardHeaders: 'draft-7',
-  legacyHeaders: false,
-  handler: (_req, res) =>
-    res.status(429).json({
-      error: { code: 'TOO_MANY_REQUESTS', message: 'Bạn đã gửi nhiều yêu cầu. Vui lòng thử lại sau ít phút hoặc gọi trực tiếp cho Bali Home.' },
-    }),
+  message: 'Bạn đã gửi nhiều yêu cầu. Vui lòng thử lại sau ít phút hoặc gọi trực tiếp cho Bali Home.',
 });
 
-const editLimiter = rateLimit({
+// Sửa yêu cầu & nhắn tin bắt buộc đăng nhập → đếm theo tài khoản, không theo IP
+const editLimiter = createLimiter({
+  name: 'contact-edit',
   windowMs: 60 * 60 * 1000,
   limit: 30,
-  standardHeaders: 'draft-7',
-  legacyHeaders: false,
-  handler: (_req, res) =>
-    res.status(429).json({ error: { code: 'TOO_MANY_REQUESTS', message: 'Bạn đã sửa quá nhiều lần. Vui lòng thử lại sau ít phút.' } }),
+  keyGenerator: byUser,
+  message: 'Bạn đã sửa quá nhiều lần. Vui lòng thử lại sau ít phút.',
 });
 
-const messageLimiter = rateLimit({
+const messageLimiter = createLimiter({
+  name: 'customer-message',
   windowMs: 10 * 60 * 1000,
   limit: 40,
-  standardHeaders: 'draft-7',
-  legacyHeaders: false,
-  handler: (_req, res) =>
-    res.status(429).json({ error: { code: 'TOO_MANY_REQUESTS', message: 'Bạn gửi tin nhắn hơi nhanh. Vui lòng đợi ít phút rồi gửi tiếp.' } }),
+  keyGenerator: byUser,
+  message: 'Bạn gửi tin nhắn hơi nhanh. Vui lòng đợi ít phút rồi gửi tiếp.',
 });
 
 /** Chỉ yêu cầu còn ở trạng thái này khách mới được tự sửa */
@@ -118,7 +113,7 @@ router.get('/mine/:id/messages', requireAuth, async (req, res) => {
 });
 
 // POST /api/contact/mine/:id/messages { body?, attachments? } — khách nhắn cho Bali Home
-router.post('/mine/:id/messages', messageLimiter, requireAuth, validate(messageSchema), async (req, res) => {
+router.post('/mine/:id/messages', requireAuth, messageLimiter, validate(messageSchema), async (req, res) => {
   const request = await findOwnRequest(req);
   const message = await postMessage({ request, authorId: req.auth.userId, kind: CUSTOMER_MESSAGE, ...req.body });
   res.status(201).json({ message });
@@ -128,7 +123,7 @@ const requestLocked = () =>
   new AppError(409, 'REQUEST_LOCKED', 'Yêu cầu này đã được Bali Home tiếp nhận xử lý nên không sửa được nữa. Vui lòng gọi hotline nếu cần thay đổi.');
 
 // PATCH /api/contact/mine/:id { phone, need, message } — khách tự sửa yêu cầu còn chờ xử lý
-router.patch('/mine/:id', editLimiter, requireAuth, validate(contactEditSchema), async (req, res) => {
+router.patch('/mine/:id', requireAuth, editLimiter, validate(contactEditSchema), async (req, res) => {
   const id = String(req.params.id);
   if (!isUuid(id)) throw new AppError(404, 'NOT_FOUND', 'Không tìm thấy yêu cầu.');
   const ownedRequest = { id, userId: req.auth.userId };

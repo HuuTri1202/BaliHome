@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import rateLimit from 'express-rate-limit';
+import { byUser, createLimiter } from '../lib/rateLimit.js';
 import { prisma } from '../lib/prisma.js';
 import { AppError } from '../utils/AppError.js';
 import { requireAuth } from '../middleware/auth.js';
@@ -22,13 +22,13 @@ router.use(systemRoutes); // /overview, /series, /users, /services
 const PAGE_SIZE = 20;
 
 // Mỗi tin của Bali Home tạo 1 thông báo cho khách → chặn gửi dồn dập (lỗi script, tài khoản admin bị lộ)
-const staffMessageLimiter = rateLimit({
+// Đếm theo tài khoản admin (router đã qua requireAuth), không theo IP
+const staffMessageLimiter = createLimiter({
+  name: 'staff-message',
   windowMs: 10 * 60 * 1000,
   limit: 120,
-  standardHeaders: 'draft-7',
-  legacyHeaders: false,
-  handler: (_req, res) =>
-    res.status(429).json({ error: { code: 'TOO_MANY_REQUESTS', message: 'Gửi quá nhiều tin trong thời gian ngắn. Vui lòng đợi ít phút.' } }),
+  keyGenerator: byUser,
+  message: 'Gửi quá nhiều tin trong thời gian ngắn. Vui lòng đợi ít phút.',
 });
 
 const ADMIN_LIST_SELECT = {

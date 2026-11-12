@@ -1,15 +1,14 @@
 import { Router } from 'express';
-import rateLimit from 'express-rate-limit';
+import { createLimiter } from '../lib/rateLimit.js';
 import { AppError } from '../utils/AppError.js';
 import { cloudinaryEnabled, signUpload } from '../lib/cloudinary.js';
 
-// Mỗi chữ ký dùng cho 1 lần tải file → giới hạn 30 lần / giờ / IP
-const signLimiter = rateLimit({
+// Mỗi chữ ký dùng cho 1 lần tải file → giới hạn 30 lần / giờ / IP (khách vãng lai cũng tải được)
+const signLimiter = createLimiter({
+  name: 'upload-signature',
   windowMs: 60 * 60 * 1000,
   limit: 30,
-  standardHeaders: 'draft-7',
-  legacyHeaders: false,
-  handler: (_req, res) => res.status(429).json({ error: { code: 'TOO_MANY_REQUESTS', message: 'Bạn tải lên quá nhiều tệp, vui lòng thử lại sau.' } }),
+  message: 'Bạn tải lên quá nhiều tệp, vui lòng thử lại sau.',
 });
 
 const router = Router(); // /api/uploads
