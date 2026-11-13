@@ -1,7 +1,5 @@
 import { useAuth } from '../context/AuthContext.jsx';
-import { useLogoTone } from '../hooks/useLogoTone.js';
 import BrandMark from './BrandMark.jsx';
-import LogoToneToggle from './nav/LogoToneToggle.jsx';
 import ThemeToggle from './ThemeToggle.jsx';
 import MobileMenu from './nav/MobileMenu.jsx';
 import NotificationBell from './nav/NotificationBell.jsx';
@@ -47,15 +45,11 @@ function AccountArea() {
  * Không đặt nút Báo giá trên thanh: CTA báo giá đã có ở Hero, khối liên hệ cuối trang và trong menu điện thoại.
  */
 export default function Navbar() {
-  const { tone: logoTone, toggleTone: toggleLogoTone } = useLogoTone();
 
   return (
     <header className="sticky top-0 z-50 border-b border-ink/5 bg-ground/80 backdrop-blur-md">
       <div className={`${CONTAINER} flex h-16 items-center justify-between gap-4 lg:h-20`}>
-        <div className="flex items-center gap-1">
-          <BrandMark tone={logoTone} />
-          <LogoToneToggle tone={logoTone} onToggle={toggleLogoTone} />
-        </div>
+        <BrandMark />
 
         <nav aria-label="Điều hướng chính" className="hidden lg:block">
           <ul className="flex items-center gap-1">
