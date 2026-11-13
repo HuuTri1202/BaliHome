@@ -1,18 +1,24 @@
 import { useId, useRef, useState } from 'react';
-import { CheckIcon, ChatIcon, FileIcon, LayersIcon } from '../ui/icons.jsx';
+import { ChatIcon, CheckIcon, FileIcon, PenIcon, ShieldIcon, SparkIcon } from '../ui/icons.jsx';
 
+/**
+ * Quy trình làm việc do Bali Home cung cấp (12/11/2026).
+ * label: tên ngắn dưới vòng tròn; title + detail: hiện đầy đủ ở khung bên dưới khi chọn bước.
+ */
 const STEPS = [
-  { title: 'Lắng nghe', detail: 'Hỏi rõ mục tiêu, khách hàng và ngân sách.', Icon: ChatIcon },
-  { title: 'Báo giá', detail: 'Chia theo hạng mục, có mốc giao từng phần.', Icon: FileIcon },
-  { title: 'Thực hiện', detail: 'Bạn duyệt bản nháp, góp ý để chỉnh sửa.', Icon: LayersIcon },
-  { title: 'Bàn giao', detail: 'File gốc, tài khoản và hỗ trợ sau dự án.', Icon: CheckIcon },
+  { label: 'Lắng nghe', title: 'Lắng nghe & Tiếp nhận nhu cầu', detail: 'Tìm hiểu mong muốn, mục tiêu, ngân sách và những yêu cầu cụ thể của khách hàng.', Icon: ChatIcon },
+  { label: 'Tư vấn', title: 'Tư vấn & Đề xuất giải pháp', detail: 'Phân tích nhu cầu, đưa ra phương án phù hợp và tối ưu hiệu quả cho khách hàng.', Icon: SparkIcon },
+  { label: 'Báo giá', title: 'Báo giá & Xác nhận', detail: 'Gửi báo giá chi tiết, thống nhất chi phí, tiến độ và phạm vi công việc.', Icon: FileIcon },
+  { label: 'Triển khai', title: 'Ký kết & Triển khai', detail: 'Xác nhận thỏa thuận, tiến hành thực hiện dịch vụ theo kế hoạch đã thống nhất.', Icon: PenIcon },
+  { label: 'Bàn giao', title: 'Nghiệm thu & Bàn giao', detail: 'Kiểm tra chất lượng, hoàn thiện các hạng mục và bàn giao kết quả cho khách hàng.', Icon: CheckIcon },
+  { label: 'Chăm sóc', title: 'Chăm sóc & Hỗ trợ sau dịch vụ', detail: 'Tiếp nhận phản hồi, hỗ trợ phát sinh và duy trì mối quan hệ lâu dài với khách hàng.', Icon: ShieldIcon },
 ];
 
-/** Tâm của cột đầu và cột cuối trong lưới 4 cột: đường nối chạy giữa hai điểm này */
-const LINE_INSET = '12.5%';
+/** Tâm của cột đầu và cột cuối trong lưới N cột: đường nối chạy giữa hai điểm này */
+const LINE_INSET = `${100 / (2 * STEPS.length)}%`;
 const KEY_STEPS = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 };
 
-function StepTab({ step: { title, Icon }, isActive, isReached, tabId, panelId, tabRef, onSelect }) {
+function StepTab({ step: { label, Icon }, isActive, isReached, tabId, panelId, tabRef, onSelect }) {
   return (
     <button
       ref={tabRef}
@@ -26,13 +32,14 @@ function StepTab({ step: { title, Icon }, isActive, isReached, tabId, panelId, t
       className="group flex w-full flex-col items-center gap-4 rounded-2xl py-2 font-semibold"
     >
       <span
-        className={`relative grid h-14 w-14 place-items-center rounded-full transition-[background-color,color,transform,box-shadow] duration-300 group-hover:scale-105 lg:h-20 lg:w-20 ${
+        className={`relative grid h-11 w-11 place-items-center rounded-full transition-[background-color,color,transform,box-shadow] duration-300 group-hover:scale-105 sm:h-14 sm:w-14 lg:h-20 lg:w-20 ${
           isReached ? 'bg-action text-on-action' : 'bg-ground-3 text-ink'
         } ${isActive ? 'scale-105 ring-4 ring-[color-mix(in_srgb,var(--action)_25%,transparent)]' : ''}`}
       >
-        <Icon className="h-6 w-6 lg:h-8 lg:w-8" />
+        <Icon className="h-5 w-5 sm:h-6 sm:w-6 lg:h-8 lg:w-8" />
       </span>
-      <span className={`text-[15px] transition-colors duration-300 lg:text-lead ${isActive ? 'text-action' : ''}`}>{title}</span>
+      {/* Điện thoại: 6 cột quá hẹp cho chữ → chỉ còn vòng tròn, tên bước vẫn có cho trình đọc màn hình */}
+      <span className={`sr-only text-[15px] transition-colors duration-300 sm:not-sr-only lg:text-[1.0625rem] ${isActive ? 'text-action' : ''}`}>{label}</span>
     </button>
   );
 }
@@ -61,13 +68,13 @@ export default function ProcessStepper() {
   return (
     <div>
       <div className="relative">
-        <span className="absolute top-9 h-0.5 bg-ground-3 lg:top-12" style={{ left: LINE_INSET, right: LINE_INSET }} aria-hidden="true">
+        <span className="absolute top-[30px] h-0.5 bg-ground-3 sm:top-9 lg:top-12" style={{ left: LINE_INSET, right: LINE_INSET }} aria-hidden="true">
           <span className="block h-full origin-left bg-action transition-transform duration-500" style={{ transform: `scaleX(${activeIndex / (STEPS.length - 1)})` }} />
         </span>
-        <div role="tablist" aria-label="Các bước làm việc" onKeyDown={selectByKeyboard} className="relative grid grid-cols-4">
+        <div role="tablist" aria-label="Các bước làm việc" onKeyDown={selectByKeyboard} className="relative grid grid-cols-6">
           {STEPS.map((step, index) => (
             <StepTab
-              key={step.title}
+              key={step.label}
               step={step}
               isActive={index === activeIndex}
               isReached={index <= activeIndex}
@@ -82,9 +89,10 @@ export default function ProcessStepper() {
 
       <div id={panelId} role="tabpanel" aria-labelledby={tabId(activeIndex)} className="mt-10 grid min-h-32 place-items-center rounded-3xl bg-ground-2 p-6 text-center lg:mt-14">
         {/* key = bước → mỗi lần đổi bước nội dung "mọc" lên lại */}
-        <div key={activeStep.title} className="animate-rise">
-          <p className="text-lead font-bold">{activeStep.title}</p>
-          <p className="mt-1 text-ink-2">{activeStep.detail}</p>
+        <div key={activeStep.label} className="animate-rise">
+          <p className="text-sm font-semibold text-action">Bước {activeIndex + 1}/{STEPS.length}</p>
+          <p className="mt-1 text-lead font-bold">{activeStep.title}</p>
+          <p className="mx-auto mt-2 max-w-[52ch] text-ink-2">{activeStep.detail}</p>
         </div>
       </div>
     </div>

@@ -15,7 +15,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 /* =============================================================================
  * Trang chủ Bali Home: ít chữ, trực quan. Mỗi section = 1 thông điệp + 1 hành động.
  * Hero → Dịch vụ (4 card) → Quy trình (stepper) → Dải CTA → Thành viên (chỉ khách chưa đăng nhập) → Form liên hệ.
- * ⚠ Các bước làm việc và câu chữ cam kết là NỘI DUNG NHÁP, cần Bali Home xác nhận.
+ * 6 bước làm việc: nội dung Bali Home cung cấp (12/11/2026). ⚠ Câu chữ cam kết khác vẫn là NỘI DUNG NHÁP.
  * ========================================================================== */
 const PAGE_TITLE = 'Bali Home | Thiết kế, In ấn, Website và Marketing cho doanh nghiệp';
 const MEMBER_BENEFITS = ['Lưu thông tin', 'Xem trạng thái', 'Miễn phí'];
@@ -24,7 +24,7 @@ function ProcessSection() {
   return (
     <section id="cach-lam-viec" aria-labelledby="cach-lam-viec-title" className="pb-28 lg:pb-44">
       <Reveal className={CONTAINER}>
-        <h2 id="cach-lam-viec-title" {...item(0, 'font-display text-title')}>Bốn bước, một người phụ trách</h2>
+        <h2 id="cach-lam-viec-title" {...item(0, 'font-display text-title')}>Sáu bước, một người phụ trách</h2>
         <div {...item(1, 'mt-20')}>
           <ProcessStepper />
         </div>
