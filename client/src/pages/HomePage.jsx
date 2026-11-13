@@ -14,7 +14,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 
 /* =============================================================================
  * Trang chủ Bali Home: ít chữ, trực quan. Mỗi section = 1 thông điệp + 1 hành động.
- * Hero → Dịch vụ (4 card) → Quy trình (stepper) → Dải CTA → Thành viên → Form liên hệ.
+ * Hero → Dịch vụ (4 card) → Quy trình (stepper) → Dải CTA → Thành viên (chỉ khách chưa đăng nhập) → Form liên hệ.
  * ⚠ Các bước làm việc và câu chữ cam kết là NỘI DUNG NHÁP, cần Bali Home xác nhận.
  * ========================================================================== */
 const PAGE_TITLE = 'Bali Home | Thiết kế, In ấn, Website và Marketing cho doanh nghiệp';
@@ -66,7 +66,8 @@ function RequestsFragment() {
   );
 }
 
-function MembersSection({ isLoggedIn }) {
+/** Mời khách tạo tài khoản. Chỉ dành cho khách chưa đăng nhập (người đã có tài khoản vào qua avatar trên Header). */
+function MembersSection() {
   return (
     <section id="thanh-vien" aria-labelledby="thanh-vien-title" className={SECTION_Y}>
       <Reveal className={`${CONTAINER} grid items-center gap-16 lg:grid-cols-12`}>
@@ -80,9 +81,7 @@ function MembersSection({ isLoggedIn }) {
             ))}
           </ul>
           <div {...item(2, 'mt-12')}>
-            <Button as={Link} to={isLoggedIn ? '/tai-khoan' : '/dang-ky'} variant="dark" size="lg">
-              {isLoggedIn ? 'Mở tài khoản của tôi' : 'Tạo tài khoản'}
-            </Button>
+            <Button as={Link} to="/dang-ky" variant="dark" size="lg">Tạo tài khoản</Button>
           </div>
         </div>
         <div {...item(2, 'lg:col-span-6')}>
@@ -96,7 +95,8 @@ function MembersSection({ isLoggedIn }) {
 }
 
 export default function HomePage() {
-  const { user } = useAuth();
+  // Chỉ hiện lời mời tạo tài khoản khi đã chắc là khách (không hiện rồi biến mất với người đã đăng nhập)
+  const { status } = useAuth();
 
   useEffect(() => { document.title = PAGE_TITLE; }, []);
 
@@ -108,7 +108,7 @@ export default function HomePage() {
         <CoreServices />
         <ProcessSection />
         <ValuesBand />
-        <MembersSection isLoggedIn={Boolean(user)} />
+        {status === 'guest' && <MembersSection />}
         <ContactSection
           isClosing
           title="Sẵn sàng nâng tầm thương hiệu?"
