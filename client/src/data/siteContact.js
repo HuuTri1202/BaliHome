@@ -11,7 +11,14 @@ const SITE_CONTACT = {
   portfolioPath: '/du-an', // trang Dự án (dữ liệu: data/projects.js); để '' sẽ ẩn link ở chân trang
 };
 
-const PHONE_PATTERN = /^\+?[\d\s().-]{8,20}$/;
+/** Icon kênh liên hệ (client/public/icons). Đổi ảnh thì tăng ?v= để trình duyệt khách không dùng ảnh cũ đã lưu. */
+export const CONTACT_ICONS = {
+  facebook: '/icons/facebook.png',
+  zalo: '/icons/zalo.png?v=2', // v2: bỏ nền trắng bên ngoài icon
+  phone: '/icons/phone.png',
+};
+
+const PHONE_PATTERN =/^\+?[\d\s().-]{8,20}$/;
 const INTERNAL_PATH_PATTERN = /^\/[^/]/;
 
 const keepIfValid = (value, pattern) => (pattern.test(value.trim()) ? value.trim() : '');

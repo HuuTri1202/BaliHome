@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { ArrowUpIcon } from './ui/icons.jsx';
-import { CONTACT, SOCIAL_LINKS, toTelHref } from '../data/siteContact.js';
+import { CONTACT, CONTACT_ICONS, SOCIAL_LINKS, toTelHref } from '../data/siteContact.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import ChatWidget from './chat/ChatWidget.jsx';
 
@@ -34,7 +34,7 @@ function HotlineButton({ hotline }) {
     <a href={toTelHref(hotline)} aria-label={`Gọi hotline ${hotline}`} className={`group ${FLOATING_BUTTON} ${ICON_SHAPE} ${CONTACT_BUTTON_SIZE}`}>
       {/* Sóng lan toả; tắt hẳn khi người dùng bật giảm chuyển động */}
       <span className={`pointer-events-none absolute inset-0 animate-ping bg-green-500 opacity-60 motion-reduce:hidden ${ICON_SHAPE}`} aria-hidden="true" />
-      <ContactIcon src="/icons/phone.png" />
+      <ContactIcon src={CONTACT_ICONS.phone} />
       <Tooltip>Gọi ngay cho chúng tôi</Tooltip>
     </a>
   );
@@ -107,8 +107,8 @@ export default function FloatingContact() {
     <aside aria-label="Liên hệ nhanh" className="fixed bottom-6 right-6 z-40 flex flex-col items-center gap-3">
       <ScrollTopButton isVisible={isPastThreshold} />
       {showChat && <ChatWidget />}
-      {facebookUrl && <ExternalContactButton href={facebookUrl} tooltip="Fanpage Bali Home" iconSrc="/icons/facebook.png" />}
-      {zaloUrl && <ExternalContactButton href={zaloUrl} tooltip="Chat Zalo tư vấn" iconSrc="/icons/zalo.png" />}
+      {facebookUrl && <ExternalContactButton href={facebookUrl} tooltip="Fanpage Bali Home" iconSrc={CONTACT_ICONS.facebook} />}
+      {zaloUrl && <ExternalContactButton href={zaloUrl} tooltip="Chat Zalo tư vấn" iconSrc={CONTACT_ICONS.zalo} />}
       {hotline && <HotlineButton hotline={hotline} />}
     </aside>
   );
