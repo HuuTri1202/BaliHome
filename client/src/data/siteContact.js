@@ -8,7 +8,7 @@ const SITE_CONTACT = {
     { label: 'Zalo', href: 'https://zalo.me/0941651202' },
     { label: 'Facebook', href: 'https://www.facebook.com/balihome2026' },
   ],
-  portfolioPath: '', // đường dẫn trong web, ví dụ '/du-an'. Chỉ điền khi đã có trang dự án thật.
+  portfolioPath: '/du-an', // trang Dự án (dữ liệu: data/projects.js); để '' sẽ ẩn link ở chân trang
 };
 
 const PHONE_PATTERN = /^\+?[\d\s().-]{8,20}$/;

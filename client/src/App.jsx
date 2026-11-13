@@ -4,6 +4,8 @@ import HomePage from './pages/HomePage.jsx';
 import ServicesPage from './pages/ServicesPage.jsx';
 import ServiceDetailPage from './pages/ServiceDetailPage.jsx';
 import QuotePage from './pages/QuotePage.jsx';
+import ProjectsPage from './pages/ProjectsPage.jsx';
+import ProjectDetailPage from './pages/ProjectDetailPage.jsx';
 import AuthPage from './pages/AuthPage.jsx';
 import LegalPage from './pages/LegalPage.jsx';
 import PortalHomePage from './pages/portal/PortalHomePage.jsx';
@@ -25,6 +27,8 @@ export default function App() {
       <Route path="/" element={<HomePage />} />
       <Route path="/dich-vu" element={<ServicesPage />} />
       <Route path="/dich-vu/:slug" element={<ServiceDetailPage />} />
+      <Route path="/du-an" element={<ProjectsPage />} />
+      <Route path="/du-an/:slug" element={<ProjectDetailPage />} />
       <Route path="/bao-gia" element={<QuotePage />} />
       <Route path="/chinh-sach-bao-mat" element={<LegalPage page="privacy" />} />
       <Route path="/dieu-khoan-su-dung" element={<LegalPage page="terms" />} />

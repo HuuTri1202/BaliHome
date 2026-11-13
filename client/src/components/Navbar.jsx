@@ -14,6 +14,7 @@ export const CONTAINER = 'mx-auto w-full max-w-[1440px] px-5 sm:px-8 lg:px-12';
 const LINKS = [
   { label: 'Trang chủ', href: '/', end: true },
   { label: 'Dịch vụ', href: '/dich-vu' },
+  { label: 'Dự án', href: '/du-an' },
   { label: 'Cách làm việc', href: '/#cach-lam-viec' },
 ];
 
