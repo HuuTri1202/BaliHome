@@ -34,3 +34,6 @@ export const fmtBytes = (b) => (b >= 1048576 ? `${(b / 1048576).toFixed(1)} MB` 
 
 /** Khách chỉ tự sửa được yêu cầu chưa ai xử lý. ⚠ Khớp EDITABLE_STATUS ở server/src/routes/contact.routes.js */
 export const isRequestEditable = (request) => request.status === 'NEW';
+
+/** Khách tự huỷ được khi yêu cầu chưa xong. ⚠ Khớp CANCELLABLE_STATUSES ở server/src/services/customerRequests.service.js */
+export const isRequestCancellable = (request) => ['NEW', 'CONTACTED', 'IN_PROGRESS'].includes(request.status);

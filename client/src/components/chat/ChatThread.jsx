@@ -14,6 +14,10 @@ function systemText(event, viewer) {
   if (event.kind === 'created') return 'Bali Home đã tiếp nhận yêu cầu';
   if (event.kind === 'status') return `Chuyển sang “${statusLabel(event.toStatus)}”`;
   if (event.kind === 'edited') return viewer === 'staff' ? 'Khách đã chỉnh sửa yêu cầu' : 'Bạn đã chỉnh sửa yêu cầu';
+  if (event.kind === 'cancelled') {
+    const who = viewer === 'staff' ? 'Khách đã huỷ yêu cầu' : 'Bạn đã huỷ yêu cầu';
+    return event.note ? `${who} · Lý do: ${event.note}` : who;
+  }
   return '';
 }
 

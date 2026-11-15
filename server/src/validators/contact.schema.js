@@ -70,6 +70,14 @@ export const messageSchema = z
 /** Khách sửa yêu cầu đang chờ xử lý: chỉ các trường dễ điền nhầm */
 export const contactEditSchema = contactSchema.pick({ phone: true, need: true, message: true });
 
+/** Khách tự huỷ yêu cầu: lý do không bắt buộc (bỏ trống → không lưu) */
+export const cancelRequestSchema = z.object({
+  reason: z.preprocess(
+    (v) => (typeof v === 'string' ? v.trim() || undefined : v),
+    z.string().max(500, 'Lý do tối đa 500 ký tự').optional()
+  ),
+});
+
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export const isUuid = (v) => UUID_RE.test(String(v));
 

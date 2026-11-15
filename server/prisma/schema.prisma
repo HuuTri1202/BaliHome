@@ -115,7 +115,7 @@ model ContactRequest {
 model RequestEvent {
   id         String         @id @default(uuid()) @db.Uuid
   requestId  String         @map("request_id") @db.Uuid
-  kind       String         // created | status | edited | note (tin nhắn của Bali Home) | message (tin nhắn của khách)
+  kind       String         // created | status | edited | cancelled (khách tự huỷ) | note (tin nhắn của Bali Home) | message (tin nhắn của khách)
   fromStatus ContactStatus? @map("from_status")
   toStatus   ContactStatus? @map("to_status")
   note       String?        // khách NHÌN THẤY ghi chú này

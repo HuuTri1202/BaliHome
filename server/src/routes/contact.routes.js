@@ -4,8 +4,9 @@ import { prisma } from '../lib/prisma.js';
 import { AppError } from '../utils/AppError.js';
 import { validate } from '../middleware/validate.js';
 import { optionalAuth, requireAuth } from '../middleware/auth.js';
-import { contactEditSchema, contactSchema, isUuid, messageSchema, OTHER_NEED } from '../validators/contact.schema.js';
+import { cancelRequestSchema, contactEditSchema, contactSchema, isUuid, messageSchema, OTHER_NEED } from '../validators/contact.schema.js';
 import * as thread from '../controllers/thread.controller.js';
+import * as myRequests from '../controllers/myRequests.controller.js';
 import { newRequestNotifications, staffRecipientIds } from '../services/notifications.service.js';
 import { isOwnUpload } from '../lib/cloudinary.js';
 import { createWithUniqueCode } from '../lib/requestCode.js';
@@ -108,6 +109,9 @@ router.get('/mine/:id', requireAuth, async (req, res) => {
   const [withName] = await withServiceNames([request]);
   res.json({ request: withName });
 });
+
+// Khách tự huỷ yêu cầu chưa hoàn thành (controllers/myRequests.controller.js → services/customerRequests.service.js)
+router.post('/mine/:id/cancel', requireAuth, editLimiter, validate(cancelRequestSchema), myRequests.cancelMyRequest);
 
 // Khung chat của khách (logic + phân quyền: controllers/thread.controller.js → services/requestThread.service.js)
 router.get('/mine/:id/messages', requireAuth, thread.customerThread);

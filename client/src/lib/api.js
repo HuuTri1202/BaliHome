@@ -67,6 +67,7 @@ export const contactApi = {
   mine: () => request('/contact/mine'),
   mineOne: (id) => request(`/contact/mine/${encodeURIComponent(id)}`),
   updateMine: (id, payload) => request(`/contact/mine/${encodeURIComponent(id)}`, { method: 'PATCH', body: payload }),
+  cancelMine: (id, payload) => request(`/contact/mine/${encodeURIComponent(id)}/cancel`, { method: 'POST', body: payload }),
   messages: (id) => request(`/contact/mine/${encodeURIComponent(id)}/messages`),
   sendMessage: (id, payload) => request(`/contact/mine/${encodeURIComponent(id)}/messages`, { method: 'POST', body: payload }),
 };

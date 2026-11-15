@@ -9,7 +9,8 @@ import Alert from '../../components/ui/Alert.jsx';
 import { ArrowLeftIcon } from '../../components/ui/icons.jsx';
 import { contactApi } from '../../lib/api.js';
 import { useMarkRequestNotificationsRead } from '../../hooks/useNotifications.js';
-import { budgetLabel, fmtDate, fmtDateTime, isRequestEditable } from '../../data/requests.js';
+import CancelRequestPanel from '../../components/portal/CancelRequestPanel.jsx';
+import { budgetLabel, fmtDate, fmtDateTime, isRequestCancellable, isRequestEditable } from '../../data/requests.js';
 
 /** /tai-khoan/yeu-cau/:id — tiến độ + khung chat với Bali Home + thông tin + tệp của 1 yêu cầu */
 export default function RequestDetailPage() {
@@ -17,16 +18,23 @@ export default function RequestDetailPage() {
   useMarkRequestNotificationsRead(id);
   const { state } = useLocation();
   const [data, setData] = useState({ status: 'loading' });
+  const [reloadKey, setReloadKey] = useState(0);
+  const [justCancelled, setJustCancelled] = useState(false);
 
   useEffect(() => {
     let alive = true;
-    setData({ status: 'loading' });
+    if (reloadKey === 0) setData({ status: 'loading' }); // tải lại sau khi huỷ: giữ nội dung cũ, không nháy trang
     contactApi
       .mineOne(id)
       .then(({ request }) => alive && setData({ status: 'ready', request }))
       .catch((e) => alive && setData({ status: 'error', message: e.message }));
     return () => { alive = false; };
-  }, [id]);
+  }, [id, reloadKey]);
+
+  const onCancelled = () => {
+    setJustCancelled(true);
+    setReloadKey((key) => key + 1);
+  };
 
   const r = data.request;
   const back = (
@@ -70,6 +78,7 @@ export default function RequestDetailPage() {
       }
     >
       {state?.edited && <Alert type="success" className="mb-6">Đã lưu thay đổi của bạn.</Alert>}
+      {justCancelled && <Alert type="success" className="mb-6">Đã huỷ yêu cầu {r.code}. Bali Home đã được thông báo.</Alert>}
       <Panel>
         <div className="mb-5 flex items-center justify-between gap-3">
           <p className="font-semibold">Tiến độ</p>
@@ -80,7 +89,9 @@ export default function RequestDetailPage() {
 
       <div className="mt-6 grid items-start gap-6 xl:grid-cols-5">
         <Panel title={`Trao đổi với Bali Home · ${r.code}`} className="xl:col-span-3">
+          {/* key theo trạng thái: huỷ xong thì khung chat nạp lại, hiện ngay mốc "Bạn đã huỷ yêu cầu" */}
           <RequestChat
+            key={r.status}
             viewer="customer"
             initialMessages={r.events}
             fetchMessages={() => contactApi.messages(r.id)}
@@ -102,6 +113,7 @@ export default function RequestDetailPage() {
           <Panel title="Tệp đính kèm">
             <Attachments files={r.attachments} />
           </Panel>
+          {isRequestCancellable(r) && <CancelRequestPanel request={r} onCancelled={onCancelled} />}
         </div>
       </div>
     </PortalLayout>
