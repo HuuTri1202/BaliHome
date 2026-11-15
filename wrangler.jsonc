@@ -15,6 +15,8 @@
   "vars": {
     "API_ORIGIN": "https://balihome.onrender.com"
   },
+  // Gọi /api/ping 10 phút/lần (hàm scheduled trong worker.js): Render miễn phí ngủ sau 15 phút không có request
+  "triggers": { "crons": ["*/10 * * * *"] },
   "observability": { "enabled": true }
   // PROXY_SECRET là secret: đặt bằng `npx wrangler secret put PROXY_SECRET`, KHÔNG ghi vào file này
 }

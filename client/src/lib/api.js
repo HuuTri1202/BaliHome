@@ -105,10 +105,10 @@ export const adminApi = {
 };
 
 export const authApi = {
-  me: () => request('/auth/me'),
+  me: ({ signal } = {}) => request('/auth/me', { signal }),
   login: (payload) => request('/auth/login', { method: 'POST', body: payload }),
   register: (payload) => request('/auth/register', { method: 'POST', body: payload }),
-  providers: () => request('/auth/providers'),
+  providers: ({ signal } = {}) => request('/auth/providers', { signal }),
   /** provider: 'google' ({ credential }) | 'facebook' ({ accessToken }) → { user } hoặc { needsEmail, pendingToken, name } */
   signInWith: (provider, payload) => request(`/auth/${provider}`, { method: 'POST', body: payload }),
   completeSignup: (payload) => request('/auth/complete-signup', { method: 'POST', body: payload }),

@@ -1,13 +1,16 @@
 import { useEffect, useState } from 'react';
 import { authApi } from './api.js';
+import { withRetry } from './retry.js';
 
 const NONE = { google: null, facebook: null };
+// Server miễn phí có thể đang ngủ (~30-60 giây mới dậy) → kiên nhẫn hỏi lại thay vì ẩn hẳn nút Google/Facebook
+const PROVIDERS_RETRY = { retries: 4, baseDelayMs: 3000, timeoutMs: 65_000 };
 let providersPromise = null;
 
-/** Cách đăng nhập server đang bật; lỗi mạng → coi như chưa bật (form email vẫn dùng được), lần sau hỏi lại */
+/** Cách đăng nhập server đang bật. Hỏi lại khi server chưa dậy; hết cách mới coi như chưa bật (form email vẫn dùng được) */
 function loadProviders() {
-  providersPromise ??= authApi.providers().catch(() => {
-    providersPromise = null;
+  providersPromise ??= withRetry((signal) => authApi.providers({ signal }), PROVIDERS_RETRY).catch(() => {
+    providersPromise = null; // lần mở trang sau hỏi lại
     return NONE;
   });
   return providersPromise;

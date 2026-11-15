@@ -1,11 +1,25 @@
+import { useEffect, useState } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { Spinner } from './ui/Button.jsx';
 
+const SLOW_NOTICE_DELAY_MS = 4000;
+
+/** Chờ kiểm tra phiên đăng nhập. Quá 4 giây (server miễn phí đang dậy) thì nói rõ cho khách biết. */
 function FullScreenLoader() {
+  const [isSlow, setIsSlow] = useState(false);
+  useEffect(() => {
+    const timer = setTimeout(() => setIsSlow(true), SLOW_NOTICE_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, []);
   return (
-    <div className="grid min-h-dvh place-items-center text-brand-500" role="status" aria-label="Đang tải">
-      <Spinner className="h-8 w-8" />
+    <div className="grid min-h-dvh place-items-center px-6 text-center" role="status" aria-live="polite">
+      <div className="grid justify-items-center gap-4">
+        <Spinner className="h-8 w-8 text-brand-500" />
+        <p className={isSlow ? 'max-w-[36ch] text-ink-2' : 'sr-only'}>
+          {isSlow ? 'Máy chủ đang khởi động, vui lòng chờ trong giây lát…' : 'Đang tải'}
+        </p>
+      </div>
     </div>
   );
 }
@@ -29,11 +43,13 @@ export function AdminRoute() {
   return <Outlet />;
 }
 
-/** Trang chỉ dành cho khách (đăng nhập/đăng ký). Đã đăng nhập → về trang tài khoản. */
+/**
+ * Trang chỉ dành cho khách (đăng nhập/đăng ký). Hiện ngay trong lúc còn đang kiểm tra phiên,
+ * không bắt khách nhìn vòng xoay khi server đang dậy; hoá ra đã đăng nhập thì chuyển về trang tài khoản.
+ */
 export function GuestRoute() {
   const { status } = useAuth();
   const location = useLocation();
-  if (status === 'loading') return <FullScreenLoader />;
   if (status === 'authenticated') {
     return <Navigate to={location.state?.from?.pathname ?? '/tai-khoan'} replace />;
   }

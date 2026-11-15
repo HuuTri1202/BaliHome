@@ -41,6 +41,10 @@ app.use(cors({ origin: env.CLIENT_ORIGIN, credentials: true }));
 app.use(express.json({ limit: '10kb' }));      // chặn payload quá lớn
 app.use(cookieParser());
 
+// Giữ server thức: Cloudflare Worker gọi 10 phút/lần (gói miễn phí Render ngủ sau 15 phút không có request).
+// Không đụng database → Neon vẫn được ngủ khi không ai dùng web.
+app.get('/api/ping', (_req, res) => res.json({ ok: true }));
+
 // Kiểm tra sức khoẻ: server + database (Render dùng để biết app đã sẵn sàng)
 app.get('/api/health', async (_req, res) => {
   try {

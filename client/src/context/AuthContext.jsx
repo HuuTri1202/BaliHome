@@ -1,5 +1,10 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { authApi } from '../lib/api.js';
+import { withRetry } from '../lib/retry.js';
+
+// Server miễn phí có thể đang ngủ: lỗi mạng / 5xx thì hỏi lại (tổng ~1 phút) rồi mới coi là khách.
+// 401 (chưa đăng nhập) không phải lỗi tạm thời → trả lời ngay.
+const SESSION_RETRY = { retries: 4, baseDelayMs: 3000, timeoutMs: 65_000 };
 
 /**
  * Trạng thái đăng nhập toàn app.
@@ -19,8 +24,7 @@ export function AuthProvider({ children }) {
   // Mở trang → hỏi server phiên hiện tại (cookie tự gửi kèm)
   useEffect(() => {
     let cancelled = false;
-    authApi
-      .me()
+    withRetry((signal) => authApi.me({ signal }), SESSION_RETRY)
       .then(({ user }) => !cancelled && applyUser(user))
       .catch(() => !cancelled && applyUser(null));
     return () => { cancelled = true; };
