@@ -12,15 +12,15 @@ const TTL = '5m';
 
 const expired = () => new AppError(401, 'SIGNUP_EXPIRED', 'Phiên đăng ký đã hết hạn. Vui lòng bấm đăng nhập bằng Facebook lại.');
 
-/** @param {{ provider: string, sub: string, name: string|null }} profile */
-export const signPendingSignup = ({ provider, sub, name }) =>
-  jwt.sign({ provider, name }, env.JWT_ACCESS_SECRET, { subject: sub, audience: AUDIENCE, expiresIn: TTL, algorithm: 'HS256' });
+/** @param {{ provider: string, sub: string, name: string|null, givenName?: string|null, familyName?: string|null }} profile */
+export const signPendingSignup = ({ provider, sub, name, givenName = null, familyName = null }) =>
+  jwt.sign({ provider, name, givenName, familyName }, env.JWT_ACCESS_SECRET, { subject: sub, audience: AUDIENCE, expiresIn: TTL, algorithm: 'HS256' });
 
 export function verifyPendingSignup(token) {
   try {
-    const { provider, name, sub } = jwt.verify(token, env.JWT_ACCESS_SECRET, { audience: AUDIENCE, algorithms: ['HS256'] });
+    const { provider, name, givenName, familyName, sub } = jwt.verify(token, env.JWT_ACCESS_SECRET, { audience: AUDIENCE, algorithms: ['HS256'] });
     if (!provider || !sub) throw new Error('incomplete');
-    return { provider, sub, name: name ?? null };
+    return { provider, sub, name: name ?? null, givenName: givenName ?? null, familyName: familyName ?? null };
   } catch {
     throw expired();
   }

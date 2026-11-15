@@ -30,8 +30,9 @@ const verifier = (fetchImpl) => createFacebookVerifier({ appId: APP_ID, appSecre
 const rejectsWith = (promise, status, code) => assert.rejects(promise, (err) => err.status === status && err.code === code);
 
 test('accepts a valid token for this app and normalises the profile', async () => {
-  const { fetchImpl, calls } = fakeFetch({ debug: VALID_DEBUG, me: { id: '1001', name: ' Trần An ', email: 'An@Example.com' } });
-  assert.deepEqual(await verifier(fetchImpl)(TOKEN), { sub: '1001', email: 'an@example.com', name: 'Trần An' });
+  const { fetchImpl, calls } = fakeFetch({ debug: VALID_DEBUG, me: { id: '1001', name: ' Trần An ', first_name: 'An', last_name: 'Trần', email: 'An@Example.com' } });
+  assert.deepEqual(await verifier(fetchImpl)(TOKEN), { sub: '1001', email: 'an@example.com', name: 'Trần An', givenName: 'An', familyName: 'Trần' });
+  assert.equal(calls[1].searchParams.get('fields'), 'id,name,first_name,last_name,email');
   assert.equal(calls[0].searchParams.get('access_token'), `${APP_ID}|${APP_SECRET}`);
   assert.equal(calls[1].searchParams.get('appsecret_proof'), createHmac('sha256', APP_SECRET).update(TOKEN).digest('hex'));
 });

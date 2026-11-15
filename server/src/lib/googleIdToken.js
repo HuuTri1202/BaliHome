@@ -40,7 +40,7 @@ export async function fetchGoogleCerts() {
 
 /**
  * @param {{ clientId: string, fetchCerts?: typeof fetchGoogleCerts, now?: () => number }} options
- * @returns {(idToken: string) => Promise<{ sub: string, email: string, name: string | null }>}
+ * @returns {(idToken: string) => Promise<{ sub: string, email: string, name: string|null, givenName: string|null, familyName: string|null }>}
  */
 export function createGoogleVerifier({ clientId, fetchCerts = fetchGoogleCerts, now = Date.now }) {
   let keys = new Map();
@@ -88,6 +88,12 @@ export function createGoogleVerifier({ clientId, fetchCerts = fetchGoogleCerts, 
     }
     // Chỉ chấp nhận email Google đã xác minh: email là thứ dùng để nối với tài khoản có sẵn
     if (!payload.sub || !payload.email || payload.email_verified !== true) throw invalidToken();
-    return { sub: payload.sub, email: payload.email.trim().toLowerCase(), name: payload.name?.trim() || null };
+    return {
+      sub: payload.sub,
+      email: payload.email.trim().toLowerCase(),
+      name: payload.name?.trim() || null,
+      givenName: payload.given_name?.trim() || null,
+      familyName: payload.family_name?.trim() || null,
+    };
   };
 }

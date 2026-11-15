@@ -1,6 +1,7 @@
 import { prisma } from '../lib/prisma.js';
 import { AppError } from '../utils/AppError.js';
 import { isOwnUpload } from '../lib/cloudinary.js';
+import { isUuid } from '../validators/contact.schema.js';
 import { requestUpdateNotification } from './notifications.service.js';
 
 /* =============================================================================
@@ -25,6 +26,30 @@ export const LATEST_THREAD_EVENTS = { select: THREAD_EVENT_SELECT, orderBy: { cr
 
 /** Đưa events về thứ tự cũ → mới cho giao diện */
 export const inChronologicalOrder = (request) => ({ ...request, events: [...request.events].reverse() });
+
+const THREAD_OWNER_SELECT = { id: true, code: true, userId: true };
+const requestNotFound = () => new AppError(404, 'NOT_FOUND', 'Không tìm thấy yêu cầu.');
+
+/**
+ * Khung chat của KHÁCH: chỉ yêu cầu của chính họ. Yêu cầu của người khác → 404 (không lộ là có tồn tại).
+ * @returns {Promise<{ id: string, code: string, userId: string|null }>}
+ */
+export async function findThreadForCustomer(userId, requestId) {
+  const request = isUuid(String(requestId))
+    ? await prisma.contactRequest.findFirst({ where: { id: String(requestId), userId }, select: THREAD_OWNER_SELECT })
+    : null;
+  if (!request) throw requestNotFound();
+  return request;
+}
+
+/** Khung chat của NHÂN VIÊN (route đã qua requireAdminFromDb): mọi yêu cầu */
+export async function findThreadForStaff(requestId) {
+  const request = isUuid(String(requestId))
+    ? await prisma.contactRequest.findUnique({ where: { id: String(requestId) }, select: THREAD_OWNER_SELECT })
+    : null;
+  if (!request) throw requestNotFound();
+  return request;
+}
 
 export async function listThread(requestId) {
   const latest = await prisma.requestEvent.findMany({ where: { requestId }, ...LATEST_THREAD_EVENTS });

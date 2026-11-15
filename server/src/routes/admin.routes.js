@@ -7,7 +7,8 @@ import { requireAdminFromDb } from '../middleware/admin.js';
 import systemRoutes from './admin.system.routes.js';
 import { validate } from '../middleware/validate.js';
 import { adminUpdateSchema, isUuid, messageSchema, STATUSES } from '../validators/contact.schema.js';
-import { LATEST_THREAD_EVENTS, listThread, postMessage, requestIdsAwaitingReply, STAFF_MESSAGE } from '../services/requestThread.service.js';
+import { LATEST_THREAD_EVENTS, requestIdsAwaitingReply } from '../services/requestThread.service.js';
+import * as thread from '../controllers/thread.controller.js';
 import { withServiceNames } from '../services/requests.service.js';
 import { requestUpdateNotification } from '../services/notifications.service.js';
 
@@ -77,26 +78,9 @@ router.get('/requests', async (req, res) => {
   res.json({ requests, page, pageSize: PAGE_SIZE, total });
 });
 
-async function findRequestForStaff(req) {
-  const request = isUuid(req.params.id)
-    ? await prisma.contactRequest.findUnique({ where: { id: req.params.id }, select: { id: true, code: true, userId: true } })
-    : null;
-  if (!request) throw new AppError(404, 'NOT_FOUND', 'Không tìm thấy yêu cầu.');
-  return request;
-}
-
-// GET /api/admin/requests/:id/messages — khung chat (trang chi tiết hỏi định kỳ)
-router.get('/requests/:id/messages', async (req, res) => {
-  const request = await findRequestForStaff(req);
-  res.json({ messages: await listThread(request.id) });
-});
-
-// POST /api/admin/requests/:id/messages { body?, attachments? } — Bali Home nhắn cho khách
-router.post('/requests/:id/messages', staffMessageLimiter, validate(messageSchema), async (req, res) => {
-  const request = await findRequestForStaff(req);
-  const message = await postMessage({ request, authorId: req.auth.userId, kind: STAFF_MESSAGE, ...req.body });
-  res.status(201).json({ message });
-});
+// Khung chat phía Bali Home (controllers/thread.controller.js)
+router.get('/requests/:id/messages', thread.staffThread);
+router.post('/requests/:id/messages', staffMessageLimiter, validate(messageSchema), thread.staffSendMessage);
 
 // GET /api/admin/requests/:id — đầy đủ thông tin + file + timeline (kèm người thao tác)
 router.get('/requests/:id', async (req, res) => {

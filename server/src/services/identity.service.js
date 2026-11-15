@@ -1,4 +1,6 @@
+import { randomUUID } from 'node:crypto';
 import { prisma } from '../lib/prisma.js';
+import { pickDisplayName } from '../lib/displayName.js';
 import { AppError } from '../utils/AppError.js';
 
 /* =============================================================================
@@ -14,16 +16,8 @@ import { AppError } from '../utils/AppError.js';
 export const PROVIDER_LABELS = { google: 'Google', facebook: 'Facebook' };
 
 const PRISMA_UNIQUE_VIOLATION = 'P2002';
-const MIN_NAME_LENGTH = 2;
-const MAX_NAME_LENGTH = 100;
 
 const isUniqueViolation = (err) => err?.code === PRISMA_UNIQUE_VIOLATION;
-
-/** Họ tên cho tài khoản mới: tên từ nhà cung cấp, không có thì lấy phần trước @ của email */
-export function displayName({ name, email }) {
-  const candidate = (name?.trim() || email?.split('@')[0] || '').slice(0, MAX_NAME_LENGTH);
-  return candidate.length >= MIN_NAME_LENGTH ? candidate : 'Khách Bali Home';
-}
 
 const mismatch = (provider) =>
   new AppError(409, 'IDENTITY_MISMATCH', `Tài khoản này đã liên kết với một tài khoản ${PROVIDER_LABELS[provider]} khác.`);
@@ -66,13 +60,18 @@ async function linkByVerifiedEmail(user, { provider, sub, email }, now) {
   return prisma.user.findUnique({ where: { id: user.id } });
 }
 
-/** Tạo tài khoản mới kèm liên kết. emailFromProvider = null khi email do khách tự nhập. */
-async function createWithIdentity({ provider, sub, name, email, emailFromProvider }, now) {
+/**
+ * Tạo tài khoản mới kèm liên kết. emailFromProvider = null khi email do khách tự nhập.
+ * Họ tên mặc định chỉ gán ở đây (lúc tạo); đăng nhập lần sau không ghi đè tên khách đã sửa ở Hồ sơ.
+ */
+async function createWithIdentity({ provider, sub, name, givenName, familyName, email, emailFromProvider }, now) {
+  const id = randomUUID(); // biết trước id để tên dự phòng "Khách hàng #<id>" khớp đúng tài khoản
   try {
     return await prisma.user.create({
       data: {
+        id,
         email,
-        fullName: displayName({ name, email }),
+        fullName: pickDisplayName({ name, givenName, familyName, email, userId: id }),
         lastLoginAt: now,
         identities: { create: { provider, providerUserId: sub, email: emailFromProvider } },
       },
@@ -94,11 +93,12 @@ const emailTaken = (provider) =>
   );
 
 /**
- * @param {{ provider: 'google'|'facebook', sub: string, email: string|null, emailVerified: boolean, name: string|null }} profile
+ * @param {{ provider: 'google'|'facebook', sub: string, email: string|null, emailVerified: boolean,
+ *           name: string|null, givenName?: string|null, familyName?: string|null }} profile
  *   email: email nhà cung cấp trả về (null khi không có); emailVerified: nhà cung cấp xác nhận rõ email đã xác minh.
  * @returns {Promise<object|null>} user, hoặc null khi cần khách bổ sung email (xem completeSignup)
  */
-export async function signInWithProvider({ provider, sub, email, emailVerified, name }) {
+export async function signInWithProvider({ provider, sub, email, emailVerified, name, givenName, familyName }) {
   const now = new Date();
   const identity = await findIdentity(provider, sub);
   if (identity) return prisma.user.update({ where: { id: identity.userId }, data: { lastLoginAt: now } });
@@ -109,14 +109,14 @@ export async function signInWithProvider({ provider, sub, email, emailVerified, 
     if (!emailVerified) throw emailTaken(provider);
     return linkByVerifiedEmail(sameEmail, { provider, sub, email }, now);
   }
-  return createWithIdentity({ provider, sub, name, email, emailFromProvider: emailVerified ? email : null }, now);
+  return createWithIdentity({ provider, sub, name, givenName, familyName, email, emailFromProvider: emailVerified ? email : null }, now);
 }
 
 /**
  * Nhà cung cấp không trả email (vd. Facebook đăng ký bằng số điện thoại) → khách tự nhập email.
  * Email này CHƯA được xác minh nên chỉ dùng cho tài khoản MỚI, không bao giờ nối vào tài khoản có sẵn.
  */
-export async function completeSignup({ provider, sub, name, email }) {
+export async function completeSignup({ provider, sub, name, givenName, familyName, email }) {
   const now = new Date();
   const identity = await findIdentity(provider, sub);
   if (identity) return prisma.user.update({ where: { id: identity.userId }, data: { lastLoginAt: now } });
@@ -127,7 +127,7 @@ export async function completeSignup({ provider, sub, name, email }) {
       email: 'Email này đã có tài khoản',
     });
   }
-  return createWithIdentity({ provider, sub, name, email, emailFromProvider: null }, now);
+  return createWithIdentity({ provider, sub, name, givenName, familyName, email, emailFromProvider: null }, now);
 }
 
 /** Danh sách nhà cung cấp đã liên kết (cho trang Bảo mật) */

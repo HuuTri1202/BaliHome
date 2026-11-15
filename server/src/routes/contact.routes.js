@@ -5,7 +5,7 @@ import { AppError } from '../utils/AppError.js';
 import { validate } from '../middleware/validate.js';
 import { optionalAuth, requireAuth } from '../middleware/auth.js';
 import { contactEditSchema, contactSchema, isUuid, messageSchema, OTHER_NEED } from '../validators/contact.schema.js';
-import { CUSTOMER_MESSAGE, listThread, postMessage } from '../services/requestThread.service.js';
+import * as thread from '../controllers/thread.controller.js';
 import { isOwnUpload } from '../lib/cloudinary.js';
 import { createWithUniqueCode } from '../lib/requestCode.js';
 import { CUSTOMER_REQUEST_SELECT, withServiceNames } from '../services/requests.service.js';
@@ -96,28 +96,9 @@ router.get('/mine/:id', requireAuth, async (req, res) => {
   res.json({ request: withName });
 });
 
-/** Yêu cầu của chính người đang đăng nhập; không phải của họ thì coi như không tồn tại */
-async function findOwnRequest(req) {
-  const id = String(req.params.id);
-  const request = isUuid(id)
-    ? await prisma.contactRequest.findFirst({ where: { id, userId: req.auth.userId }, select: { id: true, code: true, userId: true } })
-    : null;
-  if (!request) throw new AppError(404, 'NOT_FOUND', 'Không tìm thấy yêu cầu.');
-  return request;
-}
-
-// GET /api/contact/mine/:id/messages — khung chat (trang chi tiết hỏi định kỳ)
-router.get('/mine/:id/messages', requireAuth, async (req, res) => {
-  const request = await findOwnRequest(req);
-  res.json({ messages: await listThread(request.id) });
-});
-
-// POST /api/contact/mine/:id/messages { body?, attachments? } — khách nhắn cho Bali Home
-router.post('/mine/:id/messages', requireAuth, messageLimiter, validate(messageSchema), async (req, res) => {
-  const request = await findOwnRequest(req);
-  const message = await postMessage({ request, authorId: req.auth.userId, kind: CUSTOMER_MESSAGE, ...req.body });
-  res.status(201).json({ message });
-});
+// Khung chat của khách (logic + phân quyền: controllers/thread.controller.js → services/requestThread.service.js)
+router.get('/mine/:id/messages', requireAuth, thread.customerThread);
+router.post('/mine/:id/messages', requireAuth, messageLimiter, validate(messageSchema), thread.customerSendMessage);
 
 const requestLocked = () =>
   new AppError(409, 'REQUEST_LOCKED', 'Yêu cầu này đã được Bali Home tiếp nhận xử lý nên không sửa được nữa. Vui lòng gọi hotline nếu cần thay đổi.');

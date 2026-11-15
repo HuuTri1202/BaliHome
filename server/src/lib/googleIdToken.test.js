@@ -9,7 +9,7 @@ const { privateKey, publicKey } = generateKeyPairSync('rsa', { modulusLength: 20
 const attacker = generateKeyPairSync('rsa', { modulusLength: 2048 });
 const JWK = { ...publicKey.export({ format: 'jwk' }), kid: 'k1', alg: 'RS256', use: 'sig' };
 
-const PAYLOAD = { sub: '1234567890', email: 'Khach@Gmail.com', email_verified: true, name: ' Nguyễn Văn A ' };
+const PAYLOAD = { sub: '1234567890', email: 'Khach@Gmail.com', email_verified: true, name: ' Nguyễn Văn A ', given_name: 'Văn A', family_name: 'Nguyễn' };
 const sign = (payload = PAYLOAD, { key = privateKey, kid = 'k1', audience = CLIENT_ID, issuer = 'https://accounts.google.com', expiresIn = '1h' } = {}) =>
   jwt.sign(payload, key, { algorithm: 'RS256', keyid: kid, audience, issuer, expiresIn });
 
@@ -29,7 +29,7 @@ const rejects = (promise) => assert.rejects(promise, (err) => err.status === 401
 
 test('accepts a valid Google token and normalises email and name', async () => {
   const { verify } = setup();
-  assert.deepEqual(await verify(sign()), { sub: '1234567890', email: 'khach@gmail.com', name: 'Nguyễn Văn A' });
+  assert.deepEqual(await verify(sign()), { sub: '1234567890', email: 'khach@gmail.com', name: 'Nguyễn Văn A', givenName: 'Văn A', familyName: 'Nguyễn' });
 });
 
 test('rejects a token signed by another key', async () => {

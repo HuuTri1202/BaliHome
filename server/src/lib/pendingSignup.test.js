@@ -8,7 +8,7 @@ const { signPendingSignup, verifyPendingSignup } = await import('./pendingSignup
 const { signAccessToken, verifyAccessToken } = await import('../utils/tokens.js');
 const jwt = (await import('jsonwebtoken')).default;
 
-const PROFILE = { provider: 'facebook', sub: '1001', name: 'Trần An' };
+const PROFILE = { provider: 'facebook', sub: '1001', name: 'Trần An', givenName: 'An', familyName: 'Trần' };
 const expired = (fn) => assert.throws(fn, (err) => err.status === 401 && err.code === 'SIGNUP_EXPIRED');
 
 test('round-trips the verified provider profile', () => {

@@ -16,7 +16,7 @@ const facebookUnavailable = () => new AppError(503, 'FACEBOOK_UNAVAILABLE', 'T�
 
 /**
  * @param {{ appId: string, appSecret: string, fetchImpl?: typeof fetch }} options
- * @returns {(accessToken: string) => Promise<{ sub: string, email: string|null, name: string|null }>}
+ * @returns {(accessToken: string) => Promise<{ sub: string, email: string|null, name: string|null, givenName: string|null, familyName: string|null }>}
  */
 export function createFacebookVerifier({ appId, appSecret, fetchImpl = fetch }) {
   const graph = async (path, params) => {
@@ -37,7 +37,7 @@ export function createFacebookVerifier({ appId, appSecret, fetchImpl = fetch }) 
     if (!data?.is_valid || String(data.app_id) !== String(appId) || !data.user_id) throw invalidToken();
 
     const appsecretProof = createHmac('sha256', appSecret).update(accessToken).digest('hex');
-    const me = await graph('/me', { fields: 'id,name,email', access_token: accessToken, appsecret_proof: appsecretProof });
+    const me = await graph('/me', { fields: 'id,name,first_name,last_name,email', access_token: accessToken, appsecret_proof: appsecretProof });
     if (String(me.id) !== String(data.user_id)) throw invalidToken();
 
     return {
@@ -45,6 +45,8 @@ export function createFacebookVerifier({ appId, appSecret, fetchImpl = fetch }) 
       // Facebook chỉ trả email chính đã xác nhận của tài khoản; không có (đăng ký bằng SĐT / bỏ quyền email) → null
       email: typeof me.email === 'string' && me.email.includes('@') ? me.email.trim().toLowerCase() : null,
       name: me.name?.trim() || null,
+      givenName: me.first_name?.trim() || null,
+      familyName: me.last_name?.trim() || null,
     };
   };
 }
