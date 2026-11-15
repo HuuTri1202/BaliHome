@@ -45,9 +45,27 @@ export async function registerUser({ fullName, email, phone, password }) {
   });
 }
 
+const PROVIDER_LABELS = { google: 'Google', facebook: 'Facebook' };
+
+/**
+ * Tài khoản không có mật khẩu (tạo từ Google/Facebook, hoặc mật khẩu cũ bị gỡ khi liên kết Google)
+ * → nói rõ cách vào thay vì "sai email hoặc mật khẩu" khiến khách tưởng gõ nhầm email.
+ * Đánh đổi: lộ ra email này có tài khoản — giống như form Đăng ký vốn đã báo "Email này đã được đăng ký".
+ */
+function socialOnlyAccount(identities) {
+  const labels = [...new Set(identities.map(({ provider }) => PROVIDER_LABELS[provider]).filter(Boolean))];
+  const via = labels.join(' hoặc ') || 'Google';
+  return new AppError(
+    401,
+    'PASSWORD_NOT_SET',
+    `Tài khoản này chưa có mật khẩu, đang đăng nhập bằng ${via}. Bấm "Đăng nhập bằng ${labels[0] ?? 'Google'}" bên dưới; muốn dùng mật khẩu thì đặt trong mục Bảo mật sau khi vào.`
+  );
+}
+
 export async function verifyCredentials({ email, password }) {
-  const user = await prisma.user.findUnique({ where: { email } });
-  const ok = await bcrypt.compare(password, user?.passwordHash ?? DUMMY_HASH);
+  const user = await prisma.user.findUnique({ where: { email }, include: { identities: { select: { provider: true } } } });
+  const ok = await bcrypt.compare(password, user?.passwordHash ?? DUMMY_HASH); // luôn so sánh → thời gian phản hồi như nhau
+  if (user && !user.passwordHash && user.identities.length > 0) throw socialOnlyAccount(user.identities);
   if (!user || !ok) {
     // Không nói rõ sai email hay sai mật khẩu
     throw new AppError(401, 'INVALID_CREDENTIALS', 'Email hoặc mật khẩu không đúng.');
