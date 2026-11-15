@@ -7,6 +7,12 @@ import { fmtDateTime } from '../../data/requests.js';
 
 const MAX_BADGE_COUNT = 99;
 const ROW_CLASS = 'block px-4 py-3 transition-colors hover:bg-ground-3';
+// Thông báo cho nhân viên (yêu cầu mới, khách nhắn tin) mở trang quản trị; còn lại mở trang của khách.
+// ⚠ Giữ khớp STAFF_NOTIFICATION ở server/src/services/notifications.service.js
+const STAFF_KINDS = new Set(['staff_request', 'staff_message']);
+
+const notificationHref = ({ kind, requestId }) =>
+  STAFF_KINDS.has(kind) ? `/quan-tri/yeu-cau/${requestId}` : `/tai-khoan/yeu-cau/${requestId}`;
 
 function NotificationContent({ notification: { title, body, readAt, createdAt } }) {
   return (
@@ -26,11 +32,14 @@ function NotificationRow({ notification, onOpen }) {
   if (!notification.requestId) {
     return <button type="button" onClick={open} className={`${ROW_CLASS} w-full text-left`}><NotificationContent notification={notification} /></button>;
   }
-  return <Link to={`/tai-khoan/yeu-cau/${notification.requestId}`} onClick={open} className={ROW_CLASS}><NotificationContent notification={notification} /></Link>;
+  return <Link to={notificationHref(notification)} onClick={open} className={ROW_CLASS}><NotificationContent notification={notification} /></Link>;
 }
 
-/** Chuông thông báo trên Topbar: chấm đỏ kèm số chưa đọc, bấm để xem danh sách. */
-export default function NotificationBell() {
+/**
+ * Chuông thông báo (Header website + trang quản trị): chấm đỏ kèm số chưa đọc, bấm để xem danh sách.
+ * @param {{ footer?: React.ReactNode }} props footer: dòng cuối bảng (vd. "Xem tất cả yêu cầu" ở trang quản trị)
+ */
+export default function NotificationBell({ footer = null }) {
   const { notifications, unreadCount, markRead, markAllRead } = useNotifications();
   const [isOpen, setIsOpen] = useState(false);
   const rootRef = useRef(null);
@@ -77,6 +86,9 @@ export default function NotificationBell() {
             <ul className="max-h-[60vh] divide-y divide-ink/5 overflow-y-auto">
               {notifications.map((n) => <li key={n.id}><NotificationRow notification={n} onOpen={openNotification} /></li>)}
             </ul>
+          )}
+          {footer && (
+            <div className="border-t border-ink/10 px-4 py-3 text-sm" onClick={() => setIsOpen(false)}>{footer}</div>
           )}
         </div>
       )}

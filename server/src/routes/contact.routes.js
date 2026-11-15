@@ -6,6 +6,7 @@ import { validate } from '../middleware/validate.js';
 import { optionalAuth, requireAuth } from '../middleware/auth.js';
 import { contactEditSchema, contactSchema, isUuid, messageSchema, OTHER_NEED } from '../validators/contact.schema.js';
 import * as thread from '../controllers/thread.controller.js';
+import { newRequestNotifications, staffRecipientIds } from '../services/notifications.service.js';
 import { isOwnUpload } from '../lib/cloudinary.js';
 import { createWithUniqueCode } from '../lib/requestCode.js';
 import { CUSTOMER_REQUEST_SELECT, withServiceNames } from '../services/requests.service.js';
@@ -69,8 +70,20 @@ router.post('/', contactLimiter, optionalAuth, validate(contactSchema), async (r
       select: { id: true, code: true, createdAt: true },
     })
   );
+  await announceToStaff({ ...request, fullName: data.fullName, need: data.need }, req.auth?.userId);
   res.status(201).json({ request });
 });
+
+/** Báo nhân viên có yêu cầu mới. Lỗi ở bước này không được làm hỏng việc gửi yêu cầu của khách (đã lưu xong). */
+async function announceToStaff(request, authorId) {
+  try {
+    const [{ needLabel }] = await withServiceNames([{ need: request.need }]);
+    const recipients = await staffRecipientIds(authorId ?? null);
+    await prisma.$transaction(newRequestNotifications(recipients, { request, serviceLabel: needLabel }));
+  } catch (error) {
+    console.error('[notifications] không tạo được thông báo yêu cầu mới', request.code, error.message);
+  }
+}
 
 // GET /api/contact/mine — yêu cầu của thành viên đang đăng nhập (mới nhất trước), kèm timeline
 router.get('/mine', requireAuth, async (req, res) => {

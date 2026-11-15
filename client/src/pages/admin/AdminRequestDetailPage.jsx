@@ -9,6 +9,7 @@ import { Button, Spinner } from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
 import { ArrowLeftIcon } from '../../components/ui/icons.jsx';
 import { adminApi } from '../../lib/api.js';
+import { useMarkRequestNotificationsRead } from '../../hooks/useNotifications.js';
 import { STATUS, budgetLabel, fmtDate, fmtDateTime } from '../../data/requests.js';
 
 /** /quan-tri/yeu-cau/:id — xem đầy đủ + đổi trạng thái + chat với khách */
@@ -18,6 +19,7 @@ export default function AdminRequestDetailPage() {
   const [next, setNext] = useState('');
   const [saving, setSaving] = useState(false);
   const [feedback, setFeedback] = useState(null);
+  useMarkRequestNotificationsRead(id);
 
   const load = useCallback(() => {
     return adminApi

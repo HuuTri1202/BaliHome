@@ -2,7 +2,7 @@ import { prisma } from '../lib/prisma.js';
 import { AppError } from '../utils/AppError.js';
 import { isOwnUpload } from '../lib/cloudinary.js';
 import { isUuid } from '../validators/contact.schema.js';
-import { requestUpdateNotification } from './notifications.service.js';
+import { customerMessageNotifications, requestUpdateNotification, staffRecipientIds } from './notifications.service.js';
 
 /* =============================================================================
  * Khung chat của một yêu cầu = dòng thời gian của nó.
@@ -27,7 +27,7 @@ export const LATEST_THREAD_EVENTS = { select: THREAD_EVENT_SELECT, orderBy: { cr
 /** Đưa events về thứ tự cũ → mới cho giao diện */
 export const inChronologicalOrder = (request) => ({ ...request, events: [...request.events].reverse() });
 
-const THREAD_OWNER_SELECT = { id: true, code: true, userId: true };
+const THREAD_OWNER_SELECT = { id: true, code: true, userId: true, fullName: true };
 const requestNotFound = () => new AppError(404, 'NOT_FOUND', 'Không tìm thấy yêu cầu.');
 
 /**
@@ -56,22 +56,29 @@ export async function listThread(requestId) {
   return latest.reverse();
 }
 
+/** Thông báo đi kèm 1 tin nhắn: tin của Bali Home → báo khách; tin của khách → báo mọi nhân viên */
+async function messageNotifications({ request, authorId, kind, body }) {
+  if (kind === STAFF_MESSAGE) return requestUpdateNotification({ request, newStatus: null, note: body ?? 'Đã gửi tệp đính kèm' });
+  return customerMessageNotifications(await staffRecipientIds(authorId), { request, body });
+}
+
 /**
- * Ghi một tin nhắn (kèm tệp nếu có) vào khung chat. Tin của Bali Home còn tạo thông báo cho khách.
- * @param {{ request: { id: string, code: string, userId: string|null }, authorId: string, kind: string, body?: string, attachments: object[] }} input
+ * Ghi một tin nhắn (kèm tệp nếu có) vào khung chat, cùng giao dịch với thông báo cho bên kia.
+ * @param {{ request: { id: string, code: string, userId: string|null, fullName?: string }, authorId: string, kind: string, body?: string, attachments: object[] }} input
  */
 export async function postMessage({ request, authorId, kind, body, attachments }) {
   if (attachments.some((file) => !isOwnUpload(file))) {
     throw new AppError(422, 'VALIDATION_ERROR', 'Tệp đính kèm không hợp lệ.', { attachments: 'Tệp đính kèm không hợp lệ' });
   }
   const files = attachments.map(({ url, publicId, fileName, bytes, format }) => ({ requestId: request.id, url, publicId, fileName, bytes, format: format ?? null }));
+  const notifications = await messageNotifications({ request, authorId, kind, body });
   const [message] = await prisma.$transaction([
     prisma.requestEvent.create({
       data: { requestId: request.id, kind, note: body ?? null, authorId, attachments: { create: files } },
       select: THREAD_EVENT_SELECT,
     }),
     prisma.contactRequest.update({ where: { id: request.id }, data: { updatedAt: new Date() } }),
-    ...(kind === STAFF_MESSAGE ? requestUpdateNotification({ request, newStatus: null, note: body ?? 'Đã gửi tệp đính kèm' }) : []),
+    ...notifications,
   ]);
   return message;
 }

@@ -1,5 +1,49 @@
 import { prisma } from '../lib/prisma.js';
 
+/**
+ * Loại thông báo. Khách: 'status' | 'message'. Nhân viên (mở trang quản trị): 'staff_request' | 'staff_message'.
+ * ⚠ Giữ khớp STAFF_KINDS ở client/src/components/nav/NotificationBell.jsx
+ */
+export const STAFF_NOTIFICATION = { newRequest: 'staff_request', message: 'staff_message' };
+
+const MAX_PREVIEW_LENGTH = 160;
+const preview = (text) => (text.length > MAX_PREVIEW_LENGTH ? `${text.slice(0, MAX_PREVIEW_LENGTH - 1)}…` : text);
+
+/** id tài khoản nhân viên nhận thông báo (bỏ người gây ra sự kiện, vd. admin tự gửi yêu cầu thử) */
+export async function staffRecipientIds(excludeUserId = null) {
+  const staff = await prisma.user.findMany({ where: { role: 'ADMIN', ...(excludeUserId && { NOT: { id: excludeUserId } }) }, select: { id: true } });
+  return staff.map(({ id }) => id);
+}
+
+/**
+ * Thao tác tạo cùng 1 thông báo cho mọi nhân viên, để chạy chung transaction với sự kiện gốc.
+ * @returns {import('@prisma/client').Prisma.PrismaPromise<unknown>[]}
+ */
+export function staffNotifications(recipientIds, { requestId, kind, title, body = null }) {
+  if (recipientIds.length === 0) return [];
+  return [prisma.notification.createMany({ data: recipientIds.map((userId) => ({ userId, requestId, kind, title, body })) })];
+}
+
+/** Khách nhắn tin trong 1 yêu cầu → báo nhân viên (nội dung rút gọn để xem nhanh trong chuông) */
+export function customerMessageNotifications(recipientIds, { request, body }) {
+  return staffNotifications(recipientIds, {
+    requestId: request.id,
+    kind: STAFF_NOTIFICATION.message,
+    title: `${request.code}: ${request.fullName ?? 'khách'} nhắn tin mới`,
+    body: body ? preview(body) : 'Đã gửi tệp đính kèm',
+  });
+}
+
+/** Khách gửi yêu cầu tư vấn mới → báo nhân viên */
+export function newRequestNotifications(recipientIds, { request, serviceLabel }) {
+  return staffNotifications(recipientIds, {
+    requestId: request.id,
+    kind: STAFF_NOTIFICATION.newRequest,
+    title: `Yêu cầu mới ${request.code}`,
+    body: `${request.fullName} · ${serviceLabel}`,
+  });
+}
+
 // ⚠ Giữ khớp nhãn STATUS ở client/src/data/requests.js
 const STATUS_LABELS = {
   NEW: 'Mới tiếp nhận',

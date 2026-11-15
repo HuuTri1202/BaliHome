@@ -8,11 +8,13 @@ import { Button, Spinner } from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
 import { ArrowLeftIcon } from '../../components/ui/icons.jsx';
 import { contactApi } from '../../lib/api.js';
+import { useMarkRequestNotificationsRead } from '../../hooks/useNotifications.js';
 import { budgetLabel, fmtDate, fmtDateTime, isRequestEditable } from '../../data/requests.js';
 
 /** /tai-khoan/yeu-cau/:id — tiến độ + khung chat với Bali Home + thông tin + tệp của 1 yêu cầu */
 export default function RequestDetailPage() {
   const { id } = useParams();
+  useMarkRequestNotificationsRead(id);
   const { state } = useLocation();
   const [data, setData] = useState({ status: 'loading' });
 

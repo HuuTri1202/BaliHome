@@ -71,6 +71,18 @@ const markRead = (id) => markWhere((n) => n.id === id, () => notificationsApi.ma
 const markAllRead = () => markWhere(() => true, () => notificationsApi.markAllRead());
 const markRequestRead = (requestId) => markWhere((n) => n.requestId === requestId, () => notificationsApi.markRequestRead(requestId));
 
+/**
+ * Đang xem trang của 1 yêu cầu → thông báo của yêu cầu đó coi như đã đọc (kể cả tin mới đến trong lúc xem).
+ * Dùng ở trang chi tiết yêu cầu của khách và của quản trị.
+ */
+export function useMarkRequestNotificationsRead(requestId) {
+  const { notifications } = useNotifications();
+  const unreadHere = requestId ? notifications.filter((n) => n.requestId === requestId && !n.readAt).length : 0;
+  useEffect(() => {
+    if (unreadHere > 0) markRequestRead(requestId);
+  }, [requestId, unreadHere]);
+}
+
 export function useNotifications() {
   const { user } = useAuth();
   const snapshot = useSyncExternalStore(subscribe, getSnapshot);
