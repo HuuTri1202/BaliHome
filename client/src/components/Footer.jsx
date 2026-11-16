@@ -2,8 +2,9 @@ import { Link } from 'react-router-dom';
 import { CONTAINER } from './Navbar.jsx';
 import { HomeLink, LogoHex } from './BrandMark.jsx';
 import { Button } from './ui/Button.jsx';
-import { FacebookIcon, PhoneIcon } from './ui/icons.jsx';
-import { CONTACT, PORTFOLIO_PATH, SOCIAL_LINKS, toTelHref } from '../data/siteContact.js';
+import OfficeMap from './OfficeMap.jsx';
+import { FacebookIcon, MailIcon, MapPinIcon, PhoneIcon } from './ui/icons.jsx';
+import { COMPANY, CONTACT, PORTFOLIO_PATH, SOCIAL_LINKS, toTelHref } from '../data/siteContact.js';
 import { CORE_SERVICES } from '../data/coreServices.js';
 
 const SERVICE_LABELS = { 'in-an': 'In ấn', design: 'Thiết kế', web: 'Website', marketing: 'Marketing' };
@@ -31,10 +32,9 @@ function BrandColumn() {
   );
 }
 
-/** Zalo, fanpage, số điện thoại ở hàng cuối. Mục chưa điền trong siteContact.js tự ẩn */
+/** Zalo, fanpage ở hàng cuối (hotline + email nằm ở khối Văn phòng). Mục chưa điền trong siteContact.js tự ẩn */
 function ContactLinks() {
-  const { hotline } = CONTACT;
-  if (!hotline && SOCIAL_LINKS.length === 0) return null;
+  if (SOCIAL_LINKS.length === 0) return null;
   return (
     <ul className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[15px] font-semibold text-ink" aria-label="Liên hệ">
       {SOCIAL_LINKS.map(({ label, href }) => (
@@ -45,18 +45,43 @@ function ContactLinks() {
           </a>
         </li>
       ))}
-      {hotline && (
-        <li>
-          <a href={toTelHref(hotline)} className={`inline-flex items-center gap-2 ${LINK_CLASS}`}>
-            <PhoneIcon className="h-4 w-4" /> {hotline}
-          </a>
-        </li>
-      )}
     </ul>
   );
 }
 
-/** Chân trang 4 cột, luôn nền tối (class dark đặt tại đây áp token tối cho riêng khối này) */
+/** Văn phòng: tên pháp lý, địa chỉ, hotline, email + bản đồ Google Maps */
+function OfficeBlock() {
+  const { name, address } = COMPANY;
+  const { hotline, email } = CONTACT;
+  if (!name && !address) return null;
+  const rows = [
+    address && { Icon: MapPinIcon, label: 'Địa chỉ', content: address },
+    hotline && { Icon: PhoneIcon, label: 'Điện thoại', content: <a href={toTelHref(hotline)} className={LINK_CLASS}>{hotline}</a> },
+    email && { Icon: MailIcon, label: 'Email', content: <a href={`mailto:${email}`} className={`break-all ${LINK_CLASS}`}>{email}</a> },
+  ].filter(Boolean);
+  return (
+    <section aria-labelledby="footer-office" className={`${CONTAINER} grid gap-10 border-t border-ink/10 py-14 lg:grid-cols-[1fr_1.4fr] lg:gap-16 lg:py-20`}>
+      <div>
+        <h2 id="footer-office" className="text-sm font-semibold uppercase tracking-[0.16em] text-ink-2">Văn phòng</h2>
+        {name && <p className="mt-6 text-[1.125rem] font-bold leading-snug">{name}</p>}
+        <dl className="mt-6 grid gap-5 text-[15px]">
+          {rows.map(({ Icon, label, content }) => (
+            <div key={label} className="flex gap-3">
+              <Icon className="mt-0.5 h-5 w-5 shrink-0 text-action" />
+              <div className="min-w-0">
+                <dt className="sr-only">{label}</dt>
+                <dd className="font-medium leading-relaxed">{content}</dd>
+              </div>
+            </div>
+          ))}
+        </dl>
+      </div>
+      <OfficeMap address={address} />
+    </section>
+  );
+}
+
+/** Chân trang 4 cột + văn phòng & bản đồ, luôn nền tối (class dark đặt tại đây áp token tối cho riêng khối này) */
 export default function Footer() {
   return (
     <footer className="dark border-t border-ink/10 bg-ground text-ink">
@@ -81,11 +106,13 @@ export default function Footer() {
         </div>
       </div>
 
+      <OfficeBlock />
+
       <div className={`${CONTAINER} border-t border-ink/10 py-7 text-sm text-ink-2`}>
         {/* Chừa lề phải để cụm nút liên hệ nổi không che số điện thoại khi cuộn tới cuối trang */}
         <div className="flex flex-wrap items-center justify-between gap-x-8 gap-y-3 pr-16 sm:pr-24">
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-            <p>© {new Date().getFullYear()} Bali Home. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} {COMPANY.name || 'Bali Home'}. All rights reserved.</p>
             <Link to="/chinh-sach-bao-mat" className={LINK_CLASS}>Quyền riêng tư</Link>
             <Link to="/dieu-khoan-su-dung" className={LINK_CLASS}>Điều khoản</Link>
             <Link to="/xoa-du-lieu" className={LINK_CLASS}>Xoá dữ liệu</Link>

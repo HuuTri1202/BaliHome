@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { sanitizeSiteContact, toTelHref } from './siteContact.js';
+import { mapDirectionsUrl, mapEmbedUrl, sanitizeSiteContact, toTelHref } from './siteContact.js';
 
 const EMPTY = { hotline: '', social: [], portfolioPath: '' };
 
@@ -17,7 +17,21 @@ test('keeps valid values and trims surrounding spaces', () => {
 });
 
 test('hides everything when the config is empty', () => {
-  assert.deepEqual(sanitizeSiteContact(EMPTY), { hotline: '', socialLinks: [], portfolioPath: '' });
+  assert.deepEqual(sanitizeSiteContact(EMPTY), { companyName: '', address: '', hotline: '', email: '', socialLinks: [], portfolioPath: '' });
+});
+
+test('company name, address and email: trimmed, invalid email hidden', () => {
+  const result = sanitizeSiteContact({ ...EMPTY, companyName: '  CÔNG TY TNHH  BALI HOME ', address: ' 73 Đường 12,  Khu phố 5 ', email: ' Nhanhoadondt@Gmail.com ' });
+  assert.equal(result.companyName, 'CÔNG TY TNHH BALI HOME');
+  assert.equal(result.address, '73 Đường 12, Khu phố 5');
+  assert.equal(result.email, 'nhanhoadondt@gmail.com');
+  ['khong-phai-email', 'a@b', '   '].forEach((email) => assert.equal(sanitizeSiteContact({ ...EMPTY, email }).email, '', email));
+});
+
+test('Google Maps links encode the address', () => {
+  const address = '73 Đường 12, Phường Hiệp Bình';
+  assert.equal(mapEmbedUrl(address), `https://www.google.com/maps?q=${encodeURIComponent(address)}&hl=vi&z=16&output=embed`);
+  assert.ok(mapDirectionsUrl(address).startsWith('https://www.google.com/maps/dir/?api=1&destination=73%20%C4%90'));
 });
 
 test('rejects a hotline that is not a phone number', () => {

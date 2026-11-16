@@ -30,7 +30,8 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         scriptSrc: ["'self'", `${GOOGLE_SIGN_IN}/gsi/client`, FACEBOOK_SDK],
-        frameSrc: ["'self'", `${GOOGLE_SIGN_IN}/gsi/`, ...FACEBOOK_WEB],
+        // + khung bản đồ Google Maps ở chân trang (www.google.com/maps?…&output=embed)
+        frameSrc: ["'self'", `${GOOGLE_SIGN_IN}/gsi/`, ...FACEBOOK_WEB, 'https://www.google.com/maps', 'https://maps.google.com'],
         connectSrc: ["'self'", `${GOOGLE_SIGN_IN}/gsi/`, FACEBOOK_SDK, 'https://graph.facebook.com', ...FACEBOOK_WEB],
       },
     },

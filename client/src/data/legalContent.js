@@ -2,7 +2,17 @@
  * Nội dung trang pháp lý. BẢN NHÁP theo mẫu phổ biến: công ty cần đọc lại / nhờ tư vấn pháp lý trước khi
  * coi là chính thức. Sửa chữ trực tiếp ở đây; mỗi mục là { heading, paragraphs?: string[], items?: string[] }.
  * ========================================================================== */
-export const COMPANY_NAME = 'Công ty TNHH Thương mại Dịch vụ Bali Home';
+import { COMPANY, CONTACT } from './siteContact.js';
+
+export const COMPANY_NAME = COMPANY.name || 'Bali Home';
+
+/** Thông tin liên hệ chính thức (lấy từ siteContact.js, mục nào chưa có thì bỏ) */
+const CONTACT_LINES = [
+  COMPANY.name,
+  COMPANY.address && `Địa chỉ: ${COMPANY.address}`,
+  CONTACT.hotline && `Điện thoại: ${CONTACT.hotline}`,
+  CONTACT.email && `Email: ${CONTACT.email}`,
+].filter(Boolean);
 export const LAST_UPDATED = '12/11/2026';
 
 export const LEGAL_PAGES = {
@@ -60,7 +70,8 @@ export const LEGAL_PAGES = {
       },
       {
         heading: '7. Liên hệ',
-        paragraphs: ['Mọi câu hỏi về quyền riêng tư, vui lòng liên hệ Bali Home qua các kênh ở cuối trang này.'],
+        paragraphs: ['Mọi câu hỏi về quyền riêng tư, vui lòng liên hệ:'],
+        items: CONTACT_LINES,
       },
     ],
   },
@@ -106,7 +117,7 @@ export const LEGAL_PAGES = {
       {
         heading: 'Cách gửi yêu cầu xoá',
         items: [
-          'Nhắn Zalo hoặc gọi hotline của Bali Home (ở cuối trang), nêu email đăng ký và ghi rõ "Yêu cầu xoá tài khoản".',
+          `Gửi email tới ${CONTACT.email || 'Bali Home'}, nhắn Zalo hoặc gọi ${CONTACT.hotline || 'hotline'}, nêu email đăng ký và ghi rõ "Yêu cầu xoá tài khoản".`,
           'Để bảo vệ bạn, chúng tôi xác minh bạn là chủ tài khoản (ví dụ gửi xác nhận tới email đăng ký) trước khi xoá.',
           'Dữ liệu được xoá trong vòng 30 ngày kể từ khi xác minh; chúng tôi báo lại cho bạn khi hoàn tất.',
         ],
