@@ -1,4 +1,3 @@
-import { useId } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 /* Đường cắt theo đúng khung lục giác trong ảnh logo → bỏ nền trắng vuông, chỉ còn lục giác */
@@ -36,8 +35,8 @@ const LOGO_A_RIGHT_BAND = '44.5,15 63,0 126,100 98,100';
 const LOGO_A_LEFT_HOOK = '0,100 92,100 66.8,60 48,60 55.6,72 62,72 69.6,84 32.2,84 56.4,46 42,34';
 const LOGO_A_RED_TRIANGLE = '48,61 55,72 45,72';
 
+/** Thân chữ A cùng màu với các chữ còn lại (currentColor: trắng trên nền tối, tối trên nền sáng); tam giác giữ màu đỏ logo */
 function LogoLetterA() {
-  const gradientId = `logo-a${useId().replace(/:/g, '')}`; // mỗi chữ A một id riêng (Header + chân trang cùng lúc)
   return (
     <svg
       viewBox={`0 0 ${LOGO_A_WIDTH} ${LOGO_A_HEIGHT}`}
@@ -45,14 +44,8 @@ function LogoLetterA() {
       // Cao bằng chữ in hoa của Montserrat (~0.7em), đặt trên đường chân chữ như một ký tự thường
       style={{ height: '0.7em', width: `${(0.7 * LOGO_A_WIDTH) / LOGO_A_HEIGHT}em`, margin: '0 0.04em', verticalAlign: 'baseline', display: 'inline-block' }}
     >
-      <defs>
-        <linearGradient id={gradientId} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#3b82f6" />
-          <stop offset="1" stopColor="#1d4ed8" />
-        </linearGradient>
-      </defs>
-      <polygon points={LOGO_A_RIGHT_BAND} fill={`url(#${gradientId})`} />
-      <polygon points={LOGO_A_LEFT_HOOK} fill={`url(#${gradientId})`} />
+      <polygon points={LOGO_A_RIGHT_BAND} fill="currentColor" />
+      <polygon points={LOGO_A_LEFT_HOOK} fill="currentColor" />
       <polygon points={LOGO_A_RED_TRIANGLE} fill="#e5232d" />
     </svg>
   );
@@ -60,7 +53,7 @@ function LogoLetterA() {
 
 /**
  * Chữ thương hiệu "BALIHOME": viết liền, in hoa, Montserrat ExtraBold; chữ A vẽ theo logo.
- * Màu và cỡ chữ do nơi dùng truyền vào qua className (chữ A giữ màu xanh–đỏ của logo).
+ * Màu và cỡ chữ do nơi dùng truyền vào qua className (chữ A cùng màu chữ, chỉ tam giác giữ màu đỏ logo).
  */
 export function Wordmark({ className = '' }) {
   return (
