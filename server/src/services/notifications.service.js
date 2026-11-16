@@ -4,7 +4,7 @@ import { prisma } from '../lib/prisma.js';
  * Loại thông báo. Khách: 'status' | 'message'. Nhân viên (mở trang quản trị): 'staff_request' | 'staff_message'.
  * ⚠ Giữ khớp STAFF_KINDS ở client/src/components/nav/NotificationBell.jsx
  */
-export const STAFF_NOTIFICATION = { newRequest: 'staff_request', message: 'staff_message', cancelled: 'staff_cancel' };
+export const STAFF_NOTIFICATION = { newRequest: 'staff_request', message: 'staff_message', cancelled: 'staff_cancel', edited: 'staff_edit' };
 
 const MAX_PREVIEW_LENGTH = 160;
 const preview = (text) => (text.length > MAX_PREVIEW_LENGTH ? `${text.slice(0, MAX_PREVIEW_LENGTH - 1)}…` : text);
@@ -27,6 +27,15 @@ export function staffNotifications(recipientIds, notification) {
   if (recipientIds.length === 0) return [];
   return [prisma.notification.createMany({ data: staffNotificationRows(recipientIds, notification) })];
 }
+
+/** Khách sửa yêu cầu → dòng thông báo cho nhân viên, nêu các mục đã sửa */
+export const editedRequestRows = (recipientIds, { request, changedLabels }) =>
+  staffNotificationRows(recipientIds, {
+    requestId: request.id,
+    kind: STAFF_NOTIFICATION.edited,
+    title: `${request.code}: ${request.fullName ?? 'khách'} đã sửa yêu cầu`,
+    body: `Đã sửa: ${changedLabels.join(', ')}`,
+  });
 
 /** Khách tự huỷ yêu cầu → dòng thông báo cho nhân viên (kèm lý do nếu có) */
 export const cancelledRequestRows = (recipientIds, { request, reason }) =>

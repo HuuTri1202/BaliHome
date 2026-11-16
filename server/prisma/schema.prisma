@@ -93,6 +93,7 @@ model ContactRequest {
   need      String        // slug của Service, hoặc "other"
   industry  String?       // lĩnh vực kinh doanh của khách
   budget    String?       // khoảng ngân sách (khoá, xem validators/contact.schema.js)
+  desiredPrice Int?       @map("desired_price") // mức giá mong muốn (đồng), không bắt buộc
   deadline  DateTime?     // ngày mong muốn hoàn thành
   message   String?
   status    ContactStatus @default(NEW)

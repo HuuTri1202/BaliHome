@@ -1,4 +1,5 @@
 import { prisma } from '../lib/prisma.js';
+import { AppError } from '../utils/AppError.js';
 import { OTHER_NEED } from '../validators/contact.schema.js';
 import { inChronologicalOrder, LATEST_THREAD_EVENTS } from './requestThread.service.js';
 
@@ -12,9 +13,17 @@ export async function serviceNameMap(slugs) {
   return (slug) => map[slug] ?? (slug === OTHER_NEED ? 'Tư vấn khác' : slug);
 }
 
+/** Dịch vụ khách chọn phải còn mở (hoặc "Khác") */
+export async function assertServiceAvailable(need) {
+  if (need === OTHER_NEED) return;
+  const service = await prisma.service.findFirst({ where: { slug: need, isActive: true }, select: { id: true } });
+  if (!service) throw new AppError(422, 'VALIDATION_ERROR', 'Vui lòng kiểm tra lại thông tin.', { need: 'Dịch vụ không tồn tại' });
+}
+
 /** Trường khách được xem (không lộ ip, userId…) */
 export const CUSTOMER_REQUEST_SELECT = {
-  id: true, code: true, phone: true, need: true, company: true, industry: true, budget: true, deadline: true,
+  id: true, code: true, fullName: true, phone: true, email: true, need: true, company: true, industry: true,
+  budget: true, desiredPrice: true, deadline: true,
   message: true, status: true, createdAt: true, updatedAt: true,
   // Tệp gửi lúc tạo yêu cầu; tệp gửi trong khung chat đã hiện kèm tin nhắn
   attachments: { where: { eventId: null }, select: { id: true, url: true, fileName: true, bytes: true, format: true }, orderBy: { createdAt: 'asc' } },

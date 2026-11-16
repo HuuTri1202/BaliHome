@@ -10,6 +10,7 @@ import Alert from '../../components/ui/Alert.jsx';
 import { ArrowLeftIcon } from '../../components/ui/icons.jsx';
 import { adminApi } from '../../lib/api.js';
 import { useMarkRequestNotificationsRead } from '../../hooks/useNotifications.js';
+import { formatVnd } from '../../lib/money.js';
 import { STATUS, budgetLabel, fmtDate, fmtDateTime } from '../../data/requests.js';
 
 /** /quan-tri/yeu-cau/:id — xem đầy đủ + đổi trạng thái + chat với khách */
@@ -73,6 +74,7 @@ export default function AdminRequestDetailPage() {
     ['Lĩnh vực', r.industry || '—'],
     ['Dịch vụ', r.needLabel],
     ['Ngân sách', budgetLabel(r.budget)],
+    ['Mức giá mong muốn', formatVnd(r.desiredPrice)],
     ['Deadline', fmtDate(r.deadline)],
     ['Gửi lúc', fmtDateTime(r.createdAt)],
   ];

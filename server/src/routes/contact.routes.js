@@ -4,13 +4,13 @@ import { prisma } from '../lib/prisma.js';
 import { AppError } from '../utils/AppError.js';
 import { validate } from '../middleware/validate.js';
 import { optionalAuth, requireAuth } from '../middleware/auth.js';
-import { cancelRequestSchema, contactEditSchema, contactSchema, isUuid, messageSchema, OTHER_NEED } from '../validators/contact.schema.js';
+import { cancelRequestSchema, contactEditSchema, contactSchema, isUuid, messageSchema } from '../validators/contact.schema.js';
 import * as thread from '../controllers/thread.controller.js';
 import * as myRequests from '../controllers/myRequests.controller.js';
 import { newRequestNotifications, staffRecipientIds } from '../services/notifications.service.js';
 import { isOwnUpload } from '../lib/cloudinary.js';
 import { createWithUniqueCode } from '../lib/requestCode.js';
-import { CUSTOMER_REQUEST_SELECT, withServiceNames } from '../services/requests.service.js';
+import { CUSTOMER_REQUEST_SELECT, assertServiceAvailable, withServiceNames } from '../services/requests.service.js';
 
 // Chống spam: tối đa 5 yêu cầu / giờ / IP (khách vãng lai cũng gửi được nên phải tính theo IP)
 const contactLimiter = createLimiter({
@@ -36,15 +36,6 @@ const messageLimiter = createLimiter({
   keyGenerator: byUser,
   message: 'Bạn gửi tin nhắn hơi nhanh. Vui lòng đợi ít phút rồi gửi tiếp.',
 });
-
-/** Chỉ yêu cầu còn ở trạng thái này khách mới được tự sửa */
-const EDITABLE_STATUS = 'NEW';
-
-async function assertServiceAvailable(need) {
-  if (need === OTHER_NEED) return;
-  const service = await prisma.service.findFirst({ where: { slug: need, isActive: true }, select: { id: true } });
-  if (!service) throw new AppError(422, 'VALIDATION_ERROR', 'Vui lòng kiểm tra lại thông tin.', { need: 'Dịch vụ không tồn tại' });
-}
 
 const router = Router();
 
@@ -117,32 +108,7 @@ router.post('/mine/:id/cancel', requireAuth, editLimiter, validate(cancelRequest
 router.get('/mine/:id/messages', requireAuth, thread.customerThread);
 router.post('/mine/:id/messages', requireAuth, messageLimiter, validate(messageSchema), thread.customerSendMessage);
 
-const requestLocked = () =>
-  new AppError(409, 'REQUEST_LOCKED', 'Yêu cầu này đã được Bali Home tiếp nhận xử lý nên không sửa được nữa. Vui lòng gọi hotline nếu cần thay đổi.');
-
-// PATCH /api/contact/mine/:id { phone, need, message } — khách tự sửa yêu cầu còn chờ xử lý
-router.patch('/mine/:id', requireAuth, editLimiter, validate(contactEditSchema), async (req, res) => {
-  const id = String(req.params.id);
-  if (!isUuid(id)) throw new AppError(404, 'NOT_FOUND', 'Không tìm thấy yêu cầu.');
-  const ownedRequest = { id, userId: req.auth.userId };
-
-  const current = await prisma.contactRequest.findFirst({ where: ownedRequest, select: { status: true, phone: true, need: true, message: true } });
-  if (!current) throw new AppError(404, 'NOT_FOUND', 'Không tìm thấy yêu cầu.');
-  if (current.status !== EDITABLE_STATUS) throw requestLocked();
-
-  const changes = { phone: req.body.phone, need: req.body.need, message: req.body.message ?? null };
-  const isUnchanged = Object.entries(changes).every(([field, value]) => current[field] === value);
-  if (isUnchanged) return res.json({ ok: true });
-  // Dịch vụ cũ đã bị ẩn thì khách vẫn giữ được; chỉ kiểm tra khi đổi sang dịch vụ khác
-  if (changes.need !== current.need) await assertServiceAvailable(changes.need);
-
-  await prisma.$transaction(async (tx) => {
-    // Điều kiện status nằm ngay trong câu UPDATE: admin đổi trạng thái cùng lúc thì bản sửa không lọt qua
-    const { count } = await tx.contactRequest.updateMany({ where: { ...ownedRequest, status: EDITABLE_STATUS }, data: changes });
-    if (count === 0) throw requestLocked();
-    await tx.requestEvent.create({ data: { requestId: id, kind: 'edited', authorId: req.auth.userId } });
-  });
-  return res.json({ ok: true });
-});
+// Khách sửa toàn bộ thông tin yêu cầu còn "Mới tiếp nhận" (controllers/myRequests.controller.js → services/customerRequests.service.js)
+router.patch('/mine/:id', requireAuth, editLimiter, validate(contactEditSchema), myRequests.updateMyRequest);
 
 export default router;

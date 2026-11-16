@@ -9,8 +9,25 @@ export const BUDGETS = ['under-5m', '5-15m', '15-50m', 'over-50m', 'unsure'];
 
 export const STATUSES = ['NEW', 'CONTACTED', 'IN_PROGRESS', 'DONE', 'CANCELLED'];
 
+/** Mức giá mong muốn tối đa (đồng). ⚠ khớp MAX_DESIRED_PRICE ở client/src/lib/money.js */
+export const MAX_DESIRED_PRICE = 2_000_000_000;
+
 const optionalText = (max, msg) =>
   z.preprocess((v) => (typeof v === 'string' ? v.trim() || undefined : v), z.string().max(max, msg).optional());
+
+/** Mức giá mong muốn: số nguyên đồng; nhận cả chuỗi "15.000.000"; rỗng → bỏ qua */
+const desiredPrice = z.preprocess(
+  (v) => {
+    if (v === '' || v == null) return undefined;
+    return typeof v === 'string' ? Number(v.replace(/[\s.,_]/g, '')) : v;
+  },
+  z
+    .number({ invalid_type_error: 'Mức giá chỉ gồm chữ số' })
+    .int('Mức giá chỉ gồm chữ số')
+    .min(0, 'Mức giá không hợp lệ')
+    .max(MAX_DESIRED_PRICE, 'Mức giá tối đa 2.000.000.000 đ')
+    .optional()
+);
 
 const attachment = z.object({
   url: z.string().url().max(500),
@@ -48,6 +65,7 @@ export const contactSchema = z.object({
     .regex(/^[a-z0-9-]+$/, 'Dịch vụ không hợp lệ'),
   industry: optionalText(80, 'Lĩnh vực tối đa 80 ký tự'),
   budget: z.enum(BUDGETS, { errorMap: () => ({ message: 'Ngân sách không hợp lệ' }) }).optional(),
+  desiredPrice,
   deadline: z.preprocess(
     (v) => (v === '' || v == null ? undefined : v),
     z.coerce
@@ -67,8 +85,52 @@ export const messageSchema = z
   })
   .refine((v) => v.body || v.attachments.length, { message: 'Tin nhắn trống', path: ['body'] });
 
-/** Khách sửa yêu cầu đang chờ xử lý: chỉ các trường dễ điền nhầm */
-export const contactEditSchema = contactSchema.pick({ phone: true, need: true, message: true });
+/*
+ * Khi SỬA (PATCH), mỗi trường tuỳ chọn có 3 trạng thái:
+ *   không gửi (undefined) → giữ nguyên | gửi "" hoặc null → xoá (null) | gửi giá trị → cập nhật
+ */
+const blankToNull = (v) => (v === '' || v === null ? null : typeof v === 'string' && v.trim() === '' ? null : v);
+const editableText = (max, msg) =>
+  z.preprocess((v) => blankToNull(typeof v === 'string' ? v.trim() : v), z.string().max(max, msg).nullable().optional());
+
+/**
+ * Khách sửa yêu cầu đang chờ xử lý: toàn bộ thông tin đã gửi (trừ tệp đính kèm, gửi thêm qua khung chat).
+ * Trường không gửi thì giữ nguyên (bản giao diện cũ chỉ gửi phone/need/message vẫn chạy đúng).
+ * Deadline được phép giữ nguyên ngày cũ dù đã qua; chỉ ngày MỚI mới phải từ hôm nay trở đi (kiểm tra ở service).
+ */
+export const contactEditSchema = z.object({
+  fullName: contactSchema.shape.fullName.optional(),
+  phone: contactSchema.shape.phone.optional(),
+  need: contactSchema.shape.need.optional(),
+  email: z.preprocess(
+    (v) => blankToNull(typeof v === 'string' ? v.trim().toLowerCase() : v),
+    z.string().email('Email không hợp lệ').max(254).nullable().optional()
+  ),
+  company: editableText(120, 'Tên doanh nghiệp tối đa 120 ký tự'),
+  industry: editableText(80, 'Lĩnh vực tối đa 80 ký tự'),
+  budget: z.preprocess(blankToNull, z.enum(BUDGETS, { errorMap: () => ({ message: 'Ngân sách không hợp lệ' }) }).nullable().optional()),
+  desiredPrice: z.preprocess(
+    (v) => {
+      const blank = blankToNull(v);
+      return typeof blank === 'string' ? Number(blank.replace(/[\s.,_]/g, '')) : blank;
+    },
+    z
+      .number({ invalid_type_error: 'Mức giá chỉ gồm chữ số' })
+      .int('Mức giá chỉ gồm chữ số')
+      .min(0, 'Mức giá không hợp lệ')
+      .max(MAX_DESIRED_PRICE, 'Mức giá tối đa 2.000.000.000 đ')
+      .nullable()
+      .optional()
+  ),
+  deadline: z.preprocess(
+    (v) => {
+      const blank = blankToNull(v);
+      return typeof blank === 'string' ? new Date(blank) : blank;
+    },
+    z.date({ errorMap: () => ({ message: 'Ngày không hợp lệ' }) }).nullable().optional()
+  ),
+  message: editableText(2000, 'Mô tả tối đa 2000 ký tự'),
+});
 
 /** Khách tự huỷ yêu cầu: lý do không bắt buộc (bỏ trống → không lưu) */
 export const cancelRequestSchema = z.object({

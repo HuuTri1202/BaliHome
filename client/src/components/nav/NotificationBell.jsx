@@ -9,7 +9,7 @@ const MAX_BADGE_COUNT = 99;
 const ROW_CLASS = 'block px-4 py-3 transition-colors hover:bg-ground-3';
 // Thông báo cho nhân viên (yêu cầu mới, khách nhắn tin) mở trang quản trị; còn lại mở trang của khách.
 // ⚠ Giữ khớp STAFF_NOTIFICATION ở server/src/services/notifications.service.js
-const STAFF_KINDS = new Set(['staff_request', 'staff_message', 'staff_cancel']);
+const STAFF_KINDS = new Set(['staff_request', 'staff_message', 'staff_cancel', 'staff_edit']);
 
 const notificationHref = ({ kind, requestId }) =>
   STAFF_KINDS.has(kind) ? `/quan-tri/yeu-cau/${requestId}` : `/tai-khoan/yeu-cau/${requestId}`;

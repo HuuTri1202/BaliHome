@@ -13,7 +13,10 @@ const fmtTime = (iso) => { const d = new Date(iso); return `${pad(d.getHours())}
 function systemText(event, viewer) {
   if (event.kind === 'created') return 'Bali Home đã tiếp nhận yêu cầu';
   if (event.kind === 'status') return `Chuyển sang “${statusLabel(event.toStatus)}”`;
-  if (event.kind === 'edited') return viewer === 'staff' ? 'Khách đã chỉnh sửa yêu cầu' : 'Bạn đã chỉnh sửa yêu cầu';
+  if (event.kind === 'edited') {
+    const who = viewer === 'staff' ? 'Khách đã chỉnh sửa' : 'Bạn đã chỉnh sửa';
+    return event.note ? `${who}: ${event.note}` : `${who} yêu cầu`; // note = các mục đã sửa (bản sửa cũ không có)
+  }
   if (event.kind === 'cancelled') {
     const who = viewer === 'staff' ? 'Khách đã huỷ yêu cầu' : 'Bạn đã huỷ yêu cầu';
     return event.note ? `${who} · Lý do: ${event.note}` : who;

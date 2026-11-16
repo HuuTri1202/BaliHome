@@ -10,6 +10,7 @@ import { ArrowLeftIcon } from '../../components/ui/icons.jsx';
 import { contactApi } from '../../lib/api.js';
 import { useMarkRequestNotificationsRead } from '../../hooks/useNotifications.js';
 import CancelRequestPanel from '../../components/portal/CancelRequestPanel.jsx';
+import { formatVnd } from '../../lib/money.js';
 import { budgetLabel, fmtDate, fmtDateTime, isRequestCancellable, isRequestEditable } from '../../data/requests.js';
 
 /** /tai-khoan/yeu-cau/:id — tiến độ + khung chat với Bali Home + thông tin + tệp của 1 yêu cầu */
@@ -58,10 +59,13 @@ export default function RequestDetailPage() {
   const info = [
     ['Mã yêu cầu', r.code],
     ['Dịch vụ', r.needLabel],
+    ['Họ và tên', r.fullName],
     ['Số điện thoại', r.phone],
+    ['Email', r.email || '—'],
     ['Doanh nghiệp', r.company || '—'],
     ['Lĩnh vực', r.industry || '—'],
     ['Ngân sách dự kiến', budgetLabel(r.budget)],
+    ['Mức giá mong muốn', formatVnd(r.desiredPrice)],
     ['Deadline mong muốn', fmtDate(r.deadline)],
     ['Gửi lúc', fmtDateTime(r.createdAt)],
   ];
@@ -77,7 +81,11 @@ export default function RequestDetailPage() {
         </div>
       }
     >
-      {state?.edited && <Alert type="success" className="mb-6">Đã lưu thay đổi của bạn.</Alert>}
+      {state?.edited && (
+        <Alert type="success" className="mb-6">
+          {state.changed?.length ? `Đã lưu thay đổi: ${state.changed.join(', ')}. Bali Home đã được thông báo.` : 'Không có thông tin nào thay đổi.'}
+        </Alert>
+      )}
       {justCancelled && <Alert type="success" className="mb-6">Đã huỷ yêu cầu {r.code}. Bali Home đã được thông báo.</Alert>}
       <Panel>
         <div className="mb-5 flex items-center justify-between gap-3">

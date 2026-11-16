@@ -15,6 +15,8 @@ import { contactApi, ApiError } from '../lib/api.js';
 import { OTHER_NEED } from '../data/needs.js';
 import { BUDGETS, INDUSTRIES, budgetLabel, fmtDate } from '../data/requests.js';
 import RequestCode from '../components/portal/RequestCode.jsx';
+import DesiredPriceField from '../components/quote/DesiredPriceField.jsx';
+import { formatVnd, parseVnd, validateDesiredPrice } from '../lib/money.js';
 
 /* =============================================================================
  * /bao-gia — Form yêu cầu báo giá 5 bước (Dynamic multi-step form)
@@ -26,7 +28,7 @@ import RequestCode from '../components/portal/RequestCode.jsx';
 
 const STEPS = ['Dịch vụ', 'Dự án', 'Ngân sách & thời gian', 'Tệp đính kèm', 'Liên hệ & xác nhận'];
 const DRAFT_KEY = 'bh-quote-draft';
-const EMPTY = { need: '', company: '', industry: '', message: '', budget: '', deadline: '', fullName: '', phone: '', email: '' };
+const EMPTY = { need: '', company: '', industry: '', message: '', budget: '', desiredPrice: '', deadline: '', fullName: '', phone: '', email: '' };
 const today = () => new Date().toISOString().slice(0, 10);
 
 const readDraft = () => {
@@ -45,6 +47,7 @@ function validateStep(step, v) {
   }
   if (step === 2) {
     if (!v.budget) e.budget = 'Vui lòng chọn khoảng ngân sách';
+    const price = validateDesiredPrice(v.desiredPrice); if (price) e.desiredPrice = price;
     if (v.deadline && v.deadline < today()) e.deadline = 'Deadline phải từ hôm nay trở đi';
   }
   if (step === 4) {
@@ -139,6 +142,7 @@ export default function QuotePage() {
         need: values.need,
         industry: values.industry.trim() || undefined,
         budget: values.budget,
+        desiredPrice: parseVnd(values.desiredPrice) ?? undefined,
         deadline: values.deadline || undefined,
         message: values.message.trim(),
         attachments: uploads.results,
@@ -148,7 +152,7 @@ export default function QuotePage() {
     } catch (err) {
       if (err instanceof ApiError && Object.keys(err.fields).length) {
         setErrors(err.fields);
-        const back = ['need'].some((k) => err.fields[k]) ? 0 : ['message', 'industry', 'company'].some((k) => err.fields[k]) ? 1 : ['budget', 'deadline'].some((k) => err.fields[k]) ? 2 : err.fields.attachments ? 3 : 4;
+        const back = ['need'].some((k) => err.fields[k]) ? 0 : ['message', 'industry', 'company'].some((k) => err.fields[k]) ? 1 : ['budget', 'desiredPrice', 'deadline'].some((k) => err.fields[k]) ? 2 : err.fields.attachments ? 3 : 4;
         setStep(back);
       }
       setFormError(err.message);
@@ -276,6 +280,7 @@ export default function QuotePage() {
                         </div>
                         <FieldError id="err-budget">{errors.budget}</FieldError>
                       </fieldset>
+                      <DesiredPriceField value={values.desiredPrice} onChange={set('desiredPrice')} error={errors.desiredPrice} />
                       <Field label="Deadline mong muốn" type="date" optional min={today()} value={values.deadline} onChange={set('deadline')} error={errors.deadline} hint="Để trống nếu chưa có ngày cụ thể." className="max-w-xs" />
                     </div>
                   )}
@@ -302,6 +307,7 @@ export default function QuotePage() {
                             ['Doanh nghiệp', values.company || '—'],
                             ['Lĩnh vực', values.industry || '—'],
                             ['Ngân sách', budgetLabel(values.budget)],
+                            ['Mức giá mong muốn', formatVnd(parseVnd(values.desiredPrice))],
                             ['Deadline', values.deadline ? fmtDate(values.deadline) : '—'],
                             ['Tệp đính kèm', `${uploads.results.length} tệp`],
                           ].map(([k, v]) => (
