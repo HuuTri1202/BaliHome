@@ -70,6 +70,8 @@
   --font-sans: "Be Vietnam Pro", ui-sans-serif, system-ui, sans-serif;
   /* Tiêu đề: sans-serif mạnh, đủ dấu tiếng Việt. Trang quản trị giữ serif riêng (xem .admin-shell) */
   --font-display: "Plus Jakarta Sans", "Be Vietnam Pro", ui-sans-serif, system-ui, sans-serif;
+  /* Chữ thương hiệu "BALIHOME" (in hoa, rất đậm, dáng rộng). index.html chỉ tải 6 ký tự cần dùng của Montserrat 800 */
+  --font-wordmark: "Montserrat", "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
 
   /* Bảng màu thương hiệu gốc (vẫn giữ cho các chỗ cần mã màu cố định) */
   --color-brand-50: #eef4ff;

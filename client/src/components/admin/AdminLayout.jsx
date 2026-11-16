@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { HomeLink, LogoHex } from '../BrandMark.jsx';
+import { HomeLink, LogoHex, Wordmark } from '../BrandMark.jsx';
 import { initials } from '../../lib/initials.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 import NotificationBell from '../nav/NotificationBell.jsx';
@@ -52,7 +52,7 @@ export default function AdminLayout({ title, subtitle, actions, hero, children }
         <HomeLink className="flex items-center gap-3 px-2 lg:flex-col lg:gap-3 lg:text-center">
           <LogoHex className="h-10 w-10 lg:h-12 lg:w-12" />
           <span>
-            <span className="block text-[13px] font-semibold uppercase tracking-[0.3em]">Bali Home</span>
+            <Wordmark className="block text-[1.25rem]" />
             <span className="mt-1 block text-[10px] uppercase tracking-[0.24em] text-ink-2">Quản trị hệ thống</span>
           </span>
         </HomeLink>

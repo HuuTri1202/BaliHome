@@ -22,7 +22,15 @@ export function HomeLink({ children, ...props }) {
 }
 
 /**
- * Logo + chữ "BALI HOME" giãn rộng.
+ * Chữ thương hiệu "BALIHOME": viết liền, in hoa, Montserrat ExtraBold (theo mẫu nhận diện).
+ * Màu và cỡ chữ do nơi dùng truyền vào qua className.
+ */
+export function Wordmark({ className = '' }) {
+  return <span className={`font-wordmark font-extrabold uppercase leading-none tracking-[0.01em] ${className}`}>BALIHOME</span>;
+}
+
+/**
+ * Logo + chữ "BALIHOME".
  * @param {{ light?: boolean }} props light = chữ trắng (đặt trên mảng tối cố định, vd. trang đăng nhập)
  */
 export default function BrandMark({ light = false }) {
@@ -31,9 +39,7 @@ export default function BrandMark({ light = false }) {
   return (
     <HomeLink className="group inline-flex shrink-0 items-center gap-3">
       <LogoHex className="h-10 w-10 transition-transform duration-500 group-hover:rotate-[60deg]" />
-      <span className={`hidden text-[13px] font-semibold uppercase tracking-[0.32em] transition-colors duration-300 sm:inline ${textClass}`}>
-        Bali Home
-      </span>
+      <Wordmark className={`hidden text-[1.375rem] transition-colors duration-300 sm:inline ${textClass}`} />
     </HomeLink>
   );
 }

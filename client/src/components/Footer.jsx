@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { CONTAINER } from './Navbar.jsx';
-import { HomeLink, LogoHex } from './BrandMark.jsx';
+import { HomeLink, LogoHex, Wordmark } from './BrandMark.jsx';
 import { Button } from './ui/Button.jsx';
 import OfficeMap from './OfficeMap.jsx';
 import { FacebookIcon, MailIcon, MapPinIcon, PhoneIcon } from './ui/icons.jsx';
@@ -25,7 +25,7 @@ function BrandColumn() {
     <div className="col-span-2 lg:col-span-1">
       <HomeLink className="inline-flex items-center gap-3">
         <LogoHex className="h-12 w-12" />
-        <span className="font-display text-[1.875rem] font-extrabold leading-none tracking-[-0.03em] sm:text-[2.25rem]">BALI HOME</span>
+        <Wordmark className="text-[1.875rem] sm:text-[2.25rem]" />
       </HomeLink>
       <p className="mt-6 max-w-[34ch] text-ink-2">Giải pháp sáng tạo và công nghệ toàn diện cho doanh nghiệp.</p>
     </div>

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import AdminLayout from '../../components/admin/AdminLayout.jsx';
 import AreaChart from '../../components/admin/AreaChart.jsx';
+import { Wordmark } from '../../components/BrandMark.jsx';
 import { StatusBadge } from '../../components/portal/StatusBadge.jsx';
 import { Spinner } from '../../components/ui/Button.jsx';
 import Alert from '../../components/ui/Alert.jsx';
@@ -209,7 +210,7 @@ export default function AdminOverviewPage() {
             <path fill="#0c1124" d="M0 290 L70 248 L130 282 L190 240 L240 270 V360 H0Z" />
           </svg>
           <div className="absolute inset-0 -z-10" style={{ background: 'linear-gradient(0deg, rgb(7 11 24 / .85), transparent 65%)' }} aria-hidden="true" />
-          <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/80">Bali Home</p>
+          <Wordmark className="block text-[0.95rem] text-white/85" />
           <p className="mt-2 font-display text-[1.35rem] leading-snug text-white">“Một đầu mối cho mọi việc của thương hiệu.”</p>
           <span className="mt-4 block h-px w-10 bg-action" aria-hidden="true" />
         </section>
