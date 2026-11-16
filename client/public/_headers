@@ -1,0 +1,14 @@
+# Cloudflare Workers Static Assets: header cho file tĩnh (không áp dụng cho /api, đi qua worker.js)
+# File trong /assets có mã băm trong tên (index-AoekL-oF.js) → nội dung đổi thì tên đổi → lưu 1 năm, không cần hỏi lại.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Ảnh/icon tên cố định: lưu 1 tuần (đổi ảnh thì tăng ?v= trong code như icon Zalo)
+/icons/*
+  Cache-Control: public, max-age=604800
+/logo-144.png
+  Cache-Control: public, max-age=604800
+/favicon-48.png
+  Cache-Control: public, max-age=604800
+/apple-touch-icon.png
+  Cache-Control: public, max-age=604800

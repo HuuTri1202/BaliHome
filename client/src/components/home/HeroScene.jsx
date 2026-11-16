@@ -50,7 +50,8 @@ export default function HeroScene() {
         <Scenery />
 
         <div className="relative z-10 px-5 pt-16 sm:px-8 lg:max-w-[60%] lg:py-20 lg:pl-16">
-          <h1 id="hero-title" className="animate-rise text-balance font-display text-[clamp(2.5rem,4.8vw,4.5rem)] font-extrabold leading-[1.14] tracking-[-0.03em]">
+          {/* Không có hiệu ứng mờ dần: đây là nội dung lớn nhất màn hình đầu (LCP), cần hiện ngay */}
+          <h1 id="hero-title" className="text-balance font-display text-[clamp(2.5rem,4.8vw,4.5rem)] font-extrabold leading-[1.14] tracking-[-0.03em]">
             Một đầu mối duy nhất cho mọi nhu cầu tăng trưởng
           </h1>
           <div className="mt-8 animate-rise [animation-delay:80ms]">

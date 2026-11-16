@@ -1,4 +1,10 @@
 import { useEffect, useState } from 'react';
+// Font tiêu đề riêng của trang quản trị: nằm trong chunk quản trị, khách thường không phải tải
+import '@fontsource/playfair-display/400.css';
+import '@fontsource/playfair-display/500.css';
+import '@fontsource/playfair-display/600.css';
+import '@fontsource/playfair-display/400-italic.css';
+import '@fontsource/playfair-display/500-italic.css';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { HomeLink, LogoHex, Wordmark } from '../BrandMark.jsx';
 import { initials } from '../../lib/initials.js';

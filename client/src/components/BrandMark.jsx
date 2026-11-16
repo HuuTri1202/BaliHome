@@ -5,7 +5,8 @@ const LOGO_CLIP = 'polygon(50% 5.5%, 89% 27.6%, 89% 72.6%, 50% 94.5%, 11% 72.6%,
 
 /** Lục giác logo (dùng riêng ở nhiều chỗ) */
 export function LogoHex({ className = 'h-11 w-11' }) {
-  return <img src="/logo.png" alt="" width="44" height="44" className={`object-contain ${className}`} style={{ clipPath: LOGO_CLIP }} />;
+  // logo-144.png (25 KB) đủ nét cho cỡ tối đa 48px trên màn hình 3x; logo.png gốc 1024px nặng gần 700 KB
+  return <img src="/logo-144.png" alt="" width="44" height="44" decoding="async" className={`object-contain ${className}`} style={{ clipPath: LOGO_CLIP }} />;
 }
 
 /** Link của mọi logo: về trang chủ; nếu đang ở trang chủ thì cuộn lên đầu trang */
