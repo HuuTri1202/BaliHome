@@ -4,10 +4,12 @@ import { GlobeIcon, MegaphoneIcon, PenIcon, PrinterIcon } from '../components/ui
  * 4 dịch vụ cốt lõi hiển thị ở Hero (badge) và khối Dịch vụ (card).
  * Tĩnh, không gọi API → trang chủ luôn đầy đủ kể cả khi server đang khởi động.
  * tone: màu phân loại theo dịch vụ, đo được từ 4.83:1 trở lên ở cả chế độ sáng và tối.
+ * glow: màu phát sáng của ô biểu tượng trên trang chủ (nền tối cinematic), cùng họ màu với tone.
  */
 export const CORE_SERVICES = [
   {
     slug: 'in-an',
+    glow: '#38bdf8',
     title: 'In ấn',
     badge: 'In ấn sắc nét',
     line: 'Đúng màu, giao tận nơi',
@@ -16,6 +18,7 @@ export const CORE_SERVICES = [
   },
   {
     slug: 'design',
+    glow: '#fb7185',
     title: 'Design',
     badge: 'Thiết kế UI/UX',
     line: 'Thương hiệu nhất quán mọi kênh',
@@ -24,6 +27,7 @@ export const CORE_SERVICES = [
   },
   {
     slug: 'web',
+    glow: '#34d399',
     title: 'Web',
     badge: 'Website chuyên nghiệp',
     line: 'Nhanh, chuẩn điện thoại',
@@ -32,6 +36,7 @@ export const CORE_SERVICES = [
   },
   {
     slug: 'marketing',
+    glow: '#fbbf24',
     title: 'Marketing',
     badge: 'Marketing',
     line: 'Chiến dịch đo được kết quả',

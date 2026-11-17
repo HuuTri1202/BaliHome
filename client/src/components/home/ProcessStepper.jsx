@@ -87,7 +87,7 @@ export default function ProcessStepper() {
         </div>
       </div>
 
-      <div id={panelId} role="tabpanel" aria-labelledby={tabId(activeIndex)} className="mt-10 grid min-h-32 place-items-center rounded-3xl bg-ground-2 p-6 text-center lg:mt-14">
+      <div id={panelId} role="tabpanel" aria-labelledby={tabId(activeIndex)} className="glass-card mt-10 grid min-h-32 place-items-center rounded-3xl p-6 text-center lg:mt-14">
         {/* key = bước → mỗi lần đổi bước nội dung "mọc" lên lại */}
         <div key={activeStep.label} className="animate-rise">
           <p className="text-sm font-semibold text-action">Bước {activeIndex + 1}/{STEPS.length}</p>

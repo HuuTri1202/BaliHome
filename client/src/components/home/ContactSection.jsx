@@ -18,6 +18,10 @@ import { SECTION_Y } from './sectionSpacing.js';
 
 const CLOSING_SECTION = 'px-2 pb-16 sm:px-4 lg:px-6 lg:pb-24';
 const CLOSING_FRAME = 'dark rounded-[2rem] bg-ground-2 py-20 text-ink ring-1 ring-ink/10 lg:rounded-[2.5rem] lg:py-28';
+/* Trang chủ cinematic: khung kính tím, quầng hoàng hôn phía trên (vẽ bằng gradient, không ảnh) */
+const CINEMATIC_FRAME =
+  'dark relative isolate overflow-hidden rounded-[2rem] py-20 text-ink ring-1 ring-white/10 lg:rounded-[2.5rem] lg:py-28 ' +
+  'bg-[radial-gradient(70%_60%_at_80%_0%,rgb(240_164_107/0.28),transparent_70%),radial-gradient(60%_70%_at_0%_100%,rgb(124_58_237/0.35),transparent_70%),linear-gradient(160deg,#1b1446,#0f0c29)]';
 
 const schema = {
   fullName: rules.fullName,
@@ -70,6 +74,7 @@ function ServicePicker({ value, error, onChange, services, status }) {
  * Form yêu cầu tư vấn / báo giá. Dùng ở trang chủ và trang chi tiết dịch vụ.
  * @param defaultService slug dịch vụ chọn sẵn (trang chi tiết)
  * @param isClosing true = khối chốt hạ cuối trang: khung tối nổi bật, tách khỏi phần nội dung phía trên
+ * @param isCinematic chỉ dùng kèm isClosing: khung kính tím của trang chủ cinematic
  * @param submitLabel chữ trên nút gửi
  */
 export default function ContactSection({
@@ -78,6 +83,7 @@ export default function ContactSection({
   intro = 'Bali Home sẽ gọi lại và gửi báo giá.',
   defaultService = '',
   isClosing = false,
+  isCinematic = false,
   submitLabel = 'Nhận báo giá ngay',
 }) {
   const { user } = useAuth();
@@ -114,11 +120,12 @@ export default function ContactSection({
   });
 
   const needField = register('need');
+  const formSurface = isCinematic ? 'glass-card' : isClosing ? 'bg-ground' : 'bg-ground-2';
 
   return (
     <section id={id} aria-labelledby={`${id}-title`} className={isClosing ? CLOSING_SECTION : SECTION_Y}>
       {/* Khối chốt hạ: class dark đổi toàn bộ token màu sang bộ tối cho riêng khung này (giống Footer) */}
-      <div className={isClosing ? CLOSING_FRAME : undefined}>
+      <div className={isClosing ? (isCinematic ? CINEMATIC_FRAME : CLOSING_FRAME) : undefined}>
       <Reveal className={`${CONTAINER} grid gap-12 lg:grid-cols-12 lg:gap-16`}>
         <div className="lg:col-span-5">
           <h2 id={`${id}-title`} {...item(0, 'font-display text-title')}>
@@ -139,7 +146,7 @@ export default function ContactSection({
           </ul>
         </div>
 
-        <div id={CONTACT_FORM_ID} {...item(3, `rounded-3xl p-6 sm:p-10 lg:col-span-7 lg:p-12 ${isClosing ? 'bg-ground' : 'bg-ground-2'}`)}>
+        <div id={CONTACT_FORM_ID} {...item(3, `rounded-3xl p-6 sm:p-10 lg:col-span-7 lg:p-12 ${formSurface}`)}>
           {sent ? (
             <div className="flex min-h-[420px] flex-col items-start justify-center" role="status">
               <span className="hex hex-ratio grid w-16 place-items-center bg-success text-white">
